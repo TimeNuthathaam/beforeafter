@@ -955,7 +955,90 @@
             </div>
         </div>
 
-        <!-- Section 3: de Pry Clinic Logo -->
+        <!-- Section 3: Eye Privacy Censor Bar (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว) -->
+        <div class="settings-section">
+            <div class="section-label">
+                <span class="section-title-left">🕶️ แถบปิดตาคนไข้ (Eye Privacy Censor):</span>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn-preset" id="censorResetBtn" title="คืนค่าตำแหน่งและขนาดมาตรฐาน">🔄 รีเซ็ตตำแหน่งกลาง (Default)</button>
+                </div>
+            </div>
+
+            <!-- Toggle, Color, and Target -->
+            <div class="control-row">
+                <div class="control-item">
+                    <label class="toggle-label" style="background: #0f172a; color: #ffffff; border-color: #0f172a;" title="เปิด/ปิด แถบปิดตาสี่เหลี่ยมขอบโค้งมน">
+                        <input type="checkbox" id="showCensorCheckbox" checked>
+                        <span>🕶️ แสดงแถบปิดตา (Censor Bar)</span>
+                    </label>
+                </div>
+
+                <div class="control-item">
+                    <label for="censorColorSelect">สีแถบปิดตา:</label>
+                    <select id="censorColorSelect">
+                        <option value="#000000" selected>⬛ สีดำ (Black - ค่าเริ่มต้น)</option>
+                        <option value="#ffffff">⬜ สีขาว (White)</option>
+                        <option value="#1e293b">🔷 สีกรมท่าเข้ม (Dark Navy)</option>
+                        <option value="#475569">🔘 สีเทาเข้ม (Slate Gray)</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="censorTargetSelect">ตำแหน่งที่ปิดตา:</label>
+                    <select id="censorTargetSelect">
+                        <option value="both" selected>ทั้ง 2 ฝั่ง (Before & After)</option>
+                        <option value="left">เฉพาะฝั่งซ้าย (Before)</option>
+                        <option value="right">เฉพาะฝั่งขวา (After)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Position Sliders & Quick Nudges -->
+            <div class="control-row" style="background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px dashed var(--border); gap: 14px;">
+                <!-- Y Position -->
+                <div class="control-item" style="min-width: 240px;">
+                    <label for="censorYSlider">↕️ ระดับสายตา (Y):</label>
+                    <input type="range" min="15" max="65" value="36.5" step="0.5" id="censorYSlider">
+                    <span id="censorYVal" class="val-badge" style="color: var(--primary); font-weight: 700;">36.5%</span>
+                    <button type="button" class="btn-sm" id="censorUpBtn" title="เลื่อนขึ้น 0.5%">⬆️</button>
+                    <button type="button" class="btn-sm" id="censorDownBtn" title="เลื่อนลง 0.5%">⬇️</button>
+                </div>
+
+                <!-- X Position -->
+                <div class="control-item" style="min-width: 230px;">
+                    <label for="censorXSlider">↔️ แนวนอน (X):</label>
+                    <input type="range" min="30" max="70" value="50" step="0.5" id="censorXSlider">
+                    <span id="censorXVal" class="val-badge" style="color: var(--primary); font-weight: 700;">50%</span>
+                    <button type="button" class="btn-sm" id="censorLeftBtn" title="เลื่อนซ้าย 0.5%">⬅️</button>
+                    <button type="button" class="btn-sm" id="censorRightBtn" title="เลื่อนขวา 0.5%">➡️</button>
+                </div>
+
+                <!-- Width -->
+                <div class="control-item" style="min-width: 210px;">
+                    <label for="censorWSlider">↔️ ความกว้าง:</label>
+                    <input type="range" min="20" max="60" value="38" step="1" id="censorWSlider">
+                    <span id="censorWVal" class="val-badge">38%</span>
+                    <button type="button" class="btn-sm" id="censorWiderBtn" title="กว้างขึ้น 1%">➕</button>
+                    <button type="button" class="btn-sm" id="censorNarrowBtn" title="แคบลง 1%">➖</button>
+                </div>
+
+                <!-- Height -->
+                <div class="control-item" style="min-width: 170px;">
+                    <label for="censorHSlider">↕️ ความสูง:</label>
+                    <input type="range" min="3" max="15" value="6.5" step="0.5" id="censorHSlider">
+                    <span id="censorHVal" class="val-badge">6.5%</span>
+                </div>
+
+                <!-- Corner Radius -->
+                <div class="control-item" style="min-width: 180px;">
+                    <label for="censorRadiusSlider">🔘 ขอบโค้งมน:</label>
+                    <input type="range" min="0" max="30" value="14" step="1" id="censorRadiusSlider">
+                    <span id="censorRadiusVal" class="val-badge">14px</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: de Pry Clinic Logo -->
         <div class="settings-section">
             <div class="section-label">
                 <span class="section-title-left">🏷️ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
@@ -1235,6 +1318,27 @@
         const watermarkOpacitySlider = document.getElementById("watermarkOpacitySlider");
         const watermarkOpacityVal = document.getElementById("watermarkOpacityVal");
 
+        const showCensorCheckbox = document.getElementById("showCensorCheckbox");
+        const censorColorSelect = document.getElementById("censorColorSelect");
+        const censorTargetSelect = document.getElementById("censorTargetSelect");
+        const censorYSlider = document.getElementById("censorYSlider");
+        const censorYVal = document.getElementById("censorYVal");
+        const censorXSlider = document.getElementById("censorXSlider");
+        const censorXVal = document.getElementById("censorXVal");
+        const censorWSlider = document.getElementById("censorWSlider");
+        const censorWVal = document.getElementById("censorWVal");
+        const censorHSlider = document.getElementById("censorHSlider");
+        const censorHVal = document.getElementById("censorHVal");
+        const censorRadiusSlider = document.getElementById("censorRadiusSlider");
+        const censorRadiusVal = document.getElementById("censorRadiusVal");
+        const censorUpBtn = document.getElementById("censorUpBtn");
+        const censorDownBtn = document.getElementById("censorDownBtn");
+        const censorLeftBtn = document.getElementById("censorLeftBtn");
+        const censorRightBtn = document.getElementById("censorRightBtn");
+        const censorWiderBtn = document.getElementById("censorWiderBtn");
+        const censorNarrowBtn = document.getElementById("censorNarrowBtn");
+        const censorResetBtn = document.getElementById("censorResetBtn");
+
         const sampleDataBtn = document.getElementById("sampleDataBtn");
         const clearTextBtn = document.getElementById("clearTextBtn");
 
@@ -1453,6 +1557,112 @@
             }
             renderStageOverlays();
         });
+
+        // --- EYE PRIVACY CENSOR LOGIC & LOCALSTORAGE PERSISTENCE ---
+        const CENSOR_STORAGE_KEY = "beforeafter_eye_censor_settings";
+
+        function saveCensorSettings() {
+            const settings = {
+                enabled: showCensorCheckbox.checked,
+                y: censorYSlider.value,
+                x: censorXSlider.value,
+                w: censorWSlider.value,
+                h: censorHSlider.value,
+                r: censorRadiusSlider.value,
+                color: censorColorSelect.value,
+                target: censorTargetSelect.value
+            };
+            try {
+                localStorage.setItem(CENSOR_STORAGE_KEY, JSON.stringify(settings));
+            } catch (e) {}
+        }
+
+        function loadCensorSettings() {
+            try {
+                const saved = localStorage.getItem(CENSOR_STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (typeof data.enabled === "boolean") showCensorCheckbox.checked = data.enabled;
+                    if (data.y) { censorYSlider.value = data.y; censorYVal.textContent = `${data.y}%`; }
+                    if (data.x) { censorXSlider.value = data.x; censorXVal.textContent = `${data.x}%`; }
+                    if (data.w) { censorWSlider.value = data.w; censorWVal.textContent = `${data.w}%`; }
+                    if (data.h) { censorHSlider.value = data.h; censorHVal.textContent = `${data.h}%`; }
+                    if (data.r) { censorRadiusSlider.value = data.r; censorRadiusVal.textContent = `${data.r}px`; }
+                    if (data.color) censorColorSelect.value = data.color;
+                    if (data.target) censorTargetSelect.value = data.target;
+                }
+            } catch (e) {}
+        }
+
+        function updateCensorUI() {
+            censorYVal.textContent = `${censorYSlider.value}%`;
+            censorXVal.textContent = `${censorXSlider.value}%`;
+            censorWVal.textContent = `${censorWSlider.value}%`;
+            censorHVal.textContent = `${censorHSlider.value}%`;
+            censorRadiusVal.textContent = `${censorRadiusSlider.value}px`;
+            saveCensorSettings();
+            renderStageOverlays();
+        }
+
+        showCensorCheckbox.addEventListener("change", () => {
+            saveCensorSettings();
+            renderStageOverlays();
+        });
+        censorColorSelect.addEventListener("change", () => {
+            saveCensorSettings();
+            renderStageOverlays();
+        });
+        censorTargetSelect.addEventListener("change", () => {
+            saveCensorSettings();
+            renderStageOverlays();
+        });
+
+        censorYSlider.addEventListener("input", updateCensorUI);
+        censorXSlider.addEventListener("input", updateCensorUI);
+        censorWSlider.addEventListener("input", updateCensorUI);
+        censorHSlider.addEventListener("input", updateCensorUI);
+        censorRadiusSlider.addEventListener("input", updateCensorUI);
+
+        censorUpBtn.addEventListener("click", () => {
+            censorYSlider.value = (Math.max(parseFloat(censorYSlider.min), parseFloat(censorYSlider.value) - 0.5)).toFixed(1);
+            updateCensorUI();
+        });
+        censorDownBtn.addEventListener("click", () => {
+            censorYSlider.value = (Math.min(parseFloat(censorYSlider.max), parseFloat(censorYSlider.value) + 0.5)).toFixed(1);
+            updateCensorUI();
+        });
+        censorLeftBtn.addEventListener("click", () => {
+            censorXSlider.value = (Math.max(parseFloat(censorXSlider.min), parseFloat(censorXSlider.value) - 0.5)).toFixed(1);
+            updateCensorUI();
+        });
+        censorRightBtn.addEventListener("click", () => {
+            censorXSlider.value = (Math.min(parseFloat(censorXSlider.max), parseFloat(censorXSlider.value) + 0.5)).toFixed(1);
+            updateCensorUI();
+        });
+        censorWiderBtn.addEventListener("click", () => {
+            censorWSlider.value = Math.min(parseFloat(censorWSlider.max), parseFloat(censorWSlider.value) + 1);
+            updateCensorUI();
+        });
+        censorNarrowBtn.addEventListener("click", () => {
+            censorWSlider.value = Math.max(parseFloat(censorWSlider.min), parseFloat(censorWSlider.value) - 1);
+            updateCensorUI();
+        });
+
+        censorResetBtn.addEventListener("click", () => {
+            showCensorCheckbox.checked = true;
+            censorYSlider.value = 36.5;
+            censorXSlider.value = 50;
+            censorWSlider.value = 38;
+            censorHSlider.value = 6.5;
+            censorRadiusSlider.value = 14;
+            censorColorSelect.value = "#000000";
+            censorTargetSelect.value = "both";
+            updateCensorUI();
+            showToast("รีเซ็ตแถบปิดตาเป็นค่ามาตรฐานกลางเรียบร้อย");
+        });
+
+        // Initialize saved censor settings
+        loadCensorSettings();
 
         // Bottom Text Size UI update & listeners
         function updateBottomSizeUI(val) {
@@ -1825,7 +2035,70 @@
                 ctx.restore();
             }
 
-            // 2. TREATMENT TITLE (Header Pill Capsule)
+            // 2. EYE CENSOR BARS (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว)
+            if (showCensorCheckbox.checked) {
+                const yPct = parseFloat(censorYSlider.value) / 100;
+                const xPct = parseFloat(censorXSlider.value) / 100;
+                const wPct = parseFloat(censorWSlider.value) / 100;
+                const hPct = parseFloat(censorHSlider.value) / 100;
+                const rawRadius = parseFloat(censorRadiusSlider.value) || 14;
+                const radius = Math.round(rawRadius * (S / 2));
+                const color = censorColorSelect.value || "#000000";
+                const target = censorTargetSelect.value || "both";
+
+                const slotW = isHorizontal ? width / 2 : width;
+                const slotH = isHorizontal ? height : height / 2;
+
+                const barW = Math.round(slotW * wPct);
+                const barH = Math.round(slotH * hPct);
+
+                ctx.save();
+                ctx.fillStyle = color;
+                ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+                ctx.shadowBlur = Math.round(5 * S);
+                ctx.shadowOffsetY = Math.round(2 * S);
+
+                function drawSingleCensorBar(slotLeftX, slotTopY) {
+                    const cx = slotLeftX + slotW * xPct;
+                    const cy = slotTopY + slotH * yPct;
+                    const bx = Math.round(cx - barW / 2);
+                    const by = Math.round(cy - barH / 2);
+
+                    ctx.beginPath();
+                    const cornerR = Math.min(radius, barH / 2);
+                    if (typeof ctx.roundRect === "function") {
+                        ctx.roundRect(bx, by, barW, barH, cornerR);
+                    } else {
+                        ctx.moveTo(bx + cornerR, by);
+                        ctx.arcTo(bx + barW, by, bx + barW, by + barH, cornerR);
+                        ctx.arcTo(bx + barW, by + barH, bx, by + barH, cornerR);
+                        ctx.arcTo(bx, by + barH, bx, by, cornerR);
+                        ctx.arcTo(bx, by, bx + barW, by, cornerR);
+                        ctx.closePath();
+                    }
+                    ctx.fill();
+                }
+
+                if (isHorizontal) {
+                    if (target === "both" || target === "left") {
+                        drawSingleCensorBar(0, 0);
+                    }
+                    if (target === "both" || target === "right") {
+                        drawSingleCensorBar(width / 2, 0);
+                    }
+                } else {
+                    if (target === "both" || target === "left") {
+                        drawSingleCensorBar(0, 0);
+                    }
+                    if (target === "both" || target === "right") {
+                        drawSingleCensorBar(0, height / 2);
+                    }
+                }
+
+                ctx.restore();
+            }
+
+            // 3. TREATMENT TITLE (Header Pill Capsule)
             if (showTitleCheckbox.checked && titleInput.value.trim()) {
                 const title = titleInput.value.trim();
                 let fontSize = Math.round(22 * S);
@@ -1872,7 +2145,7 @@
                 ctx.restore();
             }
 
-            // 3. LOGO (Top-right de Pry Logo / Badge)
+            // 4. LOGO (Top-right de Pry Logo / Badge)
             if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
                 const logoImg = logoObjects[currentLogoColor];
                 if (logoImg.complete && logoImg.naturalWidth) {
