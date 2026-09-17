@@ -1488,6 +1488,50 @@
         <span><span class="shortcut">Click & Drag</span> เลื่อนจัดตำแหน่ง</span>
     </div>
 
+    <!-- Modal: Save New Preset -->
+    <div id="savePresetModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span>💾 บันทึกการตั้งค่าเป็น Preset ใหม่</span>
+                <button type="button" class="modal-close-btn" id="closeSaveModalBtn">✕</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label for="newPresetNameInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155;">ตั้งชื่อ Preset:</label>
+                <input type="text" id="newPresetNameInput" placeholder="เช่น เคสฟิลเลอร์คาง ปิดตา 60%, เคสสิว 1:1..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; box-sizing: border-box;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" class="btn-preset-action" id="cancelSavePresetBtn" style="background: #f1f5f9; color: #475569;">ยกเลิก</button>
+                <button type="button" class="btn-preset-action btn-save" id="confirmSavePresetBtn">บันทึก Preset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Export / Import Presets -->
+    <div id="ioPresetModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 600px;">
+            <div class="modal-header">
+                <span id="ioModalTitle">📤 ส่งออก / นำเข้าพรีเซ็ต (Export / Import Presets)</span>
+                <button type="button" class="modal-close-btn" id="closeIOModalBtn">✕</button>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 10px;">
+                คัดลอกรหัส JSON นี้ไปวางในอีกเครื่อง หรือบันทึกเป็นไฟล์เพื่อนำไปใช้ในเบราว์เซอร์อื่นได้ทันที
+            </p>
+            <textarea id="ioJsonTextarea" rows="8" style="width: 100%; padding: 8px 10px; font-family: monospace; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical; box-sizing: border-box; background: #f8fafc; margin-bottom: 12px;"></textarea>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnCopyExportJson">📋 คัดลอก JSON</button>
+                    <button type="button" class="btn-preset-action btn-io" id="btnDownloadJsonFile">💾 ดาวน์โหลดไฟล์ .json</button>
+                    <input type="file" id="importJsonFileInput" accept=".json" style="display: none;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnSelectJsonFile">📂 เลือกไฟล์ .json</button>
+                </div>
+                <div>
+                    <button type="button" class="btn-preset-action btn-save" id="btnConfirmImportJson">📥 ยืนยันนำเข้าข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Embed canonical de Pry Clinic logos (Badge, Pink, White)
         const DEPRY_LOGOS = {
@@ -3441,46 +3485,92 @@
         }
 
         function processFile(file, type) {
-            if (!file || !file.type.startsWith("image/")) {
+            if (!file) return;
+            const isImage = (file.type && file.type.startsWith("image/")) ||
+                            /\.(jpe?g|png|gif|webp|bmp|svg|avif|heic|heif)$/i.test(file.name || "");
+            if (!isImage) {
                 showToast("กรุณาเลือกไฟล์รูปภาพที่ถูกต้อง", "error");
                 return;
             }
             const img = new Image();
-            img.onload = () => handleImageLoaded(img, type);
-            img.onerror = () => showToast("โหลดภาพไม่สำเร็จ", "error");
-            img.src = URL.createObjectURL(file);
+            const objectUrl = URL.createObjectURL(file);
+            img.onload = () => {
+                handleImageLoaded(img, type);
+                URL.revokeObjectURL(objectUrl);
+            };
+            img.onerror = () => {
+                showToast("โหลดภาพไม่สำเร็จ", "error");
+                URL.revokeObjectURL(objectUrl);
+            };
+            img.src = objectUrl;
         }
 
         beforeFileInput.addEventListener("change", e => {
-            if (e.target.files[0]) processFile(e.target.files[0], "before");
+            if (e.target.files && e.target.files[0]) processFile(e.target.files[0], "before");
+            e.target.value = "";
         });
         afterFileInput.addEventListener("change", e => {
-            if (e.target.files[0]) processFile(e.target.files[0], "after");
+            if (e.target.files && e.target.files[0]) processFile(e.target.files[0], "after");
+            e.target.value = "";
         });
         beforeChangeInput.addEventListener("change", e => {
-            if (e.target.files[0]) processFile(e.target.files[0], "before");
+            if (e.target.files && e.target.files[0]) processFile(e.target.files[0], "before");
+            e.target.value = "";
         });
         afterChangeInput.addEventListener("change", e => {
-            if (e.target.files[0]) processFile(e.target.files[0], "after");
+            if (e.target.files && e.target.files[0]) processFile(e.target.files[0], "after");
+            e.target.value = "";
+        });
+
+        // Clicking anywhere on dropzone opens file picker
+        beforeDropzone.addEventListener("click", e => {
+            if (e.target.tagName !== "INPUT") {
+                beforeFileInput.click();
+            }
+        });
+        afterDropzone.addEventListener("click", e => {
+            if (e.target.tagName !== "INPUT") {
+                afterFileInput.click();
+            }
         });
 
         function setupSlotDropzone(slotEl, type) {
-            slotEl.addEventListener("dragover", e => {
-                e.preventDefault();
-                slotEl.classList.add("drag-over");
-            });
-            slotEl.addEventListener("dragleave", () => slotEl.classList.remove("drag-over"));
-            slotEl.addEventListener("drop", e => {
-                e.preventDefault();
-                slotEl.classList.remove("drag-over");
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    processFile(e.dataTransfer.files[0], type);
-                }
+            const dropzoneEl = type === "before" ? beforeDropzone : afterDropzone;
+            const targets = [slotEl, dropzoneEl].filter(Boolean);
+
+            targets.forEach(targetEl => {
+                targetEl.addEventListener("dragenter", e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    slotEl.classList.add("drag-over");
+                });
+                targetEl.addEventListener("dragover", e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    slotEl.classList.add("drag-over");
+                });
+                targetEl.addEventListener("dragleave", e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    slotEl.classList.remove("drag-over");
+                });
+                targetEl.addEventListener("drop", e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    slotEl.classList.remove("drag-over");
+                    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        processFile(e.dataTransfer.files[0], type);
+                    }
+                });
             });
         }
 
         setupSlotDropzone(slotBefore, "before");
         setupSlotDropzone(slotAfter, "after");
+
+        // Prevent browser from opening dropped files if dropped outside slot
+        window.addEventListener("dragover", e => { e.preventDefault(); }, false);
+        window.addEventListener("drop", e => { e.preventDefault(); }, false);
 
         let lastHoveredSlot = "before";
         slotBefore.addEventListener("pointerenter", () => { lastHoveredSlot = "before"; });
@@ -3766,48 +3856,5 @@
         renderBothSlots();
         renderStageOverlays();
     </script>
-    <!-- Modal: Save New Preset -->
-    <div id="savePresetModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <div class="modal-header">
-                <span>💾 บันทึกการตั้งค่าเป็น Preset ใหม่</span>
-                <button type="button" class="modal-close-btn" id="closeSaveModalBtn">✕</button>
-            </div>
-            <div style="margin-bottom: 16px;">
-                <label for="newPresetNameInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155;">ตั้งชื่อ Preset:</label>
-                <input type="text" id="newPresetNameInput" placeholder="เช่น เคสฟิลเลอร์คาง ปิดตา 60%, เคสสิว 1:1..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; box-sizing: border-box;">
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" class="btn-preset-action" id="cancelSavePresetBtn" style="background: #f1f5f9; color: #475569;">ยกเลิก</button>
-                <button type="button" class="btn-preset-action btn-save" id="confirmSavePresetBtn">บันทึก Preset</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Export / Import Presets -->
-    <div id="ioPresetModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card" style="max-width: 600px;">
-            <div class="modal-header">
-                <span id="ioModalTitle">📤 ส่งออก / นำเข้าพรีเซ็ต (Export / Import Presets)</span>
-                <button type="button" class="modal-close-btn" id="closeIOModalBtn">✕</button>
-            </div>
-            <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 10px;">
-                คัดลอกรหัส JSON นี้ไปวางในอีกเครื่อง หรือบันทึกเป็นไฟล์เพื่อนำไปใช้ในเบราว์เซอร์อื่นได้ทันที
-            </p>
-            <textarea id="ioJsonTextarea" rows="8" style="width: 100%; padding: 8px 10px; font-family: monospace; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical; box-sizing: border-box; background: #f8fafc; margin-bottom: 12px;"></textarea>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" class="btn-preset-action btn-io" id="btnCopyExportJson">📋 คัดลอก JSON</button>
-                    <button type="button" class="btn-preset-action btn-io" id="btnDownloadJsonFile">💾 ดาวน์โหลดไฟล์ .json</button>
-                    <input type="file" id="importJsonFileInput" accept=".json" style="display: none;">
-                    <button type="button" class="btn-preset-action btn-io" id="btnSelectJsonFile">📂 เลือกไฟล์ .json</button>
-                </div>
-                <div>
-                    <button type="button" class="btn-preset-action btn-save" id="btnConfirmImportJson">📥 ยืนยันนำเข้าข้อมูล</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
