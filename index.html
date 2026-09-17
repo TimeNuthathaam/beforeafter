@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Before/After Image Combiner</title>
+    <!-- Google Fonts: Kanit & Sarabun for authentic de Pry typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
@@ -32,7 +36,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px 16px 60px;
@@ -47,6 +51,7 @@
             margin-bottom: 20px;
         }
         .app-header h1 {
+            font-family: 'Kanit', sans-serif;
             font-size: 26px;
             font-weight: 700;
             color: var(--text);
@@ -71,68 +76,42 @@
             border: 1px solid var(--border);
         }
 
-        /* Aspect Ratio Section */
-        .aspect-ratio-section {
+        /* Section Dividers */
+        .settings-section {
             margin-bottom: 16px;
             padding-bottom: 14px;
             border-bottom: 1px solid var(--border);
         }
+        .settings-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
         .section-label {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text);
             margin-bottom: 10px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
-        }
-        .ratio-pill-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .ratio-pill {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ratio-pill:hover {
-            background: #f1f5f9;
-            border-color: var(--border-hover);
-        }
-        .ratio-pill.active {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
-        }
-        .ratio-pill .ratio-desc {
-            font-size: 11px;
-            opacity: 0.85;
-            font-weight: 400;
         }
 
-        /* Logo Stamp Section */
-        .logo-section {
-            margin-bottom: 16px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
+        .section-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .logo-pill-group {
+
+        /* Pill Buttons */
+        .pill-group {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
-        .logo-pill {
+        .pill-btn {
             background: #ffffff;
             border: 1px solid var(--border);
             color: var(--text);
@@ -144,19 +123,26 @@
             transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
-        .logo-pill:hover {
+        .pill-btn:hover {
             background: #f1f5f9;
             border-color: var(--border-hover);
         }
-        .logo-pill.active {
-            background: #0f172a;
+        .pill-btn.active {
+            background: var(--primary);
             color: #ffffff;
-            border-color: #0f172a;
-            box-shadow: 0 2px 6px rgba(15,23,42,0.25);
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
         }
-        .logo-dot {
+        .pill-btn .desc {
+            font-size: 11px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* Color Dot in Pill */
+        .color-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
@@ -167,7 +153,7 @@
         /* Control Rows & Groups */
         .control-row {
             display: flex;
-            gap: 18px;
+            gap: 16px;
             margin-bottom: 12px;
             flex-wrap: wrap;
             align-items: center;
@@ -252,8 +238,23 @@
             height: 15px;
         }
 
+        .btn-preset {
+            background: #eff6ff;
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-preset:hover {
+            background: #dbeafe;
+        }
+
         /* =========================================
-           UNIFIED CANVAS WORKSPACE (ต่อกันซ้ายและขวา)
+           UNIFIED CANVAS WORKSPACE
            ========================================= */
         .workspace-card {
             background: var(--surface);
@@ -306,7 +307,7 @@
             justify-content: center;
             position: relative;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
-            min-height: 420px;
+            min-height: 440px;
             overflow: hidden;
         }
 
@@ -354,6 +355,17 @@
             height: 100%;
             display: block;
             pointer-events: none;
+        }
+
+        /* Transparent Overlay Canvas for Headline, Dates, Disclaimers, Watermark, Logo */
+        .stage-overlay-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
         }
 
         /* Divider between slots */
@@ -424,36 +436,7 @@
             transform: scale(1.03);
         }
 
-        /* Floating Overlays & Tags */
-        .slot-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 8;
-        }
-        .slot-tag {
-            position: absolute;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 700;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            pointer-events: none;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .slot-tag.tag-top {
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .slot-tag.tag-bottom {
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
+        /* Hover Controls on Slot */
         .slot-quick-btns {
             position: absolute;
             bottom: 10px;
@@ -463,6 +446,7 @@
             pointer-events: auto;
             opacity: 0;
             transition: opacity 0.2s;
+            z-index: 25;
         }
         .stage-slot:hover .slot-quick-btns {
             opacity: 1;
@@ -489,20 +473,6 @@
         .btn-icon-danger:hover {
             background: #ef4444;
             border-color: #ef4444;
-        }
-
-        /* de Pry Clinic Logo Overlay on Stage */
-        .canvas-logo-overlay {
-            position: absolute;
-            z-index: 20;
-            pointer-events: none;
-            transition: all 0.15s ease;
-        }
-        .canvas-logo-overlay img {
-            display: block;
-            width: 100%;
-            height: auto;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
         }
 
         /* Diff Canvas */
@@ -798,59 +768,123 @@
 <body>
     <header class="app-header">
         <h1>Before/After Image Combiner</h1>
-        <p class="subtitle">รวมภาพแบบต่อกันซ้าย-ขวาในเฟรมเดียว (1:1, 16:9, 9:16, 4:5, 5:4) พร้อมแปะโลโก้ de Pry และซูมจัดตำแหน่งได้อย่างอิสระ</p>
+        <p class="subtitle">รวมภาพต่อกันซ้าย-ขวา (1:1, 16:9, 9:16, 4:5, 5:4) ใส่ชื่อโปรแกรม วันที่ ข้อความกำกับ และโลโก้ de Pry สไตล์คลินิก</p>
     </header>
 
     <!-- Controls Panel -->
     <div class="controls-card">
-        <!-- Aspect Ratio Selection -->
-        <div class="aspect-ratio-section">
+        <!-- Section 1: Aspect Ratio Selection -->
+        <div class="settings-section">
             <div class="section-label">
-                <span>📐 ขนาดอัตราส่วนภาพ (Aspect Ratio):</span>
+                <span class="section-title-left">📐 ขนาดอัตราส่วนภาพ (Aspect Ratio):</span>
             </div>
-            <div class="ratio-pill-group" id="ratioPills">
-                <button type="button" class="ratio-pill active" data-ratio="1:1">
+            <div class="pill-group" id="ratioPills">
+                <button type="button" class="pill-btn active" data-ratio="1:1">
                     <span>1:1</span>
-                    <span class="ratio-desc">(Square จัตุรัส)</span>
+                    <span class="desc">(Square จัตุรัส)</span>
                 </button>
-                <button type="button" class="ratio-pill" data-ratio="4:5">
+                <button type="button" class="pill-btn" data-ratio="4:5">
                     <span>4:5</span>
-                    <span class="ratio-desc">(Portrait IG Feed)</span>
+                    <span class="desc">(Portrait IG Feed)</span>
                 </button>
-                <button type="button" class="ratio-pill" data-ratio="5:4">
+                <button type="button" class="pill-btn" data-ratio="5:4">
                     <span>5:4</span>
-                    <span class="ratio-desc">(Landscape)</span>
+                    <span class="desc">(Landscape)</span>
                 </button>
-                <button type="button" class="ratio-pill" data-ratio="16:9">
+                <button type="button" class="pill-btn" data-ratio="16:9">
                     <span>16:9</span>
-                    <span class="ratio-desc">(Widescreen แนวนอน)</span>
+                    <span class="desc">(Widescreen แนวนอน)</span>
                 </button>
-                <button type="button" class="ratio-pill" data-ratio="9:16">
+                <button type="button" class="pill-btn" data-ratio="9:16">
                     <span>9:16</span>
-                    <span class="ratio-desc">(Story / Reels / TikTok)</span>
+                    <span class="desc">(Story / Reels / TikTok)</span>
                 </button>
-                <button type="button" class="ratio-pill" data-ratio="auto">
+                <button type="button" class="pill-btn" data-ratio="auto">
                     <span>Auto</span>
-                    <span class="ratio-desc">(ขนาดตามรูป)</span>
+                    <span class="desc">(ขนาดตามรูป)</span>
                 </button>
             </div>
         </div>
 
-        <!-- de Pry Clinic Logo Stamp Section -->
-        <div class="logo-section">
+        <!-- Section 2: Case Information & Text Overlays (Headline, Dates, Disclaimers, Watermark) -->
+        <div class="settings-section">
             <div class="section-label">
-                <span>✨ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
+                <span class="section-title-left">📝 ข้อมูลเคสและข้อความบนภาพ (Case Details & Dates):</span>
+                <div>
+                    <button type="button" class="btn-preset" id="sampleDataBtn">✨ โหลดตัวอย่างแบบในภาพ</button>
+                    <button type="button" class="btn-sm" id="clearTextBtn">ล้างข้อความ</button>
+                </div>
             </div>
-            <div class="logo-pill-group" id="logoPills">
-                <button type="button" class="logo-pill active" data-color="pink">
-                    <span class="logo-dot" style="background:#e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
-                    <span>โลโก้สีชมพู (Pink Logo)</span>
+
+            <!-- Treatment Headline -->
+            <div class="control-row">
+                <div class="control-item" style="flex: 2; min-width: 260px;">
+                    <input type="checkbox" id="showTitleCheckbox" checked>
+                    <label for="titleInput">ชื่อโปรแกรม / หัวข้อด้านบน:</label>
+                    <input type="text" id="titleInput" value="โปรแกรม Thermatix และ Sculptra" style="flex: 1; min-width: 180px;" placeholder="เช่น โปรแกรม Thermatix และ Sculptra">
+                </div>
+            </div>
+
+            <!-- Dates on Photos -->
+            <div class="control-row">
+                <div class="control-item" style="flex: 1; min-width: 220px;">
+                    <input type="checkbox" id="showDatesCheckbox" checked>
+                    <label for="dateLeftInput">📅 วันที่ฝั่งซ้าย (Before):</label>
+                    <input type="text" id="dateLeftInput" value="25 Jul 2026" style="width: 120px;" placeholder="เช่น 25 Jul 2026">
+                </div>
+                <div class="control-item" style="flex: 1; min-width: 220px;">
+                    <label for="dateRightInput">📅 วันที่ฝั่งขวา (After):</label>
+                    <input type="text" id="dateRightInput" value="4 Sep 2026" style="width: 120px;" placeholder="เช่น 4 Sep 2026">
+                </div>
+            </div>
+
+            <!-- Disclaimers -->
+            <div class="control-row">
+                <div class="control-item" style="flex: 1; min-width: 260px;">
+                    <input type="checkbox" id="showDisclaimersCheckbox" checked>
+                    <label for="discLeftInput">ข้อความกำกับซ้าย:</label>
+                    <input type="text" id="discLeftInput" value="*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล" style="flex: 1; min-width: 160px;">
+                </div>
+                <div class="control-item" style="flex: 1; min-width: 260px;">
+                    <label for="discRightInput">ข้อความกำกับขวา:</label>
+                    <input type="text" id="discRightInput" value="*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง" style="flex: 1; min-width: 160px;">
+                </div>
+            </div>
+
+            <!-- Watermark -->
+            <div class="control-row">
+                <div class="control-item">
+                    <input type="checkbox" id="showWatermarkCheckbox" checked>
+                    <label for="watermarkTextInput">ลายน้ำทแยงมุม (Watermark):</label>
+                    <input type="text" id="watermarkTextInput" value="de Pry clinic" style="width: 130px;">
+                </div>
+                <div class="control-item">
+                    <label for="watermarkOpacitySlider">ความจางลายน้ำ:</label>
+                    <input type="range" min="10" max="80" value="35" id="watermarkOpacitySlider">
+                    <span id="watermarkOpacityVal" class="val-badge">35%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: de Pry Clinic Logo -->
+        <div class="settings-section">
+            <div class="section-label">
+                <span class="section-title-left">🏷️ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
+            </div>
+            <div class="pill-group" id="logoPills">
+                <button type="button" class="pill-btn active" data-color="badge">
+                    <span class="color-dot" style="background:#ffffff; border:1px solid #e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
+                    <span>ป้ายคลินิก (Badge ขาว - เหมือนในภาพ)</span>
                 </button>
-                <button type="button" class="logo-pill" data-color="white">
-                    <span class="logo-dot" style="background:#ffffff; border:1px solid #94a3b8;"></span>
-                    <span>โลโก้สีขาว (White Logo)</span>
+                <button type="button" class="pill-btn" data-color="pink">
+                    <span class="color-dot" style="background:#e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
+                    <span>ไอคอนสีชมพู (Pink Logo)</span>
                 </button>
-                <button type="button" class="logo-pill" data-color="none">
+                <button type="button" class="pill-btn" data-color="white">
+                    <span class="color-dot" style="background:#ffffff; border:1px solid #94a3b8;"></span>
+                    <span>ไอคอนสีขาว (White Logo)</span>
+                </button>
+                <button type="button" class="pill-btn" data-color="none">
                     <span>✕ ไม่ใส่โลโก้ (None)</span>
                 </button>
             </div>
@@ -868,90 +902,62 @@
                 </div>
                 <div class="control-item">
                     <label for="logoSizeControl">ขนาดโลโก้:</label>
-                    <input type="range" min="5" max="22" value="9" id="logoSizeControl">
-                    <span id="logoSizeVal" class="val-badge">9%</span>
+                    <input type="range" min="5" max="22" value="12" id="logoSizeControl">
+                    <span id="logoSizeVal" class="val-badge">12%</span>
                 </div>
             </div>
         </div>
 
-        <!-- Row 2: Layout, Fit Mode, and Sync -->
-        <div class="control-row">
-            <div class="control-item">
-                <label for="layoutSelect">การจัดวางภาพ:</label>
-                <select id="layoutSelect">
-                    <option value="horizontal">ต่อกันซ้าย-ขวา (Side by Side ◄ ►)</option>
-                    <option value="vertical">ต่อกันบน-ล่าง (Stacked ▲ ▼)</option>
-                </select>
+        <!-- Section 4: Layout & Export Settings -->
+        <div class="settings-section">
+            <div class="control-row">
+                <div class="control-item">
+                    <label for="layoutSelect">การจัดวางภาพ:</label>
+                    <select id="layoutSelect">
+                        <option value="horizontal">ต่อกันซ้าย-ขวา (Side by Side ◄ ►)</option>
+                        <option value="vertical">ต่อกันบน-ล่าง (Stacked ▲ ▼)</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="fitSelect">การเติมภาพ (Fit Mode):</label>
+                    <select id="fitSelect">
+                        <option value="cover">Cover (เติมเต็มช่อง/Crop พอดีกรอบ)</option>
+                        <option value="contain">Contain (เห็นรูปครบทั้งภาพ/มีขอบ)</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label class="toggle-label" title="เมื่อซูมหรือเลื่อนตำแหน่งภาพหนึ่ง อีกภาพจะขยับตามเท่ากันทันที">
+                        <input type="checkbox" id="syncZoomPan">
+                        <span>🔗 Sync Zoom & Pan (ซิงค์การซูมและตำแหน่ง)</span>
+                    </label>
+                </div>
             </div>
 
-            <div class="control-item">
-                <label for="fitSelect">การเติมภาพ (Fit Mode):</label>
-                <select id="fitSelect">
-                    <option value="cover">Cover (เติมเต็มช่อง/Crop พอดีกรอบ)</option>
-                    <option value="contain">Contain (เห็นรูปครบทั้งภาพ/มีขอบ)</option>
-                </select>
-            </div>
-
-            <div class="control-item">
-                <label class="toggle-label" title="เมื่อซูมหรือเลื่อนตำแหน่งภาพหนึ่ง อีกภาพจะขยับตามเท่ากันทันที">
-                    <input type="checkbox" id="syncZoomPan">
-                    <span>🔗 Sync Zoom & Pan (ซิงค์การซูมและตำแหน่ง)</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Row 3: Gap, Background, Labels -->
-        <div class="control-row">
-            <div class="control-item">
-                <label for="gapControl">เส้นคั่น/ระยะห่าง (Gap):</label>
-                <input type="range" min="0" max="40" value="0" id="gapControl">
-                <span id="gapValue" class="val-badge">0px</span>
-            </div>
-            <div class="control-item">
-                <label for="bgColor">สีพื้นหลัง/เส้นคั่น:</label>
-                <input type="color" value="#ffffff" id="bgColor">
-            </div>
-            <div class="control-item">
-                <label for="labelPos">ตำแหน่งข้อความ:</label>
-                <select id="labelPos">
-                    <option value="top">Top (ด้านบน)</option>
-                    <option value="bottom">Bottom (ด้านล่าง)</option>
-                    <option value="none">Hidden (ไม่แสดง)</option>
-                </select>
-            </div>
-            <div class="control-item">
-                <label for="fontSize">ขนาดตัวอักษร:</label>
-                <input type="range" min="12" max="64" value="22" id="fontSize">
-                <span id="fontValue" class="val-badge">22px</span>
-            </div>
-            <div class="control-item">
-                <label for="labelColor">สีตัวอักษร:</label>
-                <input type="color" value="#ffffff" id="labelColor">
-            </div>
-        </div>
-
-        <!-- Row 4: Custom label texts & Export format -->
-        <div class="control-row">
-            <div class="control-item">
-                <label for="beforeLabelText">ข้อความฝั่งซ้าย:</label>
-                <input type="text" id="beforeLabelText" value="Before" style="width: 100px;">
-            </div>
-            <div class="control-item">
-                <label for="afterLabelText">ข้อความฝั่งขวา:</label>
-                <input type="text" id="afterLabelText" value="After" style="width: 100px;">
-            </div>
-            <div class="control-item">
-                <label for="formatSelect">รูปแบบไฟล์ (Format):</label>
-                <select id="formatSelect">
-                    <option value="png">PNG</option>
-                    <option value="jpeg">JPEG</option>
-                    <option value="webp">WEBP</option>
-                </select>
-            </div>
-            <div class="control-item" id="qualityControlWrapper">
-                <label for="qualityControl">คุณภาพ (Quality):</label>
-                <input type="range" min="10" max="100" value="92" id="qualityControl">
-                <span id="qualityValue" class="val-badge">92%</span>
+            <div class="control-row">
+                <div class="control-item">
+                    <label for="gapControl">เส้นคั่น/ระยะห่าง (Gap):</label>
+                    <input type="range" min="0" max="40" value="0" id="gapControl">
+                    <span id="gapValue" class="val-badge">0px</span>
+                </div>
+                <div class="control-item">
+                    <label for="bgColor">สีพื้นหลัง/เส้นคั่น:</label>
+                    <input type="color" value="#ffffff" id="bgColor">
+                </div>
+                <div class="control-item">
+                    <label for="formatSelect">รูปแบบไฟล์ (Format):</label>
+                    <select id="formatSelect">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="webp">WEBP</option>
+                    </select>
+                </div>
+                <div class="control-item" id="qualityControlWrapper">
+                    <label for="qualityControl">คุณภาพ (Quality):</label>
+                    <input type="range" min="10" max="100" value="92" id="qualityControl">
+                    <span id="qualityValue" class="val-badge">92%</span>
+                </div>
             </div>
         </div>
     </div>
@@ -986,15 +992,12 @@
                             <input type="file" accept="image/*" id="beforeFileInput" style="display:none;">
                         </label>
                     </div>
-                    <div class="slot-overlay" id="beforeOverlay" style="display: none;">
-                        <span class="slot-tag tag-top" id="beforeTag">Before</span>
-                        <div class="slot-quick-btns">
-                            <label class="btn-icon" title="เปลี่ยนภาพด้านซ้าย">
-                                ✏️
-                                <input type="file" accept="image/*" id="beforeChangeInput" style="display:none;">
-                            </label>
-                            <button type="button" class="btn-icon btn-icon-danger" id="beforeClearBtn" title="ลบภาพด้านซ้าย">✕</button>
-                        </div>
+                    <div class="slot-quick-btns">
+                        <label class="btn-icon" title="เปลี่ยนภาพด้านซ้าย">
+                            ✏️
+                            <input type="file" accept="image/*" id="beforeChangeInput" style="display:none;">
+                        </label>
+                        <button type="button" class="btn-icon btn-icon-danger" id="beforeClearBtn" title="ลบภาพด้านซ้าย">✕</button>
                     </div>
                 </div>
 
@@ -1013,22 +1016,17 @@
                             <input type="file" accept="image/*" id="afterFileInput" style="display:none;">
                         </label>
                     </div>
-                    <div class="slot-overlay" id="afterOverlay" style="display: none;">
-                        <span class="slot-tag tag-top" id="afterTag">After</span>
-                        <div class="slot-quick-btns">
-                            <label class="btn-icon" title="เปลี่ยนภาพด้านขวา">
-                                ✏️
-                                <input type="file" accept="image/*" id="afterChangeInput" style="display:none;">
-                            </label>
-                            <button type="button" class="btn-icon btn-icon-danger" id="afterClearBtn" title="ลบภาพด้านขวา">✕</button>
-                        </div>
+                    <div class="slot-quick-btns">
+                        <label class="btn-icon" title="เปลี่ยนภาพด้านขวา">
+                            ✏️
+                            <input type="file" accept="image/*" id="afterChangeInput" style="display:none;">
+                        </label>
+                        <button type="button" class="btn-icon btn-icon-danger" id="afterClearBtn" title="ลบภาพด้านขวา">✕</button>
                     </div>
                 </div>
 
-                <!-- de Pry Clinic Logo Overlay -->
-                <div class="canvas-logo-overlay" id="canvasLogoOverlay">
-                    <img id="canvasLogoImg" src="" alt="de Pry Clinic Logo">
-                </div>
+                <!-- Overlay Canvas: Live rendering of Title, Dates, Disclaimers, Watermark, Logo -->
+                <canvas id="stageOverlayCanvas" class="stage-overlay-canvas"></canvas>
 
                 <!-- Diff Image (shown when diff mode is active) -->
                 <canvas id="diffStageCanvas"></canvas>
@@ -1065,7 +1063,7 @@
         <!-- Action Buttons -->
         <div class="action-buttons-wrap">
             <button class="btn-success" id="downloadBtn" disabled>
-                <span>💾 ดาวน์โหลดภาพ (Download)</span>
+                <span>💾 ดาวน์โหลดภาพ (Download 2000px)</span>
             </button>
             <button class="btn-outline" id="copyClipboardBtn" disabled>
                 <span>📋 คัดลอกภาพ (Copy to Clipboard)</span>
@@ -1090,16 +1088,19 @@
     </div>
 
     <script>
-        // Embed canonical de Pry Clinic logos (from $deprylogo)
+        // Embed canonical de Pry Clinic logos (Badge, Pink, White)
         const DEPRY_LOGOS = {
+            badge: "data:image/png;base64,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",
             pink: "data:image/png;base64,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",
             white: "data:image/png;base64,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"
         };
 
         const logoObjects = {
+            badge: new Image(),
             pink: new Image(),
             white: new Image()
         };
+        logoObjects.badge.src = DEPRY_LOGOS.badge;
         logoObjects.pink.src = DEPRY_LOGOS.pink;
         logoObjects.white.src = DEPRY_LOGOS.white;
 
@@ -1109,7 +1110,7 @@
         let currentRatio = "1:1"; // default 1:1
         let currentLayout = "horizontal"; // default side-by-side!
         let currentFit = "cover";
-        let currentLogoColor = "pink"; // default pink logo
+        let currentLogoColor = "badge"; // default badge like in sample image
         let isDiffActive = false;
 
         const imageState = {
@@ -1117,12 +1118,28 @@
             after: { zoom: 1.0, panX: 0, panY: 0 }
         };
 
-        // DOM Elements
-        const ratioPills = document.querySelectorAll(".ratio-pill");
-        const logoPills = document.querySelectorAll(".logo-pill");
+        // DOM Elements - Settings
+        const ratioPills = document.querySelectorAll("#ratioPills .pill-btn");
+        const logoPills = document.querySelectorAll("#logoPills .pill-btn");
         const logoPosSelect = document.getElementById("logoPosSelect");
         const logoSizeControl = document.getElementById("logoSizeControl");
         const logoSizeVal = document.getElementById("logoSizeVal");
+
+        const showTitleCheckbox = document.getElementById("showTitleCheckbox");
+        const titleInput = document.getElementById("titleInput");
+        const showDatesCheckbox = document.getElementById("showDatesCheckbox");
+        const dateLeftInput = document.getElementById("dateLeftInput");
+        const dateRightInput = document.getElementById("dateRightInput");
+        const showDisclaimersCheckbox = document.getElementById("showDisclaimersCheckbox");
+        const discLeftInput = document.getElementById("discLeftInput");
+        const discRightInput = document.getElementById("discRightInput");
+        const showWatermarkCheckbox = document.getElementById("showWatermarkCheckbox");
+        const watermarkTextInput = document.getElementById("watermarkTextInput");
+        const watermarkOpacitySlider = document.getElementById("watermarkOpacitySlider");
+        const watermarkOpacityVal = document.getElementById("watermarkOpacityVal");
+
+        const sampleDataBtn = document.getElementById("sampleDataBtn");
+        const clearTextBtn = document.getElementById("clearTextBtn");
 
         const layoutSelect = document.getElementById("layoutSelect");
         const fitSelect = document.getElementById("fitSelect");
@@ -1130,12 +1147,6 @@
         const gapControl = document.getElementById("gapControl");
         const gapValue = document.getElementById("gapValue");
         const bgColor = document.getElementById("bgColor");
-        const labelPos = document.getElementById("labelPos");
-        const fontSize = document.getElementById("fontSize");
-        const fontValue = document.getElementById("fontValue");
-        const labelColor = document.getElementById("labelColor");
-        const beforeLabelText = document.getElementById("beforeLabelText");
-        const afterLabelText = document.getElementById("afterLabelText");
         const formatSelect = document.getElementById("formatSelect");
         const qualityControl = document.getElementById("qualityControl");
         const qualityValue = document.getElementById("qualityValue");
@@ -1152,14 +1163,9 @@
         const slotAfter = document.getElementById("slotAfter");
         const beforeCanvas = document.getElementById("beforeCanvas");
         const afterCanvas = document.getElementById("afterCanvas");
+        const stageOverlayCanvas = document.getElementById("stageOverlayCanvas");
         const beforeDropzone = document.getElementById("beforeDropzone");
         const afterDropzone = document.getElementById("afterDropzone");
-        const beforeOverlay = document.getElementById("beforeOverlay");
-        const afterOverlay = document.getElementById("afterOverlay");
-        const beforeTag = document.getElementById("beforeTag");
-        const afterTag = document.getElementById("afterTag");
-        const canvasLogoOverlay = document.getElementById("canvasLogoOverlay");
-        const canvasLogoImg = document.getElementById("canvasLogoImg");
         const diffStageCanvas = document.getElementById("diffStageCanvas");
 
         // File Inputs & Clear
@@ -1197,15 +1203,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 255, g: 255, b: 255 };
-        }
-
         // --- ASPECT RATIO SELECTION ---
         ratioPills.forEach(pill => {
             pill.addEventListener("click", () => {
@@ -1215,70 +1212,96 @@
                 updateMeta();
                 updateFrameDimensions();
                 renderBothSlots();
+                renderStageOverlays();
             });
         });
 
-        // --- LOGO COLOR SELECTION ---
+        // --- LOGO SELECTION ---
         logoPills.forEach(pill => {
             pill.addEventListener("click", () => {
                 logoPills.forEach(p => p.classList.remove("active"));
                 pill.classList.add("active");
                 currentLogoColor = pill.dataset.color;
-                updateLogoDisplay();
+                if (currentLogoColor === "badge") {
+                    logoSizeControl.value = 12;
+                    logoSizeVal.textContent = "12%";
+                } else if (currentLogoColor === "pink" || currentLogoColor === "white") {
+                    logoSizeControl.value = 9;
+                    logoSizeVal.textContent = "9%";
+                }
+                renderStageOverlays();
             });
         });
 
-        logoPosSelect.addEventListener("change", () => updateLogoDisplay());
+        logoPosSelect.addEventListener("change", () => renderStageOverlays());
         logoSizeControl.addEventListener("input", e => {
             logoSizeVal.textContent = `${e.target.value}%`;
-            updateLogoDisplay();
+            renderStageOverlays();
         });
 
-        function updateLogoDisplay() {
-            if (currentLogoColor === "none" || !DEPRY_LOGOS[currentLogoColor]) {
-                canvasLogoOverlay.style.display = "none";
-                return;
-            }
-            canvasLogoOverlay.style.display = "block";
-            canvasLogoImg.src = DEPRY_LOGOS[currentLogoColor];
+        // --- TEXT / DATE / DISCLAIMER / WATERMARK LISTENERS ---
+        const overlayInputs = [
+            showTitleCheckbox, titleInput,
+            showDatesCheckbox, dateLeftInput, dateRightInput,
+            showDisclaimersCheckbox, discLeftInput, discRightInput,
+            showWatermarkCheckbox, watermarkTextInput
+        ];
 
-            const pct = parseInt(logoSizeControl.value, 10) || 9;
-            canvasLogoOverlay.style.width = `${pct}%`;
+        overlayInputs.forEach(el => {
+            el.addEventListener("input", () => renderStageOverlays());
+            el.addEventListener("change", () => renderStageOverlays());
+        });
 
-            const pos = logoPosSelect.value;
-            const margin = "3.5%";
-            canvasLogoOverlay.style.top = "";
-            canvasLogoOverlay.style.bottom = "";
-            canvasLogoOverlay.style.left = "";
-            canvasLogoOverlay.style.right = "";
-            canvasLogoOverlay.style.transform = "";
+        watermarkOpacitySlider.addEventListener("input", e => {
+            watermarkOpacityVal.textContent = `${e.target.value}%`;
+            renderStageOverlays();
+        });
 
-            if (pos === "top-right") {
-                canvasLogoOverlay.style.top = margin;
-                canvasLogoOverlay.style.right = margin;
-            } else if (pos === "top-left") {
-                canvasLogoOverlay.style.top = margin;
-                canvasLogoOverlay.style.left = margin;
-            } else if (pos === "bottom-right") {
-                canvasLogoOverlay.style.bottom = margin;
-                canvasLogoOverlay.style.right = margin;
-            } else if (pos === "bottom-left") {
-                canvasLogoOverlay.style.bottom = margin;
-                canvasLogoOverlay.style.left = margin;
-            } else if (pos === "top-center") {
-                canvasLogoOverlay.style.top = margin;
-                canvasLogoOverlay.style.left = "50%";
-                canvasLogoOverlay.style.transform = "translateX(-50%)";
-            }
-        }
+        // Sample Data Preset (Matches the user's reference image!)
+        sampleDataBtn.addEventListener("click", () => {
+            showTitleCheckbox.checked = true;
+            titleInput.value = "โปรแกรม Thermatix และ Sculptra";
+            showDatesCheckbox.checked = true;
+            dateLeftInput.value = "25 Jul 2026";
+            dateRightInput.value = "4 Sep 2026";
+            showDisclaimersCheckbox.checked = true;
+            discLeftInput.value = "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล";
+            discRightInput.value = "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง";
+            showWatermarkCheckbox.checked = true;
+            watermarkTextInput.value = "de Pry clinic";
+            watermarkOpacitySlider.value = 35;
+            watermarkOpacityVal.textContent = "35%";
 
-        // --- CONTROLS LISTENERS ---
+            // Set logo to badge
+            logoPills.forEach(p => p.classList.toggle("active", p.dataset.color === "badge"));
+            currentLogoColor = "badge";
+            logoSizeControl.value = 12;
+            logoSizeVal.textContent = "12%";
+            logoPosSelect.value = "top-right";
+
+            renderStageOverlays();
+            showToast("โหลดข้อความตัวอย่างตามภาพเรียบร้อยแล้ว!");
+        });
+
+        clearTextBtn.addEventListener("click", () => {
+            titleInput.value = "";
+            dateLeftInput.value = "";
+            dateRightInput.value = "";
+            discLeftInput.value = "";
+            discRightInput.value = "";
+            watermarkTextInput.value = "";
+            renderStageOverlays();
+            showToast("ล้างข้อความเรียบร้อย");
+        });
+
+        // --- GENERAL CONTROLS LISTENERS ---
         layoutSelect.addEventListener("change", e => {
             currentLayout = e.target.value;
             canvasFrame.classList.toggle("layout-vertical", currentLayout === "vertical");
             updateMeta();
             updateFrameDimensions();
             renderBothSlots();
+            renderStageOverlays();
         });
 
         fitSelect.addEventListener("change", e => {
@@ -1291,6 +1314,7 @@
             updateDivider();
             updateFrameDimensions();
             renderBothSlots();
+            renderStageOverlays();
         });
 
         bgColor.addEventListener("input", () => {
@@ -1299,20 +1323,10 @@
             renderBothSlots();
         });
 
-        fontSize.addEventListener("input", e => {
-            fontValue.textContent = `${e.target.value}px`;
-            updateTags();
-        });
-
-        labelColor.addEventListener("input", () => updateTags());
-        labelPos.addEventListener("change", () => updateTags());
-        beforeLabelText.addEventListener("input", () => updateTags());
-        afterLabelText.addEventListener("input", () => updateTags());
-
         formatSelect.addEventListener("change", e => {
             const isLossy = e.target.value === "jpeg" || e.target.value === "webp";
             qualityControlWrapper.style.opacity = isLossy ? "1" : "0.4";
-            downloadBtn.textContent = `💾 ดาวน์โหลดภาพ (${e.target.value.toUpperCase()})`;
+            downloadBtn.textContent = `💾 ดาวน์โหลดภาพ (${e.target.value.toUpperCase()} 2000px)`;
         });
 
         qualityControl.addEventListener("input", e => {
@@ -1341,34 +1355,6 @@
                 stageDivider.style.height = "100%";
             }
             stageDivider.style.background = bgColor.value;
-        }
-
-        function updateTags() {
-            beforeTag.textContent = beforeLabelText.value;
-            afterTag.textContent = afterLabelText.value;
-
-            const isTop = labelPos.value === "top";
-            const isNone = labelPos.value === "none";
-
-            beforeTag.style.display = isNone ? "none" : "block";
-            afterTag.style.display = isNone ? "none" : "block";
-
-            beforeTag.className = `slot-tag ${isTop ? "tag-top" : "tag-bottom"}`;
-            afterTag.className = `slot-tag ${isTop ? "tag-top" : "tag-bottom"}`;
-
-            const size = parseInt(fontSize.value, 10) || 20;
-            beforeTag.style.fontSize = `${Math.min(22, Math.max(12, size * 0.75))}px`;
-            afterTag.style.fontSize = `${Math.min(22, Math.max(12, size * 0.75))}px`;
-
-            const rgb = hexToRgb(labelColor.value);
-            const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-            const bgBadge = brightness > 130 ? "rgba(15, 23, 42, 0.75)" : "rgba(255, 255, 255, 0.85)";
-            const txtColor = labelColor.value;
-
-            beforeTag.style.background = bgBadge;
-            beforeTag.style.color = txtColor;
-            afterTag.style.background = bgBadge;
-            afterTag.style.color = txtColor;
         }
 
         // --- FRAME DIMENSION CALCULATION ---
@@ -1415,6 +1401,10 @@
             canvasFrame.style.height = `${frameH}px`;
 
             updateDivider();
+
+            const dpr = window.devicePixelRatio || 1;
+            stageOverlayCanvas.width = frameW * dpr;
+            stageOverlayCanvas.height = frameH * dpr;
         }
 
         // --- FULL RESOLUTION EXPORT GEOMETRY MATH ---
@@ -1463,7 +1453,8 @@
                     canvasWidth = Math.round(baseH * targetRatio);
                 }
 
-                const minDim = 1200;
+                // Minimum crisp resolution (2000px canonical de Pry resolution)
+                const minDim = 2000;
                 if (canvasWidth < minDim && canvasHeight < minDim) {
                     const scale = minDim / Math.min(canvasWidth, canvasHeight);
                     canvasWidth = Math.round(canvasWidth * scale);
@@ -1526,19 +1517,16 @@
             const canvasEl = type === "before" ? beforeCanvas : afterCanvas;
             const slotEl = type === "before" ? slotBefore : slotAfter;
             const dropzoneEl = type === "before" ? beforeDropzone : afterDropzone;
-            const overlayEl = type === "before" ? beforeOverlay : afterOverlay;
             const state = imageState[type];
 
             if (!img) {
                 dropzoneEl.style.display = "flex";
-                overlayEl.style.display = "none";
                 const ctx = canvasEl.getContext("2d");
                 ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
                 return;
             }
 
             dropzoneEl.style.display = "none";
-            overlayEl.style.display = "block";
 
             const w = slotEl.clientWidth;
             const h = slotEl.clientHeight;
@@ -1564,6 +1552,195 @@
             }
             renderSlot("before");
             renderSlot("after");
+        }
+
+        // --- DRAW OVERLAYS (Title, Dates, Disclaimers, Watermark, Logo) ---
+        function renderOverlays(ctx, width, height) {
+            ctx.clearRect(0, 0, width, height);
+
+            const isHorizontal = currentLayout !== "vertical";
+            const S = Math.min(width, height) / 500;
+
+            const leftCX = isHorizontal ? width / 4 : width / 2;
+            const rightCX = isHorizontal ? width * 0.75 : width / 2;
+
+            // 1. WATERMARK (diagonal 45 deg across each present half)
+            if (showWatermarkCheckbox.checked && watermarkTextInput.value.trim()) {
+                const text = watermarkTextInput.value.trim();
+                const opacity = (parseInt(watermarkOpacitySlider.value, 10) || 35) / 100;
+                const fontSize = Math.round(22 * S);
+
+                ctx.save();
+                ctx.font = `600 ${fontSize}px 'Kanit', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+
+                const centers = isHorizontal ? [
+                    { x: width / 4, y: height / 2 },
+                    { x: width * 0.75, y: height / 2 }
+                ] : [
+                    { x: width / 2, y: height / 4 },
+                    { x: width / 2, y: height * 0.75 }
+                ];
+
+                for (const pt of centers) {
+                    ctx.save();
+                    ctx.translate(pt.x, pt.y);
+                    ctx.rotate(-45 * Math.PI / 180); // -45 degrees (diagonal up-right like in photo)
+                    ctx.fillText(text, 0, 0);
+                    ctx.restore();
+                }
+                ctx.restore();
+            }
+
+            // 2. TREATMENT TITLE (Header Pill Capsule)
+            if (showTitleCheckbox.checked && titleInput.value.trim()) {
+                const title = titleInput.value.trim();
+                let fontSize = Math.round(22 * S);
+
+                ctx.save();
+                ctx.font = `600 ${fontSize}px 'Kanit', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                const padX = 22 * S;
+                const padY = 11 * S;
+                const maxPillWidth = width * 0.78;
+
+                while (fontSize > 10 * S && (ctx.measureText(title).width + padX * 2) > maxPillWidth) {
+                    fontSize -= 1;
+                    ctx.font = `600 ${fontSize}px 'Kanit', sans-serif`;
+                }
+
+                const metrics = ctx.measureText(title);
+                const pillW = metrics.width + padX * 2;
+                const pillH = fontSize + padY * 2;
+                const centerX = width / 2;
+                const topY = 14 * S;
+
+                // Pill drop shadow
+                ctx.shadowColor = "rgba(0, 0, 0, 0.22)";
+                ctx.shadowBlur = Math.round(10 * S);
+                ctx.shadowOffsetY = Math.round(4 * S);
+
+                // White pill capsule
+                ctx.fillStyle = "rgba(255, 255, 255, 0.94)";
+                ctx.beginPath();
+                if (typeof ctx.roundRect === "function") {
+                    ctx.roundRect(centerX - pillW / 2, topY, pillW, pillH, pillH / 2);
+                } else {
+                    ctx.rect(centerX - pillW / 2, topY, pillW, pillH);
+                }
+                ctx.fill();
+
+                // Dark text
+                ctx.shadowColor = "transparent";
+                ctx.fillStyle = "#1e293b";
+                ctx.fillText(title, centerX, topY + pillH / 2);
+                ctx.restore();
+            }
+
+            // 3. LOGO (Top-right de Pry Logo / Badge)
+            if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
+                const logoImg = logoObjects[currentLogoColor];
+                if (logoImg.complete && logoImg.naturalWidth) {
+                    const isBadge = currentLogoColor === "badge";
+                    const defaultPct = isBadge ? 12.5 : 9;
+                    const pct = (parseInt(logoSizeControl.value, 10) || defaultPct) / 100;
+                    const logoW = Math.round(width * pct);
+                    const aspect = logoImg.naturalHeight / logoImg.naturalWidth;
+                    const logoH = Math.round(logoW * aspect);
+                    const margin = isBadge ? 0 : Math.round(width * 0.035);
+
+                    let lx, ly;
+                    const pos = logoPosSelect.value;
+                    if (pos === "top-right") {
+                        lx = width - logoW - margin;
+                        ly = margin;
+                    } else if (pos === "top-left") {
+                        lx = margin;
+                        ly = margin;
+                    } else if (pos === "bottom-right") {
+                        lx = width - logoW - margin;
+                        ly = height - logoH - margin;
+                    } else if (pos === "bottom-left") {
+                        lx = margin;
+                        ly = height - logoH - margin;
+                    } else if (pos === "top-center") {
+                        lx = Math.round((width - logoW) / 2);
+                        ly = margin;
+                    }
+
+                    ctx.save();
+                    if (!isBadge) {
+                        ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+                        ctx.shadowBlur = Math.round(logoW * 0.08);
+                        ctx.shadowOffsetY = Math.round(logoW * 0.03);
+                    }
+                    ctx.drawImage(logoImg, lx, ly, logoW, logoH);
+                    ctx.restore();
+                }
+            }
+
+            // 4. DATES (วันที่ของแต่ละฝั่ง)
+            if (showDatesCheckbox.checked) {
+                const dLeft = dateLeftInput.value.trim();
+                const dRight = dateRightInput.value.trim();
+                const dateFontSize = Math.round(12.5 * S);
+
+                ctx.save();
+                ctx.font = `400 ${dateFontSize}px 'Sarabun', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowColor = "rgba(0, 0, 0, 0.95)";
+                ctx.shadowBlur = Math.round(7 * S);
+                ctx.shadowOffsetY = Math.round(2 * S);
+
+                const hasDisclaimers = showDisclaimersCheckbox.checked && (discLeftInput.value.trim() || discRightInput.value.trim());
+                const dateY = hasDisclaimers ? height - (36 * S) : height - (16 * S);
+
+                if (dLeft) {
+                    ctx.fillText(dLeft, leftCX, isHorizontal ? dateY : (height / 2 - 18 * S));
+                }
+                if (dRight) {
+                    ctx.fillText(dRight, rightCX, dateY);
+                }
+                ctx.restore();
+            }
+
+            // 5. DISCLAIMERS (ข้อความกำกับด้านล่างสุด)
+            if (showDisclaimersCheckbox.checked) {
+                const discLeft = discLeftInput.value.trim();
+                const discRight = discRightInput.value.trim();
+                const discFontSize = Math.round(13.5 * S);
+
+                ctx.save();
+                ctx.font = `bold ${discFontSize}px 'Sarabun', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowColor = "rgba(0, 0, 0, 0.95)";
+                ctx.shadowBlur = Math.round(7 * S);
+                ctx.shadowOffsetY = Math.round(2 * S);
+
+                const discY = height - (12 * S);
+
+                if (discLeft) {
+                    ctx.fillText(discLeft, leftCX, isHorizontal ? discY : (height / 2 - 4 * S));
+                }
+                if (discRight) {
+                    ctx.fillText(discRight, rightCX, discY);
+                }
+                ctx.restore();
+            }
+        }
+
+        function renderStageOverlays() {
+            if (isDiffActive) return;
+            const ctx = stageOverlayCanvas.getContext("2d");
+            renderOverlays(ctx, stageOverlayCanvas.width, stageOverlayCanvas.height);
         }
 
         // --- INTERACTIVE DRAG & MOUSE WHEEL ZOOM ON STAGE SLOTS ---
@@ -1750,6 +1927,7 @@
             updateMeta();
             updateFrameDimensions();
             renderBothSlots();
+            renderStageOverlays();
             checkReadyState();
 
             showToast(`โหลดภาพฝั่ง ${type === "before" ? "ซ้าย (Before)" : "ขวา (After)"} สำเร็จ`);
@@ -1833,6 +2011,7 @@
             updateMeta();
             updateFrameDimensions();
             renderBothSlots();
+            renderStageOverlays();
             showToast(`ลบภาพฝั่ง ${type === "before" ? "ซ้าย" : "ขวา"} เรียบร้อย`);
         }
 
@@ -1853,7 +2032,7 @@
             fullscreenBtn.disabled = !ready;
         }
 
-        // --- FULL RESOLUTION CANVAS GENERATION (WITH LABELS & DEPRY LOGO) ---
+        // --- FULL RESOLUTION CANVAS GENERATION (CANONICAL DE PRY 2000px EXPORT) ---
         function generateFullResolutionCanvas() {
             if (!beforeImage || !afterImage) return null;
 
@@ -1873,100 +2052,8 @@
             renderImageToSlot(ctx, beforeImage, geom.slotBefore, imageState.before, currentFit);
             renderImageToSlot(ctx, afterImage, geom.slotAfter, imageState.after, currentFit);
 
-            // Draw Labels
-            if (labelPos.value !== "none") {
-                const bText = beforeLabelText.value.trim();
-                const aText = afterLabelText.value.trim();
-
-                const fontScale = Math.max(1, Math.min(geom.canvasWidth, geom.canvasHeight) / 1000);
-                const userSize = parseInt(fontSize.value, 10) || 22;
-                const actualFontSize = Math.round(userSize * fontScale);
-
-                ctx.save();
-                ctx.font = `bold ${actualFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-
-                const padding = actualFontSize * 1.3;
-                let bY, aY;
-                if (labelPos.value === "top") {
-                    bY = geom.slotBefore.y + padding;
-                    aY = geom.slotAfter.y + padding;
-                } else {
-                    bY = geom.slotBefore.y + geom.slotBefore.h - padding;
-                    aY = geom.slotAfter.y + geom.slotAfter.h - padding;
-                }
-                const bX = geom.slotBefore.x + geom.slotBefore.w / 2;
-                const aX = geom.slotAfter.x + geom.slotAfter.w / 2;
-
-                function renderPillLabel(text, x, y) {
-                    if (!text) return;
-                    const metrics = ctx.measureText(text);
-                    const padX = actualFontSize * 0.7;
-                    const padY = actualFontSize * 0.4;
-                    const badgeW = metrics.width + padX * 2;
-                    const badgeH = actualFontSize + padY * 2;
-                    const badgeX = x - badgeW / 2;
-                    const badgeY = y - badgeH / 2;
-
-                    ctx.beginPath();
-                    if (typeof ctx.roundRect === "function") {
-                        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, badgeH / 2);
-                    } else {
-                        ctx.rect(badgeX, badgeY, badgeW, badgeH);
-                    }
-
-                    const rgb = hexToRgb(labelColor.value);
-                    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-                    ctx.fillStyle = brightness > 130 ? "rgba(15, 23, 42, 0.75)" : "rgba(255, 255, 255, 0.85)";
-                    ctx.fill();
-
-                    ctx.fillStyle = labelColor.value;
-                    ctx.fillText(text, x, y);
-                }
-
-                renderPillLabel(bText, bX, bY);
-                renderPillLabel(aText, aX, aY);
-                ctx.restore();
-            }
-
-            // Draw de Pry Clinic Logo on Canvas
-            if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
-                const logoImg = logoObjects[currentLogoColor];
-                if (logoImg.complete && logoImg.naturalWidth) {
-                    const pct = (parseInt(logoSizeControl.value, 10) || 9) / 100;
-                    const logoW = Math.round(canvas.width * pct);
-                    const aspect = logoImg.naturalHeight / logoImg.naturalWidth;
-                    const logoH = Math.round(logoW * aspect);
-                    const margin = Math.round(canvas.width * 0.035);
-
-                    let lx, ly;
-                    const pos = logoPosSelect.value;
-                    if (pos === "top-right") {
-                        lx = canvas.width - logoW - margin;
-                        ly = margin;
-                    } else if (pos === "top-left") {
-                        lx = margin;
-                        ly = margin;
-                    } else if (pos === "bottom-right") {
-                        lx = canvas.width - logoW - margin;
-                        ly = canvas.height - logoH - margin;
-                    } else if (pos === "bottom-left") {
-                        lx = margin;
-                        ly = canvas.height - logoH - margin;
-                    } else if (pos === "top-center") {
-                        lx = Math.round((canvas.width - logoW) / 2);
-                        ly = margin;
-                    }
-
-                    ctx.save();
-                    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                    ctx.shadowBlur = Math.round(logoW * 0.08);
-                    ctx.shadowOffsetY = Math.round(logoW * 0.03);
-                    ctx.drawImage(logoImg, lx, ly, logoW, logoH);
-                    ctx.restore();
-                }
-            }
+            // Draw all Overlays (Title, Dates, Disclaimers, Watermark, Logo)
+            renderOverlays(ctx, canvas.width, canvas.height);
 
             return canvas;
         }
@@ -1980,6 +2067,7 @@
             diffStageCanvas.width = w * (window.devicePixelRatio || 1);
             diffStageCanvas.height = h * (window.devicePixelRatio || 1);
             diffStageCanvas.style.display = "block";
+            stageOverlayCanvas.style.display = "none";
             slotBefore.style.display = "none";
             slotAfter.style.display = "none";
             stageDivider.style.display = "none";
@@ -2032,7 +2120,7 @@
             dCtx.putImageData(outImgData, 0, 0);
 
             dCtx.save();
-            dCtx.font = "bold 22px sans-serif";
+            dCtx.font = "bold 22px 'Kanit', sans-serif";
             dCtx.textAlign = "center";
             dCtx.fillStyle = "rgba(15, 23, 42, 0.8)";
             dCtx.fillRect(dW / 2 - 180, 20, 360, 40);
@@ -2053,10 +2141,12 @@
                 toggleDiffBtn.classList.remove("btn-primary");
                 toggleDiffBtn.classList.add("btn-secondary");
                 diffStageCanvas.style.display = "none";
+                stageOverlayCanvas.style.display = "block";
                 slotBefore.style.display = "flex";
                 slotAfter.style.display = "flex";
                 stageDivider.style.display = "block";
                 renderBothSlots();
+                renderStageOverlays();
             }
         });
 
@@ -2071,12 +2161,11 @@
             const dataUrl = canvas.toDataURL(mimeType, quality);
 
             const ratioName = currentRatio === "auto" ? "auto" : currentRatio.replace(":", "x");
-            const logoSuffix = currentLogoColor !== "none" ? `-logo-${currentLogoColor}` : "";
             const link = document.createElement("a");
-            link.download = `before-after-${ratioName}${logoSuffix}.${format}`;
+            link.download = `depry-beforeafter-${ratioName}.${format}`;
             link.href = dataUrl;
             link.click();
-            showToast("ดาวน์โหลดภาพรวมพร้อมโลโก้เรียบร้อยแล้ว!");
+            showToast("ดาวน์โหลดภาพเคส 2000px เรียบร้อยแล้ว!");
         });
 
         // --- COPY TO CLIPBOARD ---
@@ -2153,15 +2242,22 @@
         window.addEventListener("resize", () => {
             updateFrameDimensions();
             renderBothSlots();
+            renderStageOverlays();
         });
+
+        // Ensure fonts are loaded before initial overlay render
+        if (document.fonts) {
+            document.fonts.ready.then(() => {
+                renderStageOverlays();
+            });
+        }
 
         // Initialize
         updateMeta();
-        updateTags();
         updateDivider();
         updateFrameDimensions();
-        updateLogoDisplay();
         renderBothSlots();
+        renderStageOverlays();
     </script>
 </body>
 </html>
