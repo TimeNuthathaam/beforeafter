@@ -1405,13 +1405,12 @@
                     </select>
                 </div>
 
-                <div class="control-item">
-                    <label for="censorTargetSelect">ตำแหน่งที่ปิดตา:</label>
-                    <select id="censorTargetSelect">
-                        <option value="both" selected>ทั้ง 2 ฝั่ง (Before & After)</option>
-                        <option value="left">เฉพาะฝั่งซ้าย (Before)</option>
-                        <option value="right">เฉพาะฝั่งขวา (After)</option>
-                    </select>
+                <div class="control-item" style="min-width: 270px;">
+                    <label>โหมดการปรับตำแหน่ง:</label>
+                    <div class="pill-group" id="censorModePills">
+                        <button type="button" class="pill-btn active" id="btnCensorModeUnified" data-mode="unified" title="ปรับตำแหน่งและขนาดทั้ง 2 ฝั่งพร้อมกันอย่างสมมาตร">🔗 ปรับพร้อมกัน (2 ฝั่ง)</button>
+                        <button type="button" class="pill-btn" id="btnCensorModeSeparate" data-mode="separate" title="ปรับตำแหน่งและขนาดของฝั่งซ้ายและขวาแยกกันอิสระ">✂️ แยกปรับซ้าย-ขวา</button>
+                    </div>
                 </div>
 
                 <div class="control-item">
@@ -1479,7 +1478,7 @@
                 <div class="censor-side-box">
                     <div class="censor-side-header">
                         <span>👈 ฝั่งซ้าย (Before)</span>
-                        <button type="button" class="btn-sm" id="btnCopyLeftToRight" title="ก๊อปปี้ค่าฝั่งซ้ายไปฝั่งขวา">ก๊อปปี้ไปขวา ➡️</button>
+                        <button type="button" class="btn-sm" id="btnCopyLeftToRight" title="คัดลอกค่าแถบปิดตาจากฝั่งซ้ายไปใส่ฝั่งขวา">คัดลอกไปขวา ➡️</button>
                     </div>
                     <div class="control-row" style="gap: 10px;">
                         <div class="control-item" style="width: 100%;">
@@ -1521,7 +1520,10 @@
                 <div class="censor-side-box">
                     <div class="censor-side-header">
                         <span>👉 ฝั่งขวา (After)</span>
-                        <button type="button" class="btn-sm" id="btnCopyRightToLeft" title="ก๊อปปี้ค่าฝั่งขวามาฝั่งซ้าย">⬅️ ก๊อปปี้มาจากซ้าย</button>
+                        <div style="display: inline-flex; gap: 6px;">
+                            <button type="button" class="btn-sm" id="btnCopyRightToLeft" title="คัดลอกค่าแถบปิดตาจากฝั่งขวาไปใส่ฝั่งซ้าย">⬅️ คัดลอกไปซ้าย</button>
+                            <button type="button" class="btn-sm" id="btnPullLeftToRight" title="ดึงค่าแถบปิดตาจากฝั่งซ้ายมาใส่ฝั่งขวา">ดึงจากซ้าย ⬅️</button>
+                        </div>
                     </div>
                     <div class="control-row" style="gap: 10px;">
                         <div class="control-item" style="width: 100%;">
@@ -1945,6 +1947,8 @@
         const censorColorSelect = document.getElementById("censorColorSelect");
         const censorTargetSelect = document.getElementById("censorTargetSelect");
         const censorSeparateCheckbox = document.getElementById("censorSeparateCheckbox");
+        const btnCensorModeUnified = document.getElementById("btnCensorModeUnified");
+        const btnCensorModeSeparate = document.getElementById("btnCensorModeSeparate");
         const censorUnifiedPanel = document.getElementById("censorUnifiedPanel");
         const censorSeparatePanel = document.getElementById("censorSeparatePanel");
         const censorYSlider = document.getElementById("censorYSlider");
@@ -1986,6 +1990,7 @@
 
         const btnCopyLeftToRight = document.getElementById("btnCopyLeftToRight");
         const btnCopyRightToLeft = document.getElementById("btnCopyRightToLeft");
+        const btnPullLeftToRight = document.getElementById("btnPullLeftToRight");
 
         const sampleDataBtn = document.getElementById("sampleDataBtn");
         const clearTextBtn = document.getElementById("clearTextBtn");
@@ -2295,13 +2300,38 @@
         // --- EYE PRIVACY CENSOR LOGIC & LOCALSTORAGE PERSISTENCE ---
         const CENSOR_STORAGE_KEY = "beforeafter_eye_censor_settings";
 
+        function safeFloat(val, defaultVal) {
+            const parsed = parseFloat(val);
+            return isNaN(parsed) ? defaultVal : parsed;
+        }
+
+        function syncSeparateFromUnified() {
+            if (!censorSeparateCheckbox.dataset.synced) {
+                censorLeftYSlider.value = censorYSlider.value;
+                censorLeftXSlider.value = censorXSlider.value;
+                censorLeftWSlider.value = censorWSlider.value;
+                censorLeftHSlider.value = censorHSlider.value;
+
+                censorRightYSlider.value = censorYSlider.value;
+                censorRightXSlider.value = censorXSlider.value;
+                censorRightWSlider.value = censorWSlider.value;
+                censorRightHSlider.value = censorHSlider.value;
+                censorSeparateCheckbox.dataset.synced = "true";
+            }
+        }
+
         function updateCensorSeparateDisplay() {
-            if (censorSeparateCheckbox.checked) {
+            const isSep = censorSeparateCheckbox.checked;
+            if (isSep) {
                 censorSeparatePanel.style.display = "grid";
                 censorUnifiedPanel.style.display = "none";
+                if (btnCensorModeSeparate) btnCensorModeSeparate.classList.add("active");
+                if (btnCensorModeUnified) btnCensorModeUnified.classList.remove("active");
             } else {
                 censorSeparatePanel.style.display = "none";
                 censorUnifiedPanel.style.display = "flex";
+                if (btnCensorModeUnified) btnCensorModeUnified.classList.add("active");
+                if (btnCensorModeSeparate) btnCensorModeSeparate.classList.remove("active");
             }
         }
 
@@ -2314,7 +2344,6 @@
                 h: censorHSlider.value,
                 r: censorRadiusSlider.value,
                 color: censorColorSelect.value,
-                target: censorTargetSelect.value,
                 separate: censorSeparateCheckbox.checked,
                 leftY: censorLeftYSlider.value,
                 leftX: censorLeftXSlider.value,
@@ -2342,8 +2371,13 @@
                     if (data.h !== undefined) censorHSlider.value = data.h;
                     if (data.r !== undefined) censorRadiusSlider.value = data.r;
                     if (data.color) censorColorSelect.value = data.color;
-                    if (data.target) censorTargetSelect.value = data.target;
-                    if (typeof data.separate === "boolean") censorSeparateCheckbox.checked = data.separate;
+
+                    // If user had "right" or "left" saved previously, auto-migrate to separate mode so neither side disappears!
+                    if (data.target === "right" || data.target === "left" || data.separate === true) {
+                        censorSeparateCheckbox.checked = true;
+                    } else if (typeof data.separate === "boolean") {
+                        censorSeparateCheckbox.checked = data.separate;
+                    }
 
                     if (data.leftY !== undefined) censorLeftYSlider.value = data.leftY;
                     if (data.leftX !== undefined) censorLeftXSlider.value = data.leftX;
@@ -2356,6 +2390,9 @@
                     if (data.rightH !== undefined) censorRightHSlider.value = data.rightH;
                 }
             } catch (e) {}
+            if (censorSeparateCheckbox.checked) {
+                syncSeparateFromUnified();
+            }
             updateCensorSeparateDisplay();
             updateCensorUI();
         }
@@ -2418,29 +2455,35 @@
             saveCensorSettings();
             renderStageOverlays();
         });
-        censorColorSelect.addEventListener("change", () => {
-            saveCensorSettings();
-            renderStageOverlays();
-        });
-        censorTargetSelect.addEventListener("change", () => {
-            saveCensorSettings();
-            renderStageOverlays();
-        });
+        if (censorTargetSelect) {
+            censorTargetSelect.addEventListener("change", () => {
+                saveCensorSettings();
+                renderStageOverlays();
+            });
+        }
+
+        if (btnCensorModeUnified) {
+            btnCensorModeUnified.addEventListener("click", () => {
+                censorSeparateCheckbox.checked = false;
+                updateCensorSeparateDisplay();
+                updateCensorUI();
+            });
+        }
+
+        if (btnCensorModeSeparate) {
+            btnCensorModeSeparate.addEventListener("click", () => {
+                censorSeparateCheckbox.checked = true;
+                syncSeparateFromUnified();
+                updateCensorSeparateDisplay();
+                updateCensorUI();
+            });
+        }
 
         censorSeparateCheckbox.addEventListener("change", () => {
-            updateCensorSeparateDisplay();
-            if (censorSeparateCheckbox.checked && !censorSeparateCheckbox.dataset.synced) {
-                censorLeftYSlider.value = censorYSlider.value;
-                censorLeftXSlider.value = censorXSlider.value;
-                censorLeftWSlider.value = censorWSlider.value;
-                censorLeftHSlider.value = censorHSlider.value;
-
-                censorRightYSlider.value = censorYSlider.value;
-                censorRightXSlider.value = censorXSlider.value;
-                censorRightWSlider.value = censorWSlider.value;
-                censorRightHSlider.value = censorHSlider.value;
-                censorSeparateCheckbox.dataset.synced = "true";
+            if (censorSeparateCheckbox.checked) {
+                syncSeparateFromUnified();
             }
+            updateCensorSeparateDisplay();
             updateCensorUI();
         });
 
@@ -2463,7 +2506,7 @@
             censorRightWSlider.value = censorLeftWSlider.value;
             censorRightHSlider.value = censorLeftHSlider.value;
             updateCensorUI();
-            showToast("ก๊อปปี้ค่าแถบปิดตาซ้าย ➡️ ขวา สำเร็จ!");
+            showToast("คัดลอกค่าแถบปิดตาจากซ้าย ➡️ ไปขวา สำเร็จ!");
         });
 
         btnCopyRightToLeft.addEventListener("click", () => {
@@ -2472,8 +2515,19 @@
             censorLeftWSlider.value = censorRightWSlider.value;
             censorLeftHSlider.value = censorRightHSlider.value;
             updateCensorUI();
-            showToast("ก๊อปปี้ค่าแถบปิดตาขวา ⬅️ ซ้าย สำเร็จ!");
+            showToast("คัดลอกค่าแถบปิดตาจากขวา ⬅️ ไปซ้าย สำเร็จ!");
         });
+
+        if (btnPullLeftToRight) {
+            btnPullLeftToRight.addEventListener("click", () => {
+                censorRightYSlider.value = censorLeftYSlider.value;
+                censorRightXSlider.value = censorLeftXSlider.value;
+                censorRightWSlider.value = censorLeftWSlider.value;
+                censorRightHSlider.value = censorLeftHSlider.value;
+                updateCensorUI();
+                showToast("ดึงค่าแถบปิดตาจากซ้าย ➡️ มาขวา สำเร็จ!");
+            });
+        }
 
         censorUpBtn.addEventListener("click", () => {
             censorYSlider.value = (Math.max(parseFloat(censorYSlider.min), parseFloat(censorYSlider.value) - 0.5)).toFixed(1);
@@ -2508,7 +2562,7 @@
             censorHSlider.value = 7;
             censorRadiusSlider.value = 14;
             censorColorSelect.value = "#000000";
-            censorTargetSelect.value = "both";
+            if (censorTargetSelect) censorTargetSelect.value = "both";
             censorSeparateCheckbox.checked = false;
 
             censorLeftYSlider.value = 36.5;
@@ -2824,7 +2878,7 @@
                 censor: {
                     enabled: showCensorCheckbox.checked,
                     color: censorColorSelect.value,
-                    target: censorTargetSelect.value,
+                    target: censorTargetSelect ? censorTargetSelect.value : "both",
                     radius: parseFloat(censorRadiusSlider.value) || 14,
                     separate: censorSeparateCheckbox.checked,
                     y: parseFloat(censorYSlider.value) || 36.5,
@@ -2935,9 +2989,10 @@
                 const c = p.censor;
                 if (typeof c.enabled === "boolean") showCensorCheckbox.checked = c.enabled;
                 if (c.color) censorColorSelect.value = c.color;
-                if (c.target) censorTargetSelect.value = c.target;
+                if (c.target && censorTargetSelect) censorTargetSelect.value = c.target;
                 if (c.radius !== undefined) censorRadiusSlider.value = c.radius;
                 if (typeof c.separate === "boolean") censorSeparateCheckbox.checked = c.separate;
+                if (c.target === "left" || c.target === "right") censorSeparateCheckbox.checked = true;
 
                 if (c.y !== undefined) censorYSlider.value = c.y;
                 if (c.x !== undefined) censorXSlider.value = c.x;
@@ -3503,25 +3558,24 @@
             if (showCensorCheckbox.checked) {
                 const isSeparate = censorSeparateCheckbox && censorSeparateCheckbox.checked;
 
-                const yPct = parseFloat(censorYSlider.value) / 100;
-                const xPct = parseFloat(censorXSlider.value) / 100;
-                const wPct = parseFloat(censorWSlider.value) / 100;
-                const hPct = parseFloat(censorHSlider.value) / 100;
+                const yPct = safeFloat(censorYSlider?.value, 36.5) / 100;
+                const xPct = safeFloat(censorXSlider?.value, 49.5) / 100;
+                const wPct = safeFloat(censorWSlider?.value, 60) / 100;
+                const hPct = safeFloat(censorHSlider?.value, 7) / 100;
 
-                const leftXPct = isSeparate ? (parseFloat(censorLeftXSlider.value) / 100) : xPct;
-                const leftYPct = isSeparate ? (parseFloat(censorLeftYSlider.value) / 100) : yPct;
-                const leftWPct = isSeparate ? (parseFloat(censorLeftWSlider.value) / 100) : wPct;
-                const leftHPct = isSeparate ? (parseFloat(censorLeftHSlider.value) / 100) : hPct;
+                const leftXPct = isSeparate ? (safeFloat(censorLeftXSlider?.value, 49.5) / 100) : xPct;
+                const leftYPct = isSeparate ? (safeFloat(censorLeftYSlider?.value, 36.5) / 100) : yPct;
+                const leftWPct = isSeparate ? (safeFloat(censorLeftWSlider?.value, 60) / 100) : wPct;
+                const leftHPct = isSeparate ? (safeFloat(censorLeftHSlider?.value, 7) / 100) : hPct;
 
-                const rightXPct = isSeparate ? (parseFloat(censorRightXSlider.value) / 100) : xPct;
-                const rightYPct = isSeparate ? (parseFloat(censorRightYSlider.value) / 100) : yPct;
-                const rightWPct = isSeparate ? (parseFloat(censorRightWSlider.value) / 100) : wPct;
-                const rightHPct = isSeparate ? (parseFloat(censorRightHSlider.value) / 100) : hPct;
+                const rightXPct = isSeparate ? (safeFloat(censorRightXSlider?.value, 49.5) / 100) : xPct;
+                const rightYPct = isSeparate ? (safeFloat(censorRightYSlider?.value, 36.5) / 100) : yPct;
+                const rightWPct = isSeparate ? (safeFloat(censorRightWSlider?.value, 60) / 100) : wPct;
+                const rightHPct = isSeparate ? (safeFloat(censorRightHSlider?.value, 7) / 100) : hPct;
 
-                const rawRadius = parseFloat(censorRadiusSlider.value) || 14;
+                const rawRadius = safeFloat(censorRadiusSlider?.value, 14);
                 const radius = Math.round(rawRadius * (S / 2));
-                const color = censorColorSelect.value || "#000000";
-                const target = censorTargetSelect.value || "both";
+                const color = censorColorSelect ? censorColorSelect.value : "#000000";
 
                 const slotW = isHorizontal ? width / 2 : width;
                 const slotH = isHorizontal ? height : height / 2;
@@ -3556,19 +3610,11 @@
                 }
 
                 if (isHorizontal) {
-                    if (target === "both" || target === "left") {
-                        drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
-                    }
-                    if (target === "both" || target === "right") {
-                        drawCustomBar(width / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
-                    }
+                    drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                    drawCustomBar(width / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
                 } else {
-                    if (target === "both" || target === "left") {
-                        drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
-                    }
-                    if (target === "both" || target === "right") {
-                        drawCustomBar(0, height / 2, rightXPct, rightYPct, rightWPct, rightHPct);
-                    }
+                    drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                    drawCustomBar(0, height / 2, rightXPct, rightYPct, rightWPct, rightHPct);
                 }
 
                 ctx.restore();
@@ -3826,22 +3872,22 @@
             const slotW = isHorizontal ? frameW / 2 : frameW;
             const slotH = isHorizontal ? frameH : frameH / 2;
 
-            const yPct = parseFloat(censorYSlider.value) / 100;
-            const xPct = parseFloat(censorXSlider.value) / 100;
-            const wPct = parseFloat(censorWSlider.value) / 100;
-            const hPct = parseFloat(censorHSlider.value) / 100;
+            const yPct = safeFloat(censorYSlider?.value, 36.5) / 100;
+            const xPct = safeFloat(censorXSlider?.value, 49.5) / 100;
+            const wPct = safeFloat(censorWSlider?.value, 60) / 100;
+            const hPct = safeFloat(censorHSlider?.value, 7) / 100;
 
-            const leftXPct = isSeparate ? (parseFloat(censorLeftXSlider.value) / 100) : xPct;
-            const leftYPct = isSeparate ? (parseFloat(censorLeftYSlider.value) / 100) : yPct;
-            const leftWPct = isSeparate ? (parseFloat(censorLeftWSlider.value) / 100) : wPct;
-            const leftHPct = isSeparate ? (parseFloat(censorLeftHSlider.value) / 100) : hPct;
+            const leftXPct = isSeparate ? (safeFloat(censorLeftXSlider?.value, 49.5) / 100) : xPct;
+            const leftYPct = isSeparate ? (safeFloat(censorLeftYSlider?.value, 36.5) / 100) : yPct;
+            const leftWPct = isSeparate ? (safeFloat(censorLeftWSlider?.value, 60) / 100) : wPct;
+            const leftHPct = isSeparate ? (safeFloat(censorLeftHSlider?.value, 7) / 100) : hPct;
 
-            const rightXPct = isSeparate ? (parseFloat(censorRightXSlider.value) / 100) : xPct;
-            const rightYPct = isSeparate ? (parseFloat(censorRightYSlider.value) / 100) : yPct;
-            const rightWPct = isSeparate ? (parseFloat(censorRightWSlider.value) / 100) : wPct;
-            const rightHPct = isSeparate ? (parseFloat(censorRightHSlider.value) / 100) : hPct;
+            const rightXPct = isSeparate ? (safeFloat(censorRightXSlider?.value, 49.5) / 100) : xPct;
+            const rightYPct = isSeparate ? (safeFloat(censorRightYSlider?.value, 36.5) / 100) : yPct;
+            const rightWPct = isSeparate ? (safeFloat(censorRightWSlider?.value, 60) / 100) : wPct;
+            const rightHPct = isSeparate ? (safeFloat(censorRightHSlider?.value, 7) / 100) : hPct;
 
-            const rawRadius = parseFloat(censorRadiusSlider.value) || 14;
+            const rawRadius = safeFloat(censorRadiusSlider?.value, 14);
             const S = frameW / 1000;
             const cssRadius = Math.round(rawRadius * (S / 2));
 
@@ -3870,29 +3916,11 @@
             }
 
             if (isHorizontal) {
-                if (target === "both" || target === "left") {
-                    positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
-                } else {
-                    censorBoxLeft.style.display = "none";
-                }
-
-                if (target === "both" || target === "right") {
-                    positionBox(censorBoxRight, censorBadgeRight, frameW / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
-                } else {
-                    censorBoxRight.style.display = "none";
-                }
+                positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                positionBox(censorBoxRight, censorBadgeRight, frameW / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
             } else {
-                if (target === "both" || target === "left") {
-                    positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
-                } else {
-                    censorBoxLeft.style.display = "none";
-                }
-
-                if (target === "both" || target === "right") {
-                    positionBox(censorBoxRight, censorBadgeRight, 0, frameH / 2, rightXPct, rightYPct, rightWPct, rightHPct);
-                } else {
-                    censorBoxRight.style.display = "none";
-                }
+                positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                positionBox(censorBoxRight, censorBadgeRight, 0, frameH / 2, rightXPct, rightYPct, rightWPct, rightHPct);
             }
         }
 
@@ -3935,24 +3963,24 @@
                     boxEl.style.cursor = "grabbing";
                 }
 
-                const isSeparate = censorSeparateCheckbox.checked;
+                const isSeparate = censorSeparateCheckbox ? censorSeparateCheckbox.checked : false;
                 if (isSeparate) {
                     if (isLeft) {
-                        startX = parseFloat(censorLeftXSlider.value);
-                        startY = parseFloat(censorLeftYSlider.value);
-                        startW = parseFloat(censorLeftWSlider.value);
-                        startH = parseFloat(censorLeftHSlider.value);
+                        startX = safeFloat(censorLeftXSlider?.value, 49.5);
+                        startY = safeFloat(censorLeftYSlider?.value, 36.5);
+                        startW = safeFloat(censorLeftWSlider?.value, 60);
+                        startH = safeFloat(censorLeftHSlider?.value, 7);
                     } else {
-                        startX = parseFloat(censorRightXSlider.value);
-                        startY = parseFloat(censorRightYSlider.value);
-                        startW = parseFloat(censorRightWSlider.value);
-                        startH = parseFloat(censorRightHSlider.value);
+                        startX = safeFloat(censorRightXSlider?.value, 49.5);
+                        startY = safeFloat(censorRightYSlider?.value, 36.5);
+                        startW = safeFloat(censorRightWSlider?.value, 60);
+                        startH = safeFloat(censorRightHSlider?.value, 7);
                     }
                 } else {
-                    startX = parseFloat(censorXSlider.value);
-                    startY = parseFloat(censorYSlider.value);
-                    startW = parseFloat(censorWSlider.value);
-                    startH = parseFloat(censorHSlider.value);
+                    startX = safeFloat(censorXSlider?.value, 49.5);
+                    startY = safeFloat(censorYSlider?.value, 36.5);
+                    startW = safeFloat(censorWSlider?.value, 60);
+                    startH = safeFloat(censorHSlider?.value, 7);
                 }
             });
 
@@ -3972,7 +4000,7 @@
 
                 if (slotW <= 0 || slotH <= 0) return;
 
-                const isSeparate = censorSeparateCheckbox.checked;
+                const isSeparate = censorSeparateCheckbox ? censorSeparateCheckbox.checked : false;
 
                 if (actionType === "move") {
                     const deltaXPct = (dx / slotW) * 100;
