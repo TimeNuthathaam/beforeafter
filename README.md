@@ -36,6 +36,7 @@ A browser-based tool for comparing and combining before/after images. No server 
 - 📝 **Case Information & Text Overlays**:
   - ชื่อโปรแกรมด้านบน (Treatment Headline Pill แคปซูลขาวโค้งมน)
   - วันที่ Before/After พร้อม Drop shadow
+  - 📅 **ปฏิทินเลือกวันที่ (Calendar Picker)**: จิ้มไอคอน 📅 เพื่อเปิดปฏิทินเลือกวันได้ทันที พร้อมตัวเลือกลงรูปแบบอัตโนมัติ (Eng สากล, ไทย ย่อ, ตัวเลข ฯลฯ) หรือพิมพ์ข้อความเองได้อิสระ
   - ข้อความกำกับทางกฎหมายด้านล่าง (Thai Legal Disclaimers)
   - ลายน้ำทแยงมุม `de Pry clinic` (Watermark พร้อมตัวปรับความจาง)
   - 📏 **ตัวปรับขนาดตัวหนังสือด้านล่าง (Default: กะทัดรัด ไม่บังรูปเคส)**: ย่อขนาดให้อยู่ชิดขอบล่าง ประหยัดพื้นที่รูปเคส 1:1 พร้อมปุ่มลัด (กะทัดรัด / ปานกลาง / ใหญ่) และฟังก์ชัน auto-shrink ป้องกันข้อความล้น
