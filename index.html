@@ -3524,37 +3524,7 @@
             const leftCX = isHorizontal ? width / 4 : width / 2;
             const rightCX = isHorizontal ? width * 0.75 : width / 2;
 
-            // 1. WATERMARK (diagonal 45 deg across each present half)
-            if (showWatermarkCheckbox.checked && watermarkTextInput.value.trim()) {
-                const text = watermarkTextInput.value.trim();
-                const opacity = (parseInt(watermarkOpacitySlider.value, 10) || 35) / 100;
-                const fontSize = Math.round(22 * S);
-
-                ctx.save();
-                ctx.font = `600 ${fontSize}px 'Kanit', sans-serif`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-
-                const centers = isHorizontal ? [
-                    { x: width / 4, y: height / 2 },
-                    { x: width * 0.75, y: height / 2 }
-                ] : [
-                    { x: width / 2, y: height / 4 },
-                    { x: width / 2, y: height * 0.75 }
-                ];
-
-                for (const pt of centers) {
-                    ctx.save();
-                    ctx.translate(pt.x, pt.y);
-                    ctx.rotate(-45 * Math.PI / 180); // -45 degrees (diagonal up-right like in photo)
-                    ctx.fillText(text, 0, 0);
-                    ctx.restore();
-                }
-                ctx.restore();
-            }
-
-            // 2. EYE CENSOR BARS (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว)
+            // 1. EYE CENSOR BARS (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว)
             if (showCensorCheckbox.checked) {
                 const isSeparate = censorSeparateCheckbox && censorSeparateCheckbox.checked;
 
@@ -3620,7 +3590,7 @@
                 ctx.restore();
             }
 
-            // 3. TREATMENT TITLE (Header Pill Capsule)
+            // 2. TREATMENT TITLE (Header Pill Capsule)
             if (showTitleCheckbox.checked && titleInput.value.trim()) {
                 const title = titleInput.value.trim();
                 let fontSize = Math.round(22 * S);
@@ -3667,7 +3637,7 @@
                 ctx.restore();
             }
 
-            // 4. LOGO (Top-right de Pry Logo / Badge)
+            // 3. LOGO (Top-right de Pry Logo / Badge)
             if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
                 const logoImg = logoObjects[currentLogoColor];
                 if (logoImg.complete && logoImg.naturalWidth) {
@@ -3775,6 +3745,39 @@
                 }
                 if (discRight) {
                     drawDynamicBottomText(discRight, rightCX, discY, discFontSize, "bold");
+                }
+                ctx.restore();
+            }
+
+            // 6. WATERMARK (Topmost Layer - diagonal 45 deg across each slot on top of all overlays)
+            if (showWatermarkCheckbox.checked && watermarkTextInput.value.trim()) {
+                const text = watermarkTextInput.value.trim();
+                const opacity = (parseInt(watermarkOpacitySlider.value, 10) || 35) / 100;
+                const fontSize = Math.round(22 * S);
+
+                ctx.save();
+                ctx.font = `600 ${fontSize}px 'Kanit', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.shadowColor = `rgba(0, 0, 0, ${opacity * 0.55})`;
+                ctx.shadowBlur = Math.round(3 * S);
+                ctx.shadowOffsetY = Math.round(1 * S);
+
+                const centers = isHorizontal ? [
+                    { x: width / 4, y: height / 2 },
+                    { x: width * 0.75, y: height / 2 }
+                ] : [
+                    { x: width / 2, y: height / 4 },
+                    { x: width / 2, y: height * 0.75 }
+                ];
+
+                for (const pt of centers) {
+                    ctx.save();
+                    ctx.translate(pt.x, pt.y);
+                    ctx.rotate(-45 * Math.PI / 180); // -45 degrees (diagonal up-right)
+                    ctx.fillText(text, 0, 0);
+                    ctx.restore();
                 }
                 ctx.restore();
             }
