@@ -324,6 +324,38 @@
             border-color: var(--primary);
         }
 
+        .censor-num-input {
+            width: 58px;
+            height: 26px;
+            text-align: center;
+            padding: 2px 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: #ffffff;
+            box-shadow: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            -moz-appearance: textfield;
+        }
+        .censor-num-input::-webkit-outer-spin-button,
+        .censor-num-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .censor-num-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+            outline: none;
+        }
+        .censor-unit-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            user-select: none;
+        }
+
         .toggle-label {
             display: inline-flex;
             align-items: center;
@@ -1243,44 +1275,59 @@
                 <div class="control-item">
                     <label for="censorRadiusSlider">🔘 ขอบโค้งมน:</label>
                     <input type="range" min="0" max="50" value="14" step="1" id="censorRadiusSlider">
-                    <span id="censorRadiusVal" class="val-badge">14px</span>
+                    <div style="display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="number" id="censorRadiusInput" min="0" max="50" step="1" value="14" class="censor-num-input" title="พิมพ์ความโค้งมน (px)">
+                        <span class="censor-unit-label">px</span>
+                    </div>
                 </div>
             </div>
 
             <!-- 1. Unified Controls (ปรับพร้อมกันทั้ง 2 ฝั่ง) -->
             <div id="censorUnifiedPanel" class="control-row" style="background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px dashed var(--border); gap: 14px;">
                 <!-- Y Position -->
-                <div class="control-item" style="min-width: 240px;">
+                <div class="control-item" style="min-width: 250px;">
                     <label for="censorYSlider">↕️ ระดับสายตา (Y):</label>
                     <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorYSlider">
-                    <span id="censorYVal" class="val-badge" style="color: var(--primary); font-weight: 700;">36.5%</span>
+                    <div style="display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="number" id="censorYInput" min="0" max="100" step="0.5" value="36.5" class="censor-num-input" title="พิมพ์ค่า Y (%)">
+                        <span class="censor-unit-label">%</span>
+                    </div>
                     <button type="button" class="btn-sm" id="censorUpBtn" title="เลื่อนขึ้น 0.5%">⬆️</button>
                     <button type="button" class="btn-sm" id="censorDownBtn" title="เลื่อนลง 0.5%">⬇️</button>
                 </div>
 
                 <!-- X Position -->
-                <div class="control-item" style="min-width: 230px;">
+                <div class="control-item" style="min-width: 250px;">
                     <label for="censorXSlider">↔️ แนวนอน (X):</label>
                     <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorXSlider">
-                    <span id="censorXVal" class="val-badge" style="color: var(--primary); font-weight: 700;">49.5%</span>
+                    <div style="display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="number" id="censorXInput" min="0" max="100" step="0.5" value="49.5" class="censor-num-input" title="พิมพ์ค่า X (%)">
+                        <span class="censor-unit-label">%</span>
+                    </div>
                     <button type="button" class="btn-sm" id="censorLeftBtn" title="เลื่อนซ้าย 0.5%">⬅️</button>
                     <button type="button" class="btn-sm" id="censorRightBtn" title="เลื่อนขวา 0.5%">➡️</button>
                 </div>
 
                 <!-- Width -->
-                <div class="control-item" style="min-width: 210px;">
+                <div class="control-item" style="min-width: 230px;">
                     <label for="censorWSlider">↔️ ความกว้าง:</label>
                     <input type="range" min="10" max="95" value="60" step="1" id="censorWSlider">
-                    <span id="censorWVal" class="val-badge">60%</span>
+                    <div style="display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="number" id="censorWInput" min="5" max="100" step="1" value="60" class="censor-num-input" title="พิมพ์ความกว้าง (%)">
+                        <span class="censor-unit-label">%</span>
+                    </div>
                     <button type="button" class="btn-sm" id="censorWiderBtn" title="กว้างขึ้น 1%">➕</button>
                     <button type="button" class="btn-sm" id="censorNarrowBtn" title="แคบลง 1%">➖</button>
                 </div>
 
                 <!-- Height -->
-                <div class="control-item" style="min-width: 170px;">
+                <div class="control-item" style="min-width: 180px;">
                     <label for="censorHSlider">↕️ ความสูง:</label>
                     <input type="range" min="2" max="30" value="7" step="0.5" id="censorHSlider">
-                    <span id="censorHVal" class="val-badge">7%</span>
+                    <div style="display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="number" id="censorHInput" min="1" max="50" step="0.5" value="7" class="censor-num-input" title="พิมพ์ความสูง (%)">
+                        <span class="censor-unit-label">%</span>
+                    </div>
                 </div>
             </div>
 
@@ -1296,22 +1343,34 @@
                         <div class="control-item" style="width: 100%;">
                             <label for="censorLeftYSlider">↕️ ระดับสายตา (Y):</label>
                             <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorLeftYSlider">
-                            <span id="censorLeftYVal" class="val-badge">36.5%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorLeftYInput" min="0" max="100" step="0.5" value="36.5" class="censor-num-input" title="พิมพ์ค่า Y (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorLeftXSlider">↔️ แนวนอน (X):</label>
                             <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorLeftXSlider">
-                            <span id="censorLeftXVal" class="val-badge">49.5%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorLeftXInput" min="0" max="100" step="0.5" value="49.5" class="censor-num-input" title="พิมพ์ค่า X (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorLeftWSlider">↔️ ความกว้าง:</label>
                             <input type="range" min="10" max="95" value="60" step="1" id="censorLeftWSlider">
-                            <span id="censorLeftWVal" class="val-badge">60%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorLeftWInput" min="5" max="100" step="1" value="60" class="censor-num-input" title="พิมพ์ความกว้าง (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorLeftHSlider">↕️ ความสูง:</label>
                             <input type="range" min="2" max="30" value="7" step="0.5" id="censorLeftHSlider">
-                            <span id="censorLeftHVal" class="val-badge">7%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorLeftHInput" min="1" max="50" step="0.5" value="7" class="censor-num-input" title="พิมพ์ความสูง (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1326,22 +1385,34 @@
                         <div class="control-item" style="width: 100%;">
                             <label for="censorRightYSlider">↕️ ระดับสายตา (Y):</label>
                             <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorRightYSlider">
-                            <span id="censorRightYVal" class="val-badge">36.5%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorRightYInput" min="0" max="100" step="0.5" value="36.5" class="censor-num-input" title="พิมพ์ค่า Y (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorRightXSlider">↔️ แนวนอน (X):</label>
                             <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorRightXSlider">
-                            <span id="censorRightXVal" class="val-badge">49.5%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorRightXInput" min="0" max="100" step="0.5" value="49.5" class="censor-num-input" title="พิมพ์ค่า X (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorRightWSlider">↔️ ความกว้าง:</label>
                             <input type="range" min="10" max="95" value="60" step="1" id="censorRightWSlider">
-                            <span id="censorRightWVal" class="val-badge">60%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorRightWInput" min="5" max="100" step="1" value="60" class="censor-num-input" title="พิมพ์ความกว้าง (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                         <div class="control-item" style="width: 100%;">
                             <label for="censorRightHSlider">↕️ ความสูง:</label>
                             <input type="range" min="2" max="30" value="7" step="0.5" id="censorRightHSlider">
-                            <span id="censorRightHVal" class="val-badge">7%</span>
+                            <div style="display: inline-flex; align-items: center; gap: 2px;">
+                                <input type="number" id="censorRightHInput" min="1" max="50" step="0.5" value="7" class="censor-num-input" title="พิมพ์ความสูง (%)">
+                                <span class="censor-unit-label">%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1463,7 +1534,7 @@
             <!-- Unified Single Frame -->
             <div class="canvas-frame" id="canvasFrame">
                 <!-- Left Slot: Before Image -->
-                <div class="stage-slot" id="slotBefore" title="คลิกค้างแล้วลากเพื่อขยับภาพซ้าย • เลื่อนลูกกลิ้งเมาส์เพื่อซูม">
+                <div class="stage-slot" id="slotBefore" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพซ้าย">
                     <canvas id="beforeCanvas" class="slot-canvas"></canvas>
                     <div class="slot-dropzone" id="beforeDropzone">
                         <div class="drop-icon">📷</div>
@@ -1487,7 +1558,7 @@
                 <div class="stage-divider" id="stageDivider"></div>
 
                 <!-- Right Slot: After Image -->
-                <div class="stage-slot" id="slotAfter" title="คลิกค้างแล้วลากเพื่อขยับภาพขวา • เลื่อนลูกกลิ้งเมาส์เพื่อซูม">
+                <div class="stage-slot" id="slotAfter" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพขวา">
                     <canvas id="afterCanvas" class="slot-canvas"></canvas>
                     <div class="slot-dropzone" id="afterDropzone">
                         <div class="drop-icon">✨</div>
@@ -1565,8 +1636,7 @@
         <span><span class="shortcut">Ctrl+V / ⌘+V</span> วางภาพจาก Clipboard</span>
         <span><span class="shortcut">Ctrl+Enter / ⌘+Enter</span> ดาวน์โหลดภาพทันที</span>
         <span><span class="shortcut">Delete</span> ลบภาพ</span>
-        <span><span class="shortcut">Scroll Wheel</span> ซูมเข้า/ออก</span>
-        <span><span class="shortcut">Click & Drag</span> เลื่อนจัดตำแหน่ง</span>
+        <span><span class="shortcut">Click & Drag</span> ลากจัดตำแหน่งภาพ</span>
     </div>
 
     <!-- Modal: Save New Preset -->
@@ -1710,15 +1780,15 @@
         const censorUnifiedPanel = document.getElementById("censorUnifiedPanel");
         const censorSeparatePanel = document.getElementById("censorSeparatePanel");
         const censorYSlider = document.getElementById("censorYSlider");
-        const censorYVal = document.getElementById("censorYVal");
+        const censorYInput = document.getElementById("censorYInput");
         const censorXSlider = document.getElementById("censorXSlider");
-        const censorXVal = document.getElementById("censorXVal");
+        const censorXInput = document.getElementById("censorXInput");
         const censorWSlider = document.getElementById("censorWSlider");
-        const censorWVal = document.getElementById("censorWVal");
+        const censorWInput = document.getElementById("censorWInput");
         const censorHSlider = document.getElementById("censorHSlider");
-        const censorHVal = document.getElementById("censorHVal");
+        const censorHInput = document.getElementById("censorHInput");
         const censorRadiusSlider = document.getElementById("censorRadiusSlider");
-        const censorRadiusVal = document.getElementById("censorRadiusVal");
+        const censorRadiusInput = document.getElementById("censorRadiusInput");
         const censorUpBtn = document.getElementById("censorUpBtn");
         const censorDownBtn = document.getElementById("censorDownBtn");
         const censorLeftBtn = document.getElementById("censorLeftBtn");
@@ -1729,22 +1799,22 @@
 
         // Independent Left/Right Censor Elements
         const censorLeftYSlider = document.getElementById("censorLeftYSlider");
-        const censorLeftYVal = document.getElementById("censorLeftYVal");
+        const censorLeftYInput = document.getElementById("censorLeftYInput");
         const censorLeftXSlider = document.getElementById("censorLeftXSlider");
-        const censorLeftXVal = document.getElementById("censorLeftXVal");
+        const censorLeftXInput = document.getElementById("censorLeftXInput");
         const censorLeftWSlider = document.getElementById("censorLeftWSlider");
-        const censorLeftWVal = document.getElementById("censorLeftWVal");
+        const censorLeftWInput = document.getElementById("censorLeftWInput");
         const censorLeftHSlider = document.getElementById("censorLeftHSlider");
-        const censorLeftHVal = document.getElementById("censorLeftHVal");
+        const censorLeftHInput = document.getElementById("censorLeftHInput");
 
         const censorRightYSlider = document.getElementById("censorRightYSlider");
-        const censorRightYVal = document.getElementById("censorRightYVal");
+        const censorRightYInput = document.getElementById("censorRightYInput");
         const censorRightXSlider = document.getElementById("censorRightXSlider");
-        const censorRightXVal = document.getElementById("censorRightXVal");
+        const censorRightXInput = document.getElementById("censorRightXInput");
         const censorRightWSlider = document.getElementById("censorRightWSlider");
-        const censorRightWVal = document.getElementById("censorRightWVal");
+        const censorRightWInput = document.getElementById("censorRightWInput");
         const censorRightHSlider = document.getElementById("censorRightHSlider");
-        const censorRightHVal = document.getElementById("censorRightHVal");
+        const censorRightHInput = document.getElementById("censorRightHInput");
 
         const btnCopyLeftToRight = document.getElementById("btnCopyLeftToRight");
         const btnCopyRightToLeft = document.getElementById("btnCopyRightToLeft");
@@ -2118,25 +2188,58 @@
         }
 
         function updateCensorUI() {
-            censorYVal.textContent = `${censorYSlider.value}%`;
-            censorXVal.textContent = `${censorXSlider.value}%`;
-            censorWVal.textContent = `${censorWSlider.value}%`;
-            censorHVal.textContent = `${censorHSlider.value}%`;
-            censorRadiusVal.textContent = `${censorRadiusSlider.value}px`;
+            if (censorYInput && document.activeElement !== censorYInput) censorYInput.value = censorYSlider.value;
+            if (censorXInput && document.activeElement !== censorXInput) censorXInput.value = censorXSlider.value;
+            if (censorWInput && document.activeElement !== censorWInput) censorWInput.value = censorWSlider.value;
+            if (censorHInput && document.activeElement !== censorHInput) censorHInput.value = censorHSlider.value;
+            if (censorRadiusInput && document.activeElement !== censorRadiusInput) censorRadiusInput.value = censorRadiusSlider.value;
 
-            censorLeftYVal.textContent = `${censorLeftYSlider.value}%`;
-            censorLeftXVal.textContent = `${censorLeftXSlider.value}%`;
-            censorLeftWVal.textContent = `${censorLeftWSlider.value}%`;
-            censorLeftHVal.textContent = `${censorLeftHSlider.value}%`;
+            if (censorLeftYInput && document.activeElement !== censorLeftYInput) censorLeftYInput.value = censorLeftYSlider.value;
+            if (censorLeftXInput && document.activeElement !== censorLeftXInput) censorLeftXInput.value = censorLeftXSlider.value;
+            if (censorLeftWInput && document.activeElement !== censorLeftWInput) censorLeftWInput.value = censorLeftWSlider.value;
+            if (censorLeftHInput && document.activeElement !== censorLeftHInput) censorLeftHInput.value = censorLeftHSlider.value;
 
-            censorRightYVal.textContent = `${censorRightYSlider.value}%`;
-            censorRightXVal.textContent = `${censorRightXSlider.value}%`;
-            censorRightWVal.textContent = `${censorRightWSlider.value}%`;
-            censorRightHVal.textContent = `${censorRightHSlider.value}%`;
+            if (censorRightYInput && document.activeElement !== censorRightYInput) censorRightYInput.value = censorRightYSlider.value;
+            if (censorRightXInput && document.activeElement !== censorRightXInput) censorRightXInput.value = censorRightXSlider.value;
+            if (censorRightWInput && document.activeElement !== censorRightWInput) censorRightWInput.value = censorRightWSlider.value;
+            if (censorRightHInput && document.activeElement !== censorRightHInput) censorRightHInput.value = censorRightHSlider.value;
 
             saveCensorSettings();
             renderStageOverlays();
         }
+
+        function bindCensorInput(inputEl, sliderEl) {
+            if (!inputEl || !sliderEl) return;
+            const syncFromInput = () => {
+                const val = parseFloat(inputEl.value);
+                if (!isNaN(val)) {
+                    sliderEl.value = val;
+                    saveCensorSettings();
+                    renderStageOverlays();
+                }
+            };
+            inputEl.addEventListener("input", syncFromInput);
+            inputEl.addEventListener("change", () => {
+                syncFromInput();
+                updateCensorUI();
+            });
+        }
+
+        bindCensorInput(censorYInput, censorYSlider);
+        bindCensorInput(censorXInput, censorXSlider);
+        bindCensorInput(censorWInput, censorWSlider);
+        bindCensorInput(censorHInput, censorHSlider);
+        bindCensorInput(censorRadiusInput, censorRadiusSlider);
+
+        bindCensorInput(censorLeftYInput, censorLeftYSlider);
+        bindCensorInput(censorLeftXInput, censorLeftXSlider);
+        bindCensorInput(censorLeftWInput, censorLeftWSlider);
+        bindCensorInput(censorLeftHInput, censorLeftHSlider);
+
+        bindCensorInput(censorRightYInput, censorRightYSlider);
+        bindCensorInput(censorRightXInput, censorRightXSlider);
+        bindCensorInput(censorRightWInput, censorRightWSlider);
+        bindCensorInput(censorRightHInput, censorRightHSlider);
 
         showCensorCheckbox.addEventListener("change", () => {
             saveCensorSettings();
@@ -3183,8 +3286,6 @@
 
         // --- DRAW OVERLAYS (Title, Dates, Disclaimers, Watermark, Logo) ---
         function renderOverlays(ctx, width, height) {
-            ctx.clearRect(0, 0, width, height);
-
             const isHorizontal = currentLayout !== "vertical";
             const S = Math.min(width, height) / 500;
 
@@ -3459,6 +3560,7 @@
         function renderStageOverlays() {
             if (isDiffActive) return;
             const ctx = stageOverlayCanvas.getContext("2d");
+            ctx.clearRect(0, 0, stageOverlayCanvas.width, stageOverlayCanvas.height);
             renderOverlays(ctx, stageOverlayCanvas.width, stageOverlayCanvas.height);
         }
 
@@ -3516,35 +3618,6 @@
 
             slotEl.addEventListener("pointerup", endDrag);
             slotEl.addEventListener("pointercancel", endDrag);
-
-            slotEl.addEventListener("wheel", e => {
-                const img = type === "before" ? beforeImage : afterImage;
-                if (!img) return;
-                e.preventDefault();
-
-                const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
-                const newZoom = Math.max(0.2, Math.min(5.0, state.zoom * zoomFactor));
-
-                const rect = slotEl.getBoundingClientRect();
-                const mouseRelX = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
-                const mouseRelY = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
-
-                const zoomRatio = newZoom / state.zoom;
-                state.panX = mouseRelX * (1 - zoomRatio) + state.panX * zoomRatio;
-                state.panY = mouseRelY * (1 - zoomRatio) + state.panY * zoomRatio;
-                state.zoom = newZoom;
-
-                updateZoomUI(type);
-                renderSlot(type);
-
-                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
-                    otherState.zoom = state.zoom;
-                    otherState.panX = state.panX;
-                    otherState.panY = state.panY;
-                    updateZoomUI(otherType);
-                    renderSlot(otherType);
-                }
-            }, { passive: false });
         }
 
         setupSlotInteractions("before");
