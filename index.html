@@ -511,6 +511,143 @@
             z-index: 15;
         }
 
+        /* Interactive Censor Drag/Resize Overlay Layer */
+        .censor-overlay-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 18;
+        }
+
+        .censor-interactive-box {
+            position: absolute;
+            pointer-events: auto;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            box-sizing: border-box;
+            border: 2px dashed transparent;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .censor-interactive-box:hover {
+            border-color: rgba(59, 130, 246, 0.85);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .censor-interactive-box.dragging {
+            cursor: grabbing;
+            border-color: #2563eb;
+            border-style: solid;
+            background: rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        .censor-drag-badge {
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(4px);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 25;
+        }
+
+        .censor-drag-badge.badge-below {
+            bottom: auto;
+            top: calc(100% + 6px);
+        }
+
+        .censor-interactive-box:hover .censor-drag-badge,
+        .censor-interactive-box.dragging .censor-drag-badge {
+            opacity: 1;
+        }
+
+        .censor-handle {
+            position: absolute;
+            box-sizing: border-box;
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border: 2px solid #2563eb;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: auto;
+        }
+
+        .censor-interactive-box:hover .censor-handle,
+        .censor-interactive-box.dragging .censor-handle {
+            opacity: 1;
+        }
+
+        .censor-h-w {
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: ew-resize;
+            height: 14px;
+            border-radius: 3px;
+        }
+        .censor-h-e {
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: ew-resize;
+            height: 14px;
+            border-radius: 3px;
+        }
+        .censor-h-n {
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ns-resize;
+            width: 14px;
+            border-radius: 3px;
+        }
+        .censor-h-s {
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ns-resize;
+            width: 14px;
+            border-radius: 3px;
+        }
+        .censor-h-nw {
+            top: -4px;
+            left: -4px;
+            cursor: nwse-resize;
+        }
+        .censor-h-ne {
+            top: -4px;
+            right: -4px;
+            cursor: nesw-resize;
+        }
+        .censor-h-sw {
+            bottom: -4px;
+            left: -4px;
+            cursor: nesw-resize;
+        }
+        .censor-h-se {
+            bottom: -4px;
+            right: -4px;
+            cursor: nwse-resize;
+        }
+
         /* Divider between slots */
         .stage-divider {
             flex-shrink: 0;
@@ -1244,6 +1381,11 @@
                 </div>
             </div>
 
+            <!-- Tip banner for mouse drag/resize -->
+            <div style="font-size: 12px; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 7px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                <span>💡 <strong>เคล็ดลับ:</strong> สามารถคลิกค้างที่แถบปิดตาบนรูปภาพ แล้วลาก (Drag) ด้วยเมาส์เพื่อเลื่อนตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยายได้ทันที</span>
+            </div>
+
             <!-- Toggle, Color, and Target -->
             <div class="control-row">
                 <div class="control-item">
@@ -1581,6 +1723,32 @@
                 <!-- Overlay Canvas: Live rendering of Title, Dates, Disclaimers, Watermark, Logo -->
                 <canvas id="stageOverlayCanvas" class="stage-overlay-canvas"></canvas>
 
+                <!-- Interactive Censor Drag/Resize Overlay -->
+                <div id="censorOverlayContainer" class="censor-overlay-container">
+                    <div id="censorBoxLeft" class="censor-interactive-box" data-side="left" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
+                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
+                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
+                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
+                        <div class="censor-handle censor-h-se" data-handle="se"></div>
+                        <div class="censor-drag-badge" id="censorBadgeLeft">↔️ ลากเพื่อเลื่อน</div>
+                    </div>
+                    <div id="censorBoxRight" class="censor-interactive-box" data-side="right" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
+                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
+                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
+                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
+                        <div class="censor-handle censor-h-se" data-handle="se"></div>
+                        <div class="censor-drag-badge" id="censorBadgeRight">↔️ ลากเพื่อเลื่อน</div>
+                    </div>
+                </div>
+
                 <!-- Diff Image (shown when diff mode is active) -->
                 <canvas id="diffStageCanvas"></canvas>
             </div>
@@ -1610,7 +1778,7 @@
         </div>
 
         <div class="sync-row">
-            <span>💡 <strong>วิธีใช้งาน:</strong> คลิกค้างแล้วลากบนรูปเพื่อเลื่อนตำแหน่ง • หมุนล้อเมาส์เพื่อซูม In/Out บนรูปได้โดยตรง</span>
+            <span>💡 <strong>วิธีใช้งาน:</strong> คลิกค้างแล้วลากบนรูปเพื่อเลื่อนภาพ • คลิกค้างที่แถบปิดตาเพื่อเลื่อนตำแหน่งหรือดึงขอบเพื่อย่อ-ขยาย</span>
         </div>
 
         <!-- Action Buttons -->
@@ -1845,6 +2013,11 @@
         const beforeCanvas = document.getElementById("beforeCanvas");
         const afterCanvas = document.getElementById("afterCanvas");
         const stageOverlayCanvas = document.getElementById("stageOverlayCanvas");
+        const censorOverlayContainer = document.getElementById("censorOverlayContainer");
+        const censorBoxLeft = document.getElementById("censorBoxLeft");
+        const censorBoxRight = document.getElementById("censorBoxRight");
+        const censorBadgeLeft = document.getElementById("censorBadgeLeft");
+        const censorBadgeRight = document.getElementById("censorBadgeRight");
         const beforeDropzone = document.getElementById("beforeDropzone");
         const afterDropzone = document.getElementById("afterDropzone");
         const diffStageCanvas = document.getElementById("diffStageCanvas");
@@ -3135,6 +3308,10 @@
             const dpr = window.devicePixelRatio || 1;
             stageOverlayCanvas.width = frameW * dpr;
             stageOverlayCanvas.height = frameH * dpr;
+
+            if (typeof updateCensorBoxPositions === "function") {
+                updateCensorBoxPositions();
+            }
         }
 
         // --- FULL RESOLUTION EXPORT GEOMETRY MATH ---
@@ -3562,6 +3739,9 @@
             const ctx = stageOverlayCanvas.getContext("2d");
             ctx.clearRect(0, 0, stageOverlayCanvas.width, stageOverlayCanvas.height);
             renderOverlays(ctx, stageOverlayCanvas.width, stageOverlayCanvas.height);
+            if (typeof updateCensorBoxPositions === "function") {
+                updateCensorBoxPositions();
+            }
         }
 
         // --- INTERACTIVE DRAG & MOUSE WHEEL ZOOM ON STAGE SLOTS ---
@@ -3581,7 +3761,7 @@
                 if (e.target.closest(".slot-quick-btns") || e.target.closest(".slot-dropzone")) return;
 
                 isDragging = true;
-                slotEl.setPointerCapture(e.pointerId);
+                try { slotEl.setPointerCapture(e.pointerId); } catch(err) {}
                 startX = e.clientX;
                 startY = e.clientY;
                 initialPanX = state.panX;
@@ -3622,6 +3802,259 @@
 
         setupSlotInteractions("before");
         setupSlotInteractions("after");
+
+        // ==============================================================
+        // --- INTERACTIVE EYE PRIVACY CENSOR BAR (DRAG & RESIZE WITH MOUSE) ---
+        // ==============================================================
+        function updateCensorBoxPositions() {
+            if (!censorBoxLeft || !censorBoxRight || !canvasFrame) return;
+
+            if (!showCensorCheckbox || !showCensorCheckbox.checked || isDiffActive) {
+                censorBoxLeft.style.display = "none";
+                censorBoxRight.style.display = "none";
+                return;
+            }
+
+            const target = censorTargetSelect ? censorTargetSelect.value : "both";
+            const isSeparate = censorSeparateCheckbox ? censorSeparateCheckbox.checked : false;
+
+            const frameW = canvasFrame.clientWidth;
+            const frameH = canvasFrame.clientHeight;
+            if (!frameW || !frameH) return;
+
+            const isHorizontal = currentLayout !== "vertical";
+            const slotW = isHorizontal ? frameW / 2 : frameW;
+            const slotH = isHorizontal ? frameH : frameH / 2;
+
+            const yPct = parseFloat(censorYSlider.value) / 100;
+            const xPct = parseFloat(censorXSlider.value) / 100;
+            const wPct = parseFloat(censorWSlider.value) / 100;
+            const hPct = parseFloat(censorHSlider.value) / 100;
+
+            const leftXPct = isSeparate ? (parseFloat(censorLeftXSlider.value) / 100) : xPct;
+            const leftYPct = isSeparate ? (parseFloat(censorLeftYSlider.value) / 100) : yPct;
+            const leftWPct = isSeparate ? (parseFloat(censorLeftWSlider.value) / 100) : wPct;
+            const leftHPct = isSeparate ? (parseFloat(censorLeftHSlider.value) / 100) : hPct;
+
+            const rightXPct = isSeparate ? (parseFloat(censorRightXSlider.value) / 100) : xPct;
+            const rightYPct = isSeparate ? (parseFloat(censorRightYSlider.value) / 100) : yPct;
+            const rightWPct = isSeparate ? (parseFloat(censorRightWSlider.value) / 100) : wPct;
+            const rightHPct = isSeparate ? (parseFloat(censorRightHSlider.value) / 100) : hPct;
+
+            const rawRadius = parseFloat(censorRadiusSlider.value) || 14;
+            const S = frameW / 1000;
+            const cssRadius = Math.round(rawRadius * (S / 2));
+
+            function positionBox(boxEl, badgeEl, slotLeftX, slotTopY, xp, yp, wp, hp) {
+                const barW = Math.round(slotW * wp);
+                const barH = Math.round(slotH * hp);
+                const cx = slotLeftX + slotW * xp;
+                const cy = slotTopY + slotH * yp;
+                const bx = Math.round(cx - barW / 2);
+                const by = Math.round(cy - barH / 2);
+
+                boxEl.style.display = "block";
+                boxEl.style.left = `${bx}px`;
+                boxEl.style.top = `${by}px`;
+                boxEl.style.width = `${barW}px`;
+                boxEl.style.height = `${barH}px`;
+                boxEl.style.borderRadius = `${Math.min(cssRadius, barH / 2)}px`;
+
+                if (badgeEl) {
+                    if (by < 28) {
+                        badgeEl.classList.add("badge-below");
+                    } else {
+                        badgeEl.classList.remove("badge-below");
+                    }
+                }
+            }
+
+            if (isHorizontal) {
+                if (target === "both" || target === "left") {
+                    positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                } else {
+                    censorBoxLeft.style.display = "none";
+                }
+
+                if (target === "both" || target === "right") {
+                    positionBox(censorBoxRight, censorBadgeRight, frameW / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
+                } else {
+                    censorBoxRight.style.display = "none";
+                }
+            } else {
+                if (target === "both" || target === "left") {
+                    positionBox(censorBoxLeft, censorBadgeLeft, 0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
+                } else {
+                    censorBoxLeft.style.display = "none";
+                }
+
+                if (target === "both" || target === "right") {
+                    positionBox(censorBoxRight, censorBadgeRight, 0, frameH / 2, rightXPct, rightYPct, rightWPct, rightHPct);
+                } else {
+                    censorBoxRight.style.display = "none";
+                }
+            }
+        }
+
+        function setupCensorBoxDrag(boxEl, side) {
+            if (!boxEl) return;
+            const isLeft = side === "left";
+            const badgeEl = isLeft ? censorBadgeLeft : censorBadgeRight;
+
+            let isInteracting = false;
+            let actionType = "move"; // 'move' | 'resize'
+            let resizeHandle = null;
+            let startPointerX = 0;
+            let startPointerY = 0;
+
+            let startX = 0, startY = 0, startW = 0, startH = 0;
+
+            boxEl.addEventListener("pointerdown", e => {
+                if (!showCensorCheckbox.checked) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                isInteracting = true;
+                boxEl.classList.add("dragging");
+                try { boxEl.setPointerCapture(e.pointerId); } catch(err) {}
+
+                startPointerX = e.clientX;
+                startPointerY = e.clientY;
+
+                const handle = e.target.dataset.handle;
+                if (handle) {
+                    actionType = "resize";
+                    resizeHandle = handle;
+                    if (handle === "w" || handle === "e") boxEl.style.cursor = "ew-resize";
+                    else if (handle === "n" || handle === "s") boxEl.style.cursor = "ns-resize";
+                    else if (handle === "nw" || handle === "se") boxEl.style.cursor = "nwse-resize";
+                    else if (handle === "ne" || handle === "sw") boxEl.style.cursor = "nesw-resize";
+                } else {
+                    actionType = "move";
+                    resizeHandle = null;
+                    boxEl.style.cursor = "grabbing";
+                }
+
+                const isSeparate = censorSeparateCheckbox.checked;
+                if (isSeparate) {
+                    if (isLeft) {
+                        startX = parseFloat(censorLeftXSlider.value);
+                        startY = parseFloat(censorLeftYSlider.value);
+                        startW = parseFloat(censorLeftWSlider.value);
+                        startH = parseFloat(censorLeftHSlider.value);
+                    } else {
+                        startX = parseFloat(censorRightXSlider.value);
+                        startY = parseFloat(censorRightYSlider.value);
+                        startW = parseFloat(censorRightWSlider.value);
+                        startH = parseFloat(censorRightHSlider.value);
+                    }
+                } else {
+                    startX = parseFloat(censorXSlider.value);
+                    startY = parseFloat(censorYSlider.value);
+                    startW = parseFloat(censorWSlider.value);
+                    startH = parseFloat(censorHSlider.value);
+                }
+            });
+
+            boxEl.addEventListener("pointermove", e => {
+                if (!isInteracting) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                const dx = e.clientX - startPointerX;
+                const dy = e.clientY - startPointerY;
+
+                const frameW = canvasFrame.clientWidth;
+                const frameH = canvasFrame.clientHeight;
+                const isHorizontal = currentLayout !== "vertical";
+                const slotW = isHorizontal ? frameW / 2 : frameW;
+                const slotH = isHorizontal ? frameH : frameH / 2;
+
+                if (slotW <= 0 || slotH <= 0) return;
+
+                const isSeparate = censorSeparateCheckbox.checked;
+
+                if (actionType === "move") {
+                    const deltaXPct = (dx / slotW) * 100;
+                    const deltaYPct = (dy / slotH) * 100;
+
+                    const newX = Math.max(5, Math.min(95, startX + deltaXPct));
+                    const newY = Math.max(5, Math.min(95, startY + deltaYPct));
+
+                    if (isSeparate) {
+                        if (isLeft) {
+                            censorLeftXSlider.value = newX.toFixed(1);
+                            censorLeftYSlider.value = newY.toFixed(1);
+                        } else {
+                            censorRightXSlider.value = newX.toFixed(1);
+                            censorRightYSlider.value = newY.toFixed(1);
+                        }
+                    } else {
+                        censorXSlider.value = newX.toFixed(1);
+                        censorYSlider.value = newY.toFixed(1);
+                    }
+
+                    if (badgeEl) {
+                        badgeEl.textContent = `📍 X: ${newX.toFixed(1)}% | Y: ${newY.toFixed(1)}%`;
+                    }
+                } else if (actionType === "resize") {
+                    let newW = startW;
+                    let newH = startH;
+
+                    if (resizeHandle.includes("e")) {
+                        newW = Math.max(10, Math.min(95, startW + (dx / slotW) * 100 * 2));
+                    } else if (resizeHandle.includes("w")) {
+                        newW = Math.max(10, Math.min(95, startW - (dx / slotW) * 100 * 2));
+                    }
+
+                    if (resizeHandle.includes("s")) {
+                        newH = Math.max(2, Math.min(30, startH + (dy / slotH) * 100 * 2));
+                    } else if (resizeHandle.includes("n")) {
+                        newH = Math.max(2, Math.min(30, startH - (dy / slotH) * 100 * 2));
+                    }
+
+                    if (isSeparate) {
+                        if (isLeft) {
+                            censorLeftWSlider.value = Math.round(newW);
+                            censorLeftHSlider.value = parseFloat(newH.toFixed(1));
+                        } else {
+                            censorRightWSlider.value = Math.round(newW);
+                            censorRightHSlider.value = parseFloat(newH.toFixed(1));
+                        }
+                    } else {
+                        censorWSlider.value = Math.round(newW);
+                        censorHSlider.value = parseFloat(newH.toFixed(1));
+                    }
+
+                    if (badgeEl) {
+                        badgeEl.textContent = `↔️ กว้าง: ${Math.round(newW)}% | ↕️ สูง: ${newH.toFixed(1)}%`;
+                    }
+                }
+
+                updateCensorUI();
+            });
+
+            const endInteraction = (e) => {
+                if (!isInteracting) return;
+                isInteracting = false;
+                boxEl.classList.remove("dragging");
+                boxEl.style.cursor = "";
+                try { boxEl.releasePointerCapture(e.pointerId); } catch(err) {}
+
+                if (badgeEl) {
+                    badgeEl.textContent = "↔️ ลากเพื่อเลื่อน";
+                }
+
+                updateCensorUI();
+            };
+
+            boxEl.addEventListener("pointerup", endInteraction);
+            boxEl.addEventListener("pointercancel", endInteraction);
+        }
+
+        setupCensorBoxDrag(censorBoxLeft, "left");
+        setupCensorBoxDrag(censorBoxRight, "right");
+        updateCensorBoxPositions();
 
         // --- ZOOM SLIDER & BUTTONS ---
         function updateZoomUI(type) {
