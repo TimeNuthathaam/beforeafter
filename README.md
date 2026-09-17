@@ -30,10 +30,15 @@ A browser-based tool for comparing and combining before/after images. No server 
   - Gap between images
   - Export format (`PNG`, `JPEG`, `WEBP`) and quality
 - 🏷️ **de Pry Clinic Logo Stamp**:
-  - เลือกสีโลโก้ได้ทั้ง **สีชมพู (Pink)** และ **สีขาว (White)** (หรือเลือกไม่ใส่ได้)
+  - ตัวเลือกโลโก้: **ป้ายคลินิก (Badge ขาว)**, **สีชมพู (Pink)** และ **สีขาว (White)**
   - เลือกตำแหน่งจัดวาง: บนขวา (Top-Right), บนซ้าย, ล่างขวา, ล่างซ้าย, บนกลาง
-  - ปรับขนาดโลโก้ได้ตั้งแต่ 5% ถึง 22% ของความกว้างภาพ
-  - แสดงผลสดบนหน้าจอแบบเรียลไทม์ และประทับลงภาพจริงความละเอียดสูงพร้อม Drop Shadow
+  - ปรับขนาดโลโก้ได้ตั้งแต่ 5% ถึง 22%
+- 📝 **Case Information & Text Overlays**:
+  - ชื่อโปรแกรมด้านบน (Treatment Headline Pill แคปซูลขาวโค้งมน)
+  - วันที่ Before/After พร้อม Drop shadow
+  - ข้อความกำกับทางกฎหมายด้านล่าง (Thai Legal Disclaimers)
+  - ลายน้ำทแยงมุม `de Pry clinic` (Watermark พร้อมตัวปรับความจาง)
+  - 📏 **ตัวปรับขนาดตัวหนังสือด้านล่าง (Default: กะทัดรัด ไม่บังรูปเคส)**: ย่อขนาดให้อยู่ชิดขอบล่าง ประหยัดพื้นที่รูปเคส 1:1 พร้อมปุ่มลัด (กะทัดรัด / ปานกลาง / ใหญ่) และฟังก์ชัน auto-shrink ป้องกันข้อความล้น
 - 💾 Download high-resolution combined or diff images
 - 📋 One-click copy image to clipboard
 - ⛶ Fullscreen lightbox preview & result zoom
