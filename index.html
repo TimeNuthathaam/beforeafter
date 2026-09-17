@@ -851,6 +851,20 @@
                 </div>
             </div>
 
+            <!-- Bottom Text Sizing Controls (Dates & Disclaimers) -->
+            <div class="control-row" style="background: #f8fafc; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border); margin-top: 4px;">
+                <div class="control-item" style="flex: 1; min-width: 260px;">
+                    <label for="bottomTextSizeSlider">📏 ขนาดตัวหนังสือด้านล่าง (Default กะทัดรัด ไม่บังรูป):</label>
+                    <input type="range" min="4.5" max="14" value="7.0" step="0.5" id="bottomTextSizeSlider">
+                    <span id="bottomTextSizeVal" class="val-badge" style="color: var(--primary); font-weight: 700;">7 (กะทัดรัด)</span>
+                </div>
+                <div class="control-item" style="gap: 6px;">
+                    <button type="button" class="btn-preset active" id="btnSizeCompact" style="font-size: 11px;">กะทัดรัด (แนะนำ)</button>
+                    <button type="button" class="btn-preset" id="btnSizeMedium" style="font-size: 11px; background: white; color: var(--text); border-color: var(--border);">ปานกลาง</button>
+                    <button type="button" class="btn-preset" id="btnSizeLarge" style="font-size: 11px; background: white; color: var(--text); border-color: var(--border);">ใหญ่</button>
+                </div>
+            </div>
+
             <!-- Watermark -->
             <div class="control-row">
                 <div class="control-item">
@@ -1133,6 +1147,11 @@
         const showDisclaimersCheckbox = document.getElementById("showDisclaimersCheckbox");
         const discLeftInput = document.getElementById("discLeftInput");
         const discRightInput = document.getElementById("discRightInput");
+        const bottomTextSizeSlider = document.getElementById("bottomTextSizeSlider");
+        const bottomTextSizeVal = document.getElementById("bottomTextSizeVal");
+        const btnSizeCompact = document.getElementById("btnSizeCompact");
+        const btnSizeMedium = document.getElementById("btnSizeMedium");
+        const btnSizeLarge = document.getElementById("btnSizeLarge");
         const showWatermarkCheckbox = document.getElementById("showWatermarkCheckbox");
         const watermarkTextInput = document.getElementById("watermarkTextInput");
         const watermarkOpacitySlider = document.getElementById("watermarkOpacitySlider");
@@ -1257,6 +1276,38 @@
             renderStageOverlays();
         });
 
+        // Bottom Text Size UI update & listeners
+        function updateBottomSizeUI(val) {
+            bottomTextSizeSlider.value = val;
+            let label = `${val}`;
+            if (val <= 7.5) label += " (กะทัดรัด)";
+            else if (val <= 10.5) label += " (ปานกลาง)";
+            else label += " (ใหญ่)";
+            bottomTextSizeVal.textContent = label;
+
+            btnSizeCompact.style.background = val <= 7.5 ? "var(--primary-light)" : "white";
+            btnSizeCompact.style.color = val <= 7.5 ? "var(--primary)" : "var(--text)";
+            btnSizeCompact.style.borderColor = val <= 7.5 ? "#bfdbfe" : "var(--border)";
+
+            btnSizeMedium.style.background = (val > 7.5 && val <= 10.5) ? "var(--primary-light)" : "white";
+            btnSizeMedium.style.color = (val > 7.5 && val <= 10.5) ? "var(--primary)" : "var(--text)";
+            btnSizeMedium.style.borderColor = (val > 7.5 && val <= 10.5) ? "#bfdbfe" : "var(--border)";
+
+            btnSizeLarge.style.background = val > 10.5 ? "var(--primary-light)" : "white";
+            btnSizeLarge.style.color = val > 10.5 ? "var(--primary)" : "var(--text)";
+            btnSizeLarge.style.borderColor = val > 10.5 ? "#bfdbfe" : "var(--border)";
+
+            renderStageOverlays();
+        }
+
+        bottomTextSizeSlider.addEventListener("input", e => {
+            updateBottomSizeUI(parseFloat(e.target.value));
+        });
+
+        btnSizeCompact.addEventListener("click", () => updateBottomSizeUI(7.0));
+        btnSizeMedium.addEventListener("click", () => updateBottomSizeUI(9.5));
+        btnSizeLarge.addEventListener("click", () => updateBottomSizeUI(13.0));
+
         // Sample Data Preset (Matches the user's reference image!)
         sampleDataBtn.addEventListener("click", () => {
             showTitleCheckbox.checked = true;
@@ -1267,6 +1318,7 @@
             showDisclaimersCheckbox.checked = true;
             discLeftInput.value = "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล";
             discRightInput.value = "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง";
+            updateBottomSizeUI(7.0);
             showWatermarkCheckbox.checked = true;
             watermarkTextInput.value = "de Pry clinic";
             watermarkOpacitySlider.value = 35;
@@ -1683,29 +1735,46 @@
                 }
             }
 
+            const bottomScale = parseFloat(bottomTextSizeSlider ? bottomTextSizeSlider.value : 7.0) || 7.0;
+            const maxBottomW = (isHorizontal ? width / 2 : width) * 0.88;
+
+            function drawDynamicBottomText(text, cx, bottomY, initialSize, weight) {
+                if (!text) return;
+                let curSize = initialSize;
+                ctx.font = `${weight} ${curSize}px 'Sarabun', sans-serif`;
+                while (curSize > 3 * S && ctx.measureText(text).width > maxBottomW) {
+                    curSize -= 0.5 * S;
+                    ctx.font = `${weight} ${curSize}px 'Sarabun', sans-serif`;
+                }
+                ctx.fillText(text, cx, bottomY);
+            }
+
+            const hasDisclaimers = showDisclaimersCheckbox.checked && (discLeftInput.value.trim() || discRightInput.value.trim());
+
             // 4. DATES (วันที่ของแต่ละฝั่ง)
             if (showDatesCheckbox.checked) {
                 const dLeft = dateLeftInput.value.trim();
                 const dRight = dateRightInput.value.trim();
-                const dateFontSize = Math.round(12.5 * S);
+                const dateFontSize = Math.round((bottomScale * 1.05) * S);
 
                 ctx.save();
-                ctx.font = `400 ${dateFontSize}px 'Sarabun', sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "bottom";
                 ctx.fillStyle = "#ffffff";
                 ctx.shadowColor = "rgba(0, 0, 0, 0.95)";
-                ctx.shadowBlur = Math.round(7 * S);
-                ctx.shadowOffsetY = Math.round(2 * S);
+                ctx.shadowBlur = Math.round(4 * S);
+                ctx.shadowOffsetY = Math.round(1.5 * S);
 
-                const hasDisclaimers = showDisclaimersCheckbox.checked && (discLeftInput.value.trim() || discRightInput.value.trim());
-                const dateY = hasDisclaimers ? height - (36 * S) : height - (16 * S);
+                const dateY = hasDisclaimers
+                    ? height - Math.round((bottomScale * 2.3) * S)
+                    : height - Math.round((bottomScale * 0.9) * S);
 
                 if (dLeft) {
-                    ctx.fillText(dLeft, leftCX, isHorizontal ? dateY : (height / 2 - 18 * S));
+                    const yPos = isHorizontal ? dateY : (hasDisclaimers ? height / 2 - Math.round((bottomScale * 2.3) * S) : height / 2 - Math.round((bottomScale * 0.9) * S));
+                    drawDynamicBottomText(dLeft, leftCX, yPos, dateFontSize, "400");
                 }
                 if (dRight) {
-                    ctx.fillText(dRight, rightCX, dateY);
+                    drawDynamicBottomText(dRight, rightCX, dateY, dateFontSize, "400");
                 }
                 ctx.restore();
             }
@@ -1714,24 +1783,24 @@
             if (showDisclaimersCheckbox.checked) {
                 const discLeft = discLeftInput.value.trim();
                 const discRight = discRightInput.value.trim();
-                const discFontSize = Math.round(13.5 * S);
+                const discFontSize = Math.round(bottomScale * S);
 
                 ctx.save();
-                ctx.font = `bold ${discFontSize}px 'Sarabun', sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "bottom";
                 ctx.fillStyle = "#ffffff";
                 ctx.shadowColor = "rgba(0, 0, 0, 0.95)";
-                ctx.shadowBlur = Math.round(7 * S);
-                ctx.shadowOffsetY = Math.round(2 * S);
+                ctx.shadowBlur = Math.round(4 * S);
+                ctx.shadowOffsetY = Math.round(1.5 * S);
 
-                const discY = height - (12 * S);
+                const discY = height - Math.round((bottomScale * 0.85) * S);
 
                 if (discLeft) {
-                    ctx.fillText(discLeft, leftCX, isHorizontal ? discY : (height / 2 - 4 * S));
+                    const yPos = isHorizontal ? discY : (height / 2 - Math.round((bottomScale * 0.85) * S));
+                    drawDynamicBottomText(discLeft, leftCX, yPos, discFontSize, "bold");
                 }
                 if (discRight) {
-                    ctx.fillText(discRight, rightCX, discY);
+                    drawDynamicBottomText(discRight, rightCX, discY, discFontSize, "bold");
                 }
                 ctx.restore();
             }
