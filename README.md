@@ -29,6 +29,11 @@ A browser-based tool for comparing and combining before/after images. No server 
   - Label size, color, and position (Top / Bottom / Hidden)
   - Gap between images
   - Export format (`PNG`, `JPEG`, `WEBP`) and quality
+- 🏷️ **de Pry Clinic Logo Stamp**:
+  - เลือกสีโลโก้ได้ทั้ง **สีชมพู (Pink)** และ **สีขาว (White)** (หรือเลือกไม่ใส่ได้)
+  - เลือกตำแหน่งจัดวาง: บนขวา (Top-Right), บนซ้าย, ล่างขวา, ล่างซ้าย, บนกลาง
+  - ปรับขนาดโลโก้ได้ตั้งแต่ 5% ถึง 22% ของความกว้างภาพ
+  - แสดงผลสดบนหน้าจอแบบเรียลไทม์ และประทับลงภาพจริงความละเอียดสูงพร้อม Drop Shadow
 - 💾 Download high-resolution combined or diff images
 - 📋 One-click copy image to clipboard
 - ⛶ Fullscreen lightbox preview & result zoom

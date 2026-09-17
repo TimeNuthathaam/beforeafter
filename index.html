@@ -121,6 +121,49 @@
             font-weight: 400;
         }
 
+        /* Logo Stamp Section */
+        .logo-section {
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .logo-pill {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 7px 16px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-pill:hover {
+            background: #f1f5f9;
+            border-color: var(--border-hover);
+        }
+        .logo-pill.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.25);
+        }
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
         /* Control Rows & Groups */
         .control-row {
             display: flex;
@@ -448,7 +491,21 @@
             border-color: #ef4444;
         }
 
-        /* Diff Canvas (replaces side-by-side during diff mode) */
+        /* de Pry Clinic Logo Overlay on Stage */
+        .canvas-logo-overlay {
+            position: absolute;
+            z-index: 20;
+            pointer-events: none;
+            transition: all 0.15s ease;
+        }
+        .canvas-logo-overlay img {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
+        }
+
+        /* Diff Canvas */
         #diffStageCanvas {
             display: none;
             width: 100%;
@@ -741,7 +798,7 @@
 <body>
     <header class="app-header">
         <h1>Before/After Image Combiner</h1>
-        <p class="subtitle">รวมภาพแบบต่อกันซ้าย-ขวาในเฟรมเดียว (1:1, 16:9, 9:16, 4:5, 5:4) พร้อมซูมและเลื่อนจัดตำแหน่งได้อย่างอิสระ</p>
+        <p class="subtitle">รวมภาพแบบต่อกันซ้าย-ขวาในเฟรมเดียว (1:1, 16:9, 9:16, 4:5, 5:4) พร้อมแปะโลโก้ de Pry และซูมจัดตำแหน่งได้อย่างอิสระ</p>
     </header>
 
     <!-- Controls Panel -->
@@ -776,6 +833,44 @@
                     <span>Auto</span>
                     <span class="ratio-desc">(ขนาดตามรูป)</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- de Pry Clinic Logo Stamp Section -->
+        <div class="logo-section">
+            <div class="section-label">
+                <span>✨ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
+            </div>
+            <div class="logo-pill-group" id="logoPills">
+                <button type="button" class="logo-pill active" data-color="pink">
+                    <span class="logo-dot" style="background:#e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
+                    <span>โลโก้สีชมพู (Pink Logo)</span>
+                </button>
+                <button type="button" class="logo-pill" data-color="white">
+                    <span class="logo-dot" style="background:#ffffff; border:1px solid #94a3b8;"></span>
+                    <span>โลโก้สีขาว (White Logo)</span>
+                </button>
+                <button type="button" class="logo-pill" data-color="none">
+                    <span>✕ ไม่ใส่โลโก้ (None)</span>
+                </button>
+            </div>
+
+            <div class="control-row" style="margin-top: 12px; margin-bottom: 0;">
+                <div class="control-item">
+                    <label for="logoPosSelect">ตำแหน่งโลโก้:</label>
+                    <select id="logoPosSelect">
+                        <option value="top-right">บนขวา (Top-Right - มาตรฐานคลินิก)</option>
+                        <option value="top-left">บนซ้าย (Top-Left)</option>
+                        <option value="bottom-right">ล่างขวา (Bottom-Right)</option>
+                        <option value="bottom-left">ล่างซ้าย (Bottom-Left)</option>
+                        <option value="top-center">บนตรงกลาง (Top-Center)</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="logoSizeControl">ขนาดโลโก้:</label>
+                    <input type="range" min="5" max="22" value="9" id="logoSizeControl">
+                    <span id="logoSizeVal" class="val-badge">9%</span>
+                </div>
             </div>
         </div>
 
@@ -930,6 +1025,11 @@
                     </div>
                 </div>
 
+                <!-- de Pry Clinic Logo Overlay -->
+                <div class="canvas-logo-overlay" id="canvasLogoOverlay">
+                    <img id="canvasLogoImg" src="" alt="de Pry Clinic Logo">
+                </div>
+
                 <!-- Diff Image (shown when diff mode is active) -->
                 <canvas id="diffStageCanvas"></canvas>
             </div>
@@ -990,12 +1090,26 @@
     </div>
 
     <script>
+        // Embed canonical de Pry Clinic logos (from $deprylogo)
+        const DEPRY_LOGOS = {
+            pink: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANsAAADOCAYAAAC3mHdoAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nO3dd3wcxd0/8O/M1qs6nXpv7r03bGzA2BATML3FOAYTCAECJJCQUJKHkgR4CEkggScEQ6j5EaohlIAptnFv2Jblqt6vt+0zvz9cEEaSJVs6yfK8X/Cyfbe3O3e3n5292dkZRCkFhmF6H+7rAjDMqYKFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShIWNYZKEhY1hkoSFjWGShO/rApxszluwgM/LzRNkJDpE4G02nc/iCbYBADq8DOKxwTnFqGbpWsJQ1daoPxxMRGLvvPMOSXZ5R40ahUpKStBQb/Egj+RKMZpjOdQkgtEQLgbL4olmOI5+DeI4AxCyhDxPJeKwyXvtrSGcaPSh6IGKigpr/fr1SX8fAwELWzcsWbIETZs2jRs3ZqzkRnaPA8melLg0TDI5z6FFEAAAlvmEmOFoierxeFCNRPY0V5p1wSblhhtuoLquw7Jly5I23WtJSQmaMWMGnls4tSDflZWr7PaNIqphU7c3TKO6KZGYkv6dFwlCAnHYtI3NX40ErEnF3n31OMjv51pqDi3BwnYcEJvmt2OLFy/GBRm5zvNKTj8XDCLj6th4FIyVQHN4NAbgESAOEySgo0/HEaIII4sApYQSYoliM+H5AMp17wEe6/tHaI+qhm5u31feWlVVRd98880e+xKGDBmCFi1axOXpKZPKlLR5QkAv4aJmrqhoZZxluYlBRKAUUd2SgFIElLbzUwJRQABI5FUAoIjHpoVR3MQQ0WWuXnMI+5tHwLJEKtr96/vuiTW3tLDwdQGr2dpw25yy1+FxUs2wUYvwi67+gZArpjpzBE8Zpaas6mqJmYBiI6wXwsFaDFMA6CwpCAAEGYtI4t2ixhmIcHquYBukgm4GxFSPKUVIoT3DRAKvIoEzAvFQLKLE1O6UOz891yXwPLYiaurgQYNwnpAq5lJ3Wa7lKTGscImZMHKsqJZtmd89ZWwfPfifqguH/gUIYaeA+VSZkwVe8hBORGWKAKRATosW2jNMJAoJAsSqDTW1dqfspxJWs7WxeMZFM+87/5YLE5sqz7J80Xyqqx6glOvVjWKsI0GKSsNy14lF6RX/8+5f3nrhqzdXdWcVXz729jUl2YWewD/X/YyahkzVRGZvFbc9SBJi8uiyj0I03vi8sfLWp59+mu1U7TilwzZj3JSUsYnsH1DTlMHQnWMLhhfOHjpluNEQKiEJzQ2WKUNvt9giZAHmND7dVc957L4vdq/fta12V404veQNbBcjTzz/VM3RL5k9aPKosXnDSoymQBlVdPcPz758XKozRVa21c2ghPDQ5Rqsh3BY57O8+1Sqx7aSmg9a/X6ltrEpsap1xxfbQ5VfJ7Us/dgpG7alS5eiFFMuXOwb9wFRlVSaiGf3dZnact1x5pVcuqP+oZf+uOrZZ5/91pd07zk3XXHNlAvOVLbun2f5o/mHfnehDlaVdEiUQtjuaP19+WsPvFK14sW+Lk9/ccr9Zrvsssv4srJSdHnhWVdzipVhVTYXgEWEvi7X0RJvbbsTiZxyeclZ/3h40S/rfvXi7/87esQo+bYbbsk4vXT0ZGXL/nOsSCK9/QaOLqMAQIDjdcQLypEHDc0JhIjHvVLDcFixqECNJNew/dwpE7b0tDROlmR04w+uzRleOtRW2pw+hYCWEjPqnMd4KQWMTUCIIIlXCaKayRHFMi1qEQvi8TiYhtnuCyVJApvdBpIgCiIncFS3ZEoB04TmPlZ5rUr/WACgpWUTv27h0tJy5dQ9UydMccwaOjFHq9xdYvprCzpdAUIWIGQhkdeQgHXF0hWLWmYoGGqzDFAARBDPq4iI8cMPE11NAcuSAAAwRmB3OEASRM4m2QQwiUB1S6KGKQOhR+8/FAARELECdi4CAtKO9T5PJafMaeSzf3o65/QZsxzq0+uetXa1zO7yCzHWOY+3EtmEuGNK8eetbmVNXXrs/bq6OrO11UcefPBBq6OXTps2DS1YsABPHzpx0MjCoXnqhqYzqWo6wm+tua1H3lQnkM3WyrndDbaxuWulQRnl/21av7xeaa259957OyxvR5YuXYqmDp9YsGDq3GF6ZWiovqN1srqj8kwrGM07aqsWEqQImp73Kj5/0KO//+Mj/pdffzXaU+/pZDfga7bc7By+tLhU/On5S4ZbewJZNG6kdPW1yGHzUwFHQpl0lQ6KWlOxblfYrjX53Krl8/lIOBzu9Ei1du1aumjRIsopNNZc3+TX9wT3UN2Spw3L3kBNwptNsTxqWSJVNE9n6+kWjA0kCnHNxVUqXnNT0L9/VzS+p3p7cE/Cp4WO68j67LPP0p9ef7Nio4LPFkOyQ0dSmpsvlIUU3fRHcw+dhmPgsSEUpO6u10IN+9esTjQ0NbZf5Z+iBnzNdtUlV6T88qd3ptPX9jwE+8NTSCKWBaZp78prxSFFKzQ3t2/jqNCtLS0t9J577tF7okwtayvnWxE1JfRG+WIrGs8wqhom98R6AQCQLIX49LS9tTnav/eWKU+88cYb5hdffNGjF52XLl2KLss5Y2mZI3dYbMX2q0lcTQVKRJxib0m9Zua9yz58bcf9LzzyVU9ucyAYsGErKipC5y1YIIxE2fNn4KLFtDIyAaJGOpiGDeh3fmsAAICQ790tDcnZVEt822Kg+t/46D91gUQ04k/V16mqCps3b+6RnfaKBZfkUsMS9epQWUFOrv3c2WdkpRPXEA+1F2h7GicYdYEh3Vkf5/VUAYcNfHb+3/dUHoj9841/1cTtVnXEZZWvW7euV3p3zBt7+mAXb08xm4JlafYUz92X3zLTr0QC/7vxtaf21VcGt+zbwS5uH2XAnkZ6vV40Z/YcPmVreAj9ovHirryGS3U2y8PyNsQt/b0g4JoXHl7eIzXZ0V57/98Nh/5aNX78OHzaiO8LaVb6LJmkjjVbo/ndDRt22PxIEFQ8peDNVrM68XbVysZeKPa3fLzty72H/rqxJLsw5bfD8gS9yQq9/sXyPb297ZPVgK3ZZg2dPOjpxQ/8wKpsnWLtrD+3s2WRIEaQbAu879v46t/r//uIRo14Q3Ojkayy5uRko9HDRtvKikqk0yL5d42OZ1xJYtFcoF27JBFZMmwe8Ug1P7zjxgOKqpCW1pZuN4KcCIEXcH56jsswTVLna2ANIh0YsDUbx3HI7nBgM8MIGCX69vaWsSghMTMRC0SjkaZAvX+Hv3JXZVNNqL1le1NjYxMFgAQAJO48bdEuzQyvGiVnnSUh0UF13XWs11Mn5yNuvqm6tjppB4i2DNMgABDui22fTAZu2FxS2DkudwNA7gaAEf9qbxnF1JRKf8WW9z54X/m/D/6RuC7ZhWzHo6tf/CcA/PP9+Y+8WeRMKzQaGyce6zUccCJGnJSE4jEnYMCGra65PvH3N16o7GwZk5hGXbxZ2bGrvN81UVvDXSsMb4oXBUPFQCyB6nqHF8LtrXQs6CQTAJYnsYhMNw3YsO2u2hcDgB19XY7jZUzxvmrkZ/K2jYFLia45Owubq47MxkEaufnmm9978sknB+aP8AFgwDaQnOxysnMwz/MIh/S8Ca7iOfeVXPhCR8siWYwCRkQdnvXSmupt5be/+4e/JrOsTNcM2JrtZNfY1Hj4+ljNaalDWzpblqoHG1E8yJ7jAKnXm/2Z48NG1zoJoKHpX3J/OHsIvnbCtYA5DQC127SvbKy4SN9be1qyy8d0DQvbSSASi5pbyreFKlvqmoW8tArslAMdLZuekY7OPfccbsSI4ey77WfYF3IS+HrH1/rna1f6ttfsrZUG5W7gUhwdnlbm5+WjH/7wh+LUqVN7dzgHpttY2E4Sy5Ytoyt3rKv7zNj5fB0J7OpoOZvO5RQ3uy7zRqXxySwfc2wsbCeRj1etCO4hjWtCNN5hI4hocinpUXmSQxUKk1k25thY2E4yjz32GNm8ZUuH12ussOJNbKyZbdQEByWzXMyxsab/kxDiOQ1JYoQahv3ooQkoIRzVdQe1rOMeQyRZRo4cgTHCgDkOY4o4DIjzhQNKdXX1gLz4y8J2EsJOZxOfkV5h+vxDqHrUXd6mabeCwVKSSKT1UfG6ZPz4cfi+++4TZVHiHHaHKBHeJQJvX77yo8rbbrvNeOKJJwbcKMssbCch7JJCfKar1oqEC6l68oypc8Xll4tprlRbpuEece2EhVmZqyIzOIREHgdsPMUCBsRPloo+N2WamD9//r8++uijAVXDsbCdhLBdjHFeRysSuF65ubW3nDnnDLE4u9AxTM0epdcEhsQ+3LmEWqbcdlDZYTNGCFiWIpMnT/5/N910E/z1r38dMIFjYTsJySWp+13TCzmjsm6a5Y/0m1bHrKws9Mjvfu/wYEd2BvYUx1fuX6Bub5xKDc1NiSWOzszEAleBg3Sfg5qH7mSg9FuDy6o766chjjPyz8vnRVGkANAn9+j1Bha2k5HAqcjGRYFrv9tWMmRlZSKMMfCY5xAgjHXqKs7I4wts6dke5MjJwCklcVt4kCrrgymnuYESEaIEAHQg0HGFTDXTBpiIgiAjnh9Yu+fAejenCB1MNQF6xAKa1KP+kiVLkM1mA7fbjR588EHB7XZzBd6cNMnkvam7rMusmOqJ/XX7D4FYvI8e/4jKAxULWycWnrEgT6Cc3aiPlAAhmCq6kxIiADmxZnUkySHAiGKJV4DDBraLMSRwOuKxiUWsI54zACNycMTibxCglgmWdtHc7zs5QBIC6LBL1pCiMtcV516cf/jfVCcCJZSjltXxd25RDijFxCACEIppwjgyWnROdjY/sqiYF3UBy1GJy2jgOFvAwoIv5uQszmG2klyiGTbssPkBA0UcoohDJmBMEIcMwIhwLimMeGxxdkEzQ4k0taJpQnsfT/c+zZMHC1s7LrvsMlRaWooe+sk9Y1yWlBv7cO8V1LQEszlUSnXdSXU19UTWz6dnlgOHDD7N2YTsQlTITanmXFKIc4hxzi2FOKcYQyKnIYQOh40CABhgqjGsBWTCe0Xg3RhQh2GbPfG09AvOv/lIly0zormoQUQr0e6YJhQAgKiGDSzKW1HNRU0img2RksMLEM2QqWo4qGLxNEIkaAUAsADADwBw+MSQ8OmeaiTxCc4hxZDEJ5DI6cgmRBGPTXmQdxdnFxNSrjuQ2Fk/qYOwARwMHILOp7476bCwtTEnffT8S3Jn/PCyjMEOe1zmjZrtGRGKJcsXz6GUYqqZNiCkw88MyULUNr7sw5igN1Q7gp/5/QGrsanRqti1C6prao7sOFgUYwCIIpHTgMMmkngV8dhAHLYO/okswKjtdSYKAEARJRYQY/G8K0afM/mMHGp2PHfch1992vz2qr+sO7IC82CtRa0Oy0+BUA4oRdSk/JH3exihmFqEA0ox0A57HlHAiCCMCHDYRBhZgBABDlmAEOXsQiwrK5t79P7fFem61u4PN87rbEA8r1ZW7jaCwWBHb++kxMLWRo6cWjAzbcRcqmluUIhIg4FuNYUhjjOF7NRKKib2Rj3Kx60cNWtiCfOVbf/t0SP0A9fdbcE4KnQ2g01tU33i08ovOr3ptC8U5xfJpmXmW5bV7kVrLAlxJApKLBaj8Xic1WwDFT8l713brbO3aS9v/x+yLzCJ6mrqsWYeFcvyvuLczhbneYNfrA43No69YvaaUgCY1IvltEJKql4XKiJqm5rnJIEsEMUWaxgNkfz2nuczXQ3YLkWeeIj1IBnQGpob9S/XrQoZtVUbiD8amugqPkvmeCdY1pGdGrttfj7N2RAx4uGEpcYawwfKE0EzZNvY3NQSD4ROu+LsXi+nFVNTjeZIPtVMudc31sNKi4oFvS5UbPrjWe09jzxiCzilDm+OPZmxsLXx6erPQwAQgl/AfQAAy2f9z6cFNvcgGoseuXAslWVtdZ816rXq0J51+2J1u55++nmrvLw8qac7epV/WMKqPIeoCW8yt3ui7r77bu6S8y50Rz/ZcyHRtXbnxUPDUtdxaY76ZJctGVjYOjMr92Ukpw2mH+7+JSBkIUkOrtvz9b4vq5Z/1aqFmsNGLOlBAwAAy7QRXXUDbaexAyETcUICcVy/6zRZkl2YVmDPyLRi9dlArHaHVg/TeDMQq7402YVLAha2TqDRaZ+AnF4NB8NGkChFyqv3N/xj17/K+7Jc1LJEMI32Z0xF2EK8oADuf/0ms71Z7mxbWipV93V4R0KcKkEC1J/MciULC1snrrv1hnqPK6Vl/ow5JbFYHD766CMjZqmxP/RRecaMGY1vu+02ce7cs3jYqbS7jJCTUuU+e8zz9hWVm5JcvGNCr+z+A5LTBnV2KnD7nT8PN5ihQFNTU9LKlSwsbJ1oPjgbjAUAVX1cFAAAkEWZL8jMcztsdSJA+2GjPFJJilBPbVzSJwg5prCaBZrWbsMIHLqW6PP7SJPiG3AtkQAsbCcVB5Eyhuk5c2NWsEgFX7vLqILpD6aG/xu0qfF2F+hDRIlnUrB1HLZveswMSCxsJ4GS7MKUC2d+b+j5I2eXJr7au9BsDHXYflDXUG++++La2K6Kin7zm+2aMy8Z65XcaRc6iu3QQZ0lDsrcKuR79+JdYiy5pUseFraTQHF2geeOi2+Yqle1Dg8v37yws2Xr6+utZZ+80G922CVLlqBFZ148drC7YEj4vY02ElPbXU4alLXVPrX0A/SC0G/K3tNY2Pq5W2+9lfvetDnF4Xc33UgUvf0WyENSL536uHMXVCSrbMdy/dgLLl9YNvPMlM2BcVEU8XZW/n++/9qBVcurVzX7W9r/MToAsLD1c5NGjPe66rVs/WvfiA4XwtgAAEpKPGto0NlvmvHy+dShxYr7LBKP5ZimYW93IYRMwNjcW10ZXFG/qt+UvTewsPVT1113HUpNTUU35Z5/u6EFSxPQceMil+KpRByvr4mXL9+l1vR5S978+fPxNddcw8+cNCmTbA+WdbYsdjpaOa+nCjfb+12n6Z42YMPmldyekd6S4Z0uxCGTz3A2hpRIbEvF1/2qqTw3YZuVCqLDwMFSKxDL6WzZiJduIiIJb9u2jRw4cKDPwmYTZHFy/sjh40eOdjmrlVQhanY4PgqShDiX5myIcGZlAPt2RJA6oGs1gAE8GeKsnLHT/zbrZ090tgx2imHnOcNeW1u1tfyDXV+sW7ZsWb/4MJYuXYqu3ldU7jHEQUDpMQ+IX1+UMkxzc/t+9KMf9dmYJAAARam5WR//8OknjKbAYKO6qdO5wPnc1L2uM0a/sq55x7oPa9d82F8++940YGs2SghHVMNOTcNOda29u5MBRTk99vH2xflubvPCQWekX3/eosq/v/fizmSXta0fff+aEefPOLvYUd3sBN3s0vDww13FEyBFyrr88stXNjY2wpdffpnUHTfNm4ZvveHm1FuvvTFH21s/lSodT0l8WALrLU321uXbfHtbToWgAQzgsAGhGExLoprupIqS0d4iFIBqkXhW6vA8nD9iaMtW1zYNAPo0bHnOjJxxGUNHBbmATKBrYcuR0op4m8M2adKk1RUVFRSSPJyAw27H5597nhN8iRRrzZqSY78CQMdWtEWMba+LNfdpbZxMA/Y00sZJcoacknVe+vhrrs874z44ODjO0YPJUAAAJPIqkoV4VFeDQTXRZD97yKt8vmff1fdcv6quuaFXm6Knj5mc/thtD0xMrKmar+5snJwq27NcopxKYmoqkM5vXD0Mu20+xGErqsejkOncQ6cWv/TvL5fvfuLfz2zurXI/9IvfFE4ZN8lpfVK3mIuauemKNRMsykNIbfemUAAAEMQIl2pvdP1oyi/XbN/YfNUvfrSmt8rXHw3Ymk2xNBUAqq8efGalkO/dZ/qi+VT9Tk95BABAddNGddPm4HiHU/J6bNQ1gTccaZOGjd0zbviYwNZdX0d7smyDBg1CHMY41e5xjSsenpdnOKYq2D1Gk7Sh1DCcRFW6dQc2iSjpAAB2gCxe4Tin6Zg0LKWAmzFiUrPB06jFEWX//v1mOBI5oSNrWVkZsomy4JQd8u0Lrx2drztyCE4ZS0HNNPzNxcd6vVCYustw89Xra3aWb6/b2++6k/W2AVuzHXbtOVeOeWDxL04Pvbvxx3p1J9eq2uG648yra1XfvjN+8L31PVmmxx9/XHBIdnneyFkTjd0tU+IvrOvxGwlsYwq/cM0e8UYgRdsccxp777jr56E1a9cedxeumTNnogsuuIAblF2cNb5kVHH0ubV/MHe3TD00bESXhp/z3nvOpbWqb9/MC+duPd5ynMwGbM12WHn1Ht9zH766LV2Bl2UPZJfGXd9zm2IhUNLuzYtt6Vtq50lGfMKVOTOmAiAKCBEuxd7KpbtqOYcYwzKvRpDSYoClaJpKDx+4BE7g3bLTwRMs8QTbjeZYnhlMZJBYIg0I5RYuvECUeI3XwpUFVku0+FjlwG6bTx6cvZWahCeqYTObw0VWKJ7d2WtMXzQvsa36dGIzSznRapkDpcqVOTMO/j7iOINLcTYgDptIFhTAyEJtRvOiqmmjFuFNX7gQKCCgljC7tBQV7CfI1Rp2q/UHvCSQyDl66PCjIUGIIV5QYFDKRpQitr6x4r0DNcGm1pkXzj3WWx6QBnzN1taSJUvQ+Q1FbxYnXPPA6qBHQ8coYM4Qy7I22cYWrxBzXHVCmt1XhVs3xZDqCwQCFiEH91eX5LCXpBXkSCbncRhiVmx9zRy1onW8Xtc0CkxL7u4gr2Jp5nbvZVOfIIohG75EZmLjvnO03Q1Tu1n+I5AoxKVBhSuRxCtcmqMFeKxj8ZubTS1/IpNqpk3ZemA+pRSB1Xk3sY5gl6uOszt86JKyh1Cpe+u5l32/urq2ZsCM3d9dp1TYAABeuP+p008bMzkn9tS6J4ASjmrtt1S243C1pWJJUBCHTeCQZYKlEaCWBUg9vAwGxAsI2REARhRxVDVtRLckME0JvhmAtEuQ7GjaHK/88oHaN67PzclBZ5w+RxhX5/71oFbHD6hxaAz97iNIFBRAQAFjCxBQ1Gb0ZXpoZGSqmfYjb+k4GHMLHzYnZr38h78+Xr+1fHviVA4awClwGnk0Yuf8XJqDIoxN2r2+FgcDYlg2Ynwz2haCg82cHOaVI/djUYIpseSeOIwhjE1FU7XKhuoIAMDNN9+MNWpPIIwtihA9zkZ+TPVvpmkC6J1rBcTGhUiqUN8c9sera2vMXtjESeWUq9naKsktcq18+r0LlG0N0xMrD3yf6toJDy1+opAoB5EoxT6fGpmTsJPqu+++u8PrUFdffTUeNGgQmr8j+z2nJhRZAV/n3dN6DwXM6SRNrtR/Nn7m62/8W3n8T08k+qgs/dYpV7O1FYlH9efee6XCrA9rWo3PV1pYaB89dpjbqYpFgoWd2r6mCVTv3YFQsVMOioXp5QnRaNIEy799V0XkQE1NYh9Ww7rQed27e/duGggEaKTR/a5k4FSSiGflZeXIc6efkU6ao8VmTWjEweHSj93lqxsoAFCxOGMHdtkCUVmriiRi2seffhKHsBAw39ivbNm29ZSvxdpzSofNHw5oALDx0P+vLzz/Arl0/lyHx++c59DEAr3OP7S3w8Z57C2OaUOWx9zxr+JOrfyDyuXxtyveaf8Oy6Ns3Ljx8GnJ3w4/NmfKLO/5C24eo62v/Z5VHy+hYNiAdDJzTfdRQIjIowpWioXpu/ze0HuNzbXhR/7+Tr/qyN0fndKnkUcrLCzkhg0Zyjs0IZcn2HH7vB98PxU78rQvqy8CQjiqJDJ7YjvymJKPQUAaLXTs2Ntc0/DSmvc/VwWzVeOtUMWe3WZNTc1xd2HKzsgSZ06Y5h2WWVwwpWjksAzJk+sRHGnWbv9UGtIyTV+kEChFQLpwEEHIAIQtZLMFhRx3tVSavisGii8E8fr3tq3aVO1v9MUlozamxI0vV63sN8Mw9FendM12tEM7uQUAlQAAn730H5voyCw01jWfRS1L6KmwiQXpu6iEY3Sc9+PW9VWB11e/t6Mn1gsA0NTarANA09lnn906eO6Er1Nd3jLRnpFnhIiXkBixAvFsSgkGAl0IGyaAsYklOSxkph6wjcz/Kk4j1QoEdn3xzibfhi2bulQDMwexmu0EXX/99dzw4cOx0+lEHMchAIBYLEZqa2utzZs30xUrVrAPmAEAVrOdsMbGRioIArHb7RhjTAEAFEWhLS0tLGjMt7CajWGS5Lh6BjAM030sbAyTJCxsDJMkLGwMkyQsbAyTJCxsDJMkLGwMkyQsbAyTJCxsDJMkLGwMkyQsbAyTJCxsDJMkLGwMkyQsbAyTJCxsDJMkLGwMkyQsbAyTJCxsDJMkLGwMkyR9OuDPKw/830QrqqVoVcGhRDNlElbTjzzJIQ0h+PaIwBQQUMpRChgocICAAAKKeM4EhCiX5mhGGFmcWwpqohUMu42dq9evSbzz4Xux4y1jtjdTfvSG+6dQ3ZLVvb6RVLdsVP32OPnHgZoSBJtHcc/sqzxgvfrmv74zu+lD5/70qixnWorZGut4Js9D68J2MQEYEewUw9TB+c1829bP1q8M/b8P3mzpSmHOHjOr9OqZC8ca9eFiktBd1CICkO8ciOmRPxEAtosK4rEFEh+zRAi3FpPlgUDA+uNf/9zlz/q6665Duby3aJCQM9JojJSY/kRO2+21KEH/fev+/seurg8AYHTekLzbzlw8zwoq6SSme/hMZy2ShVhDrvo2AMC9v//tce8LJ6pPwza4sMzJJYhHtps5ENO8pCY89vBzNEWsAZGLmaYJhwclQgAIKPCIIg4BEjiEEUYYIw5ThBBFTrEAccjiPHJAk6xWX6qmhet9wfzU7CbKI4ViMAOhoKVqapdHOZIEkWvdx68AABvmSURBVBs/dHQK6MSGxVg+DatZ1BcvOvw8tkthxOOuDVBKD07OYUUVr2FHjVVj5OcBULuvnThoTGahNzeNVLTOOPg6ygFCBDA2sMirSDi0TQqAZEEHBBTJfJy4+Baj1Kb5G1tq8jNyY5ql660BX6fDgWd40uQJg0encfZEKY6baSSiZlDDkjm3zU8BiE5MHSNEEUaAACEMCCMOY4QRApGLmzIEGsrojuaUZi09Pb3C5/N16fPNzMyEUke+PN49JBXx4RGIi4+CIzP8IKsm1lzfpc+1Da8z1T5nxPQSoy442GyN5VvF7q+oS2zmPA1dmjK5N/X56FpTp07l/vC739n5PaGzHf/c88bhxxM/HHahOdTzcXV1DTWMgzMNYYxBFEUs8xLnkOxCFvIUebEzm7YohaBartDr639GKeHA0NPh0JFYKMrcLI8oXJEYLH1kefi6m++9o271hjXdmmJ20aJFyJOSwi25erEXVtZeh97e8/Dh5zwXT3lYKs3s0kyaVDcloIBb/vzhC2aKUNlydemsjds2q/c/+oD/6GVf/OeLjvy8POx9uHwHtUyZ6momkqUgn5FeYZ+Q/5k8JGMrNSwBKGBlZ9Mkqlm2xOaqudQ0bVRL5IhjCj60zR76/Or6rVt2+vbt+/3vf9/pvAG33XYbvnDoWWeWePLyIu9uvsOo9o3J+tmC61WiJ8oTVettso1zO1y8TASng0qpifcqbrRqQiNILFoElPDA8XHNhQ/sutAz45MVnxgvv/pKl6eHuvnmm9G0eu8jI33uH4Nl2gAAI14K1yit+8/f8PDErq4HAODMibNyXrrv6dmRT3YsUjZXzl830Ty/NYN+dO+99x73KNM9pc/HjVRVldbV15tOv2q1PTfz+Xwk5ohZ5eU7qapqAHAwbDzPE4ETqCxINBU5Ii5kwzSkA+iWLRbY8ylQyoFpuFM9qdzIISNsVBQSZmu4hIrCZPBxJSNxdtNM7/CEUJK2I6Ep5rodmwLHKuOLL75IL77oYtLc2qLbY1HL3ea5bft3BmOh3Y1dea/UJCJQisZlefZSB1cPnRzpmpubLQRA0mQhAgYQqgMARgSJvLq3oTLYGqtoBIvylFKkV4cc1LBEzdfMe51u9+iSQWVI5FSjyjfO5ddd2RF+0IiCQRvKa/e1drS9qqoqGigIRdJTvJJJLR0AAAlY1RVT2/j15rgkStgu2TiR8qZEBVOvrd1k+eKt+RnpWTLiXZlRPAUb4HbVafPKcEbrnJHTG/Y1Vfnr/I2RY30uTz75JP3jxT/fE8lL+8TZYJ2FTeqkhPCyKAozJk+TQ+EQKd9T0aWzh3RXqkOvDgzWJdqil7o+qQtW+KqDoX4xXmOfh23btm1kyZIlalHMoRfBNz9PtmzZalTvjevLli3r7IM6emL5IzXjrKmnOZ9e/INia03NVcr7FXfDRrgEAODH4swwGj1bT73jjOuqGmriALCiK+V84803yP333x8preXUMfDN/IOPvvrkjtXB3au6so7DDjz6xSs6Z4UBQtBR4H5+58/VJUuWoAnp8ytJPJFJYrFixHMGn2r3v/T5yztf3PZe221+dvgvZ0yYmf3Pi6+cpWyuOie+fOsviwCgCJzweow7FwA+7KhMb7/9Nv3tnffuF7Oc9V7QIzIA8ClyMBxtiv/mfx9q72CyCQDghhtuQAVy2uAFG/jdQpyUlP03/NaIoRNXXXvT5e/85vU/fgoAW7rymWyUGpelzh354rD/p2+XItYgIIYj3etxPXHLY1lfbVirAMAxf3/efPPNaELJiLzwe9uviZzufVSZXfqvj37zfHzDpg3dm4mvl/R52HrLzt3lyo1331KVY0t9viQta+W5o2ePLvDmpiW+2rfQbI4UR1/fcL9DgOYXAn9r/e+az30vvfevLtVOPeHaf9z1EkFgJkTDH45GyP2PPdhj6/56f3ngmgdvWjmLKx5yoTDqyOO3X/HjIc/d8xfftQ/esrHHNgYAzzzzDJ01Zmr40rPvfpmqukvZcuB8o84/IhpVvEadvxG6GLbPPv/M2r59O3li7I1fuvNT92rl1edCVM/kXt65bJzNufuF+596/qUPX6/677rPm9t7/aSsYaN/M/3a2yO8Xv9+duXSr7/8+MD+t+rje/ft6fPTx8MGbNgCoaAFADEA2HPppZfu1XMcipibkatsrpoHlIjGAd9EwWuvm3Plmd6q+prvtAb2ps8r1u3rrXX7wwEdAJquzJkRgZJvwja6bEQKX5reIxODHK22od4QslP3WTHFCwBA4pqHJLQUEu/6xJINDQ0UAOh/l/5fI5/qsjQAQAaxoX3BOeml6a6SidP/8/mm1R3WbrLFeQviztk19sgXNfbol699/Ha/OHVs65S4zvb666/TJ//z/LqH33tq+f7WmhY41HhCwlpa5O/rH54ull709JN/c15+6WXHMz91/4Q4HTghAuhgqyUXtzL5kFnYG5uiIkoog6VPtGLpq8NbBwoYujF3+GG+seKy5ini4yBIrcCLQQAAsz5SFnlx09367pZJHb1u7ty5FBCYDU1N1tNPP93vggYwgGu2o737wXIFAODFC+/Zbqa5HHxtfApQAMsfK3Km2IaXkNSpXxN7LQDs6eOi9gyMTSTwCWpQDiwiAgBCgHrl4EqAWhGktCKk2qWD2zYQx6mAuW7P2bajendrc9yPx6Zzq7AJDncrzKOGZbMCscKCtJy0qeMmO6rra7Sm1mZz2JChnCRJ6MppCyZliCnZdXJsfXMkurvn32HPOGXCdljDWPtDBZOGSp5Hd2ynlGCqJvJsu/VL7PuVs1110ecA4L6+LmNPwCIf55zOJisW46hlOrDAGVjitN7Ylm4Z5p5QTa0YMcVhAIAlKci53TVYloLdXddDj/0uAgDw+OOPX2aL0bJpH0IFEEumSiJv0fmXFF07o7j0wT//oQEA/HfdfqczLzeXy/5L5StVtsjnb2XtuebZd//RL2s1gFPkNLKt1evXqG8ufysuFmd8LeZ7Dx4FCRGoZTiAkAFzGkktIhBdtwOxBAAAXbBCimi127hwojiMUYrNJbllpwgAgFPkgFjiLefc8jEvq3Rk5cqVZOPGjQQAmXBwgkogDfEya7vv9BJPbt6sWbNQRlSe4G6g0wEhKxaPkWeffbbfBg3gFKzZ3v3PwdPJA49+scqKKV69qmk6UCKBSSRKrF6dPzuZqGWJVNVSqGmJAACqSFqR3aztjW1xmMOZ7jQHMhUbAACf5miyjc5dy33taDredb711luk0JZObp44wQRKMVDCkQPhsVarlT66qKwpZVRueX6r40yHDzIVDluhQLhfNO935pQL22Fvxtc8aVegZDrAzX1dlp72wAMPcN87Z76dlmtpB/uPYvW3f/ld9aZE9a6ahp7PG4oYWbbn972AnGJQuGPm/Hc+/6jpmV/eXeWPhtRlJ7Beyy3UtiwtmybVqxM9KwL304SabsRi+YUBriBXxHfaRgmbkSzEns/YOr/KqFV+0mPvqHeccqeRh0WpEohRNdzX5ehpo0aNQpmZmcjldGIAevBgihBt8fuMmoba3plknlAOh4w8FDe9ON1RE8VaU2VzbSSSiJ7Q9iiHTCtVrLRcQiPC2KSEcmBadkGlWfY4KsEUcQgjGuK1mrc+fb9Lna770ikbtt/+9rfWk08++a0LnpMnT0L33HNPr34mixYt6nZzeHekKbbhZ9YUPTEknHEuEuUWee6Ip9w/O+sSviStSxeXu2vZM8+6lj399xQghKuprbaGzxlf8dCfH+mRHb+hoYF874LzIg++8KdNnp/M+Jk0JvtgrxnLcFFdydw/NP7XXWPivz1GL6N+45Q9jWwPIRRMs9MO8t9x1uBpY66ZdIHa6UKHemSNLBvqnigWYQB4+3jL2J5LZp032G13ioRHiZnTTxPrXNEvq83K8l31mzbx68s3cvWeqvrWxm5fuI9tqJ7FhYLaVcVnZQECigAIPXQNjRp6ChBLuuryK2Vs9+O9WbEXmyLKcTeIdKaupUF5/v1X949qtIVLQT7yuC8YMDWT63KH577GwtYGJaTbYbty/PdO573u4mOtFyggszlaeOiaV4+G7acLl44vyS5MMe24xaeHWjaH97y1wthuvbb3zSONBv8Dj3R7vZGPKy4SAMgvR14RAwALYWRSSjFQ4K1oZDCYRgqsj0PMFt27dXpiWCAQ7ZUaZm/tgSgAbL+r5Hxfac6MI483NjcZ8SjtnVPjXsDC1kZ1TTU89ubz3WrVWrb+rU/3Wf41nS5EKQAFoKrhpJTit+GqEyrn0R5+7c/rXTaHQHikakRX/XrEbGw88a6envNGvdIa8msP/N+j2wEBBUAEgCKggH+QP/uWwY6cUVRVMiUDZ0za6/rfxqjuA4CHTvwdDUwsbG34/YFuH5lXV23ZtTq4e21vlKerPtiwoqo31msfm7fBqjPi79R99fnRzz016ZbzhohSAdXUdMECZ3GL7TKckCqBha1Dp2wDyY033oiuuOKKXm2sGMhsFwx7ynnrtB9jj60RKAWqJXJT7FLmbbfdhufMmcM+13acsjVbQUpOhkNBXgAAZBPD2CkHcFT+zh3TTPsqKvfGZFHGhWl4gyjbm4WGxBSOIlt2TJ5e5sptnjhuQk1tfZ3Z0trS7y82J8spG7Yrxy040wolsmIbvwIhL63cNr70fYnbvaGvy3WyeOS5JyoBAJY9848lhXLaYO8zFZsdOp99zr6cf589eexr5LabH3vsyT+GAKBbQ1AMZKdc2GbMmIGysrLQ74ZcezpVdDdgPqbYaVXUq66K2s1uDzBzqnv5X69ohXK6eguMtwAAqKm7uMbEGH5d4EquWe3yndqnglMubCNHjkTDhw/H5urAOGpZAuJ4RZNoYzRF36HYzKTeRDoQfLLiU6PQlq7fMmECAUoBiOXAfrWM3xU9CweMPcDCdsQp10Ay/GvuD9NX8J8ZLS3j4krAtX4enLas6bM/XHfT9cFX/t9rLGzHwXBytXsvzxxXtSDtfAAAKxrL1WvqZ/34+1dP+/S59yZOGTPJfax1nAr6bdgQQoBQzzZqZWdnIzcRc20xOggo5QxiklrFV1kXavbVNzSQcDh8UnT76W8aW5v1GtW3r1ELVQMgCwjlqGE6Ujl7VqE9o7gwM9dZmF9wyp1FHa3ffgCSJIHd3nP7/i/uukv44/8+zuUvb0mjNUo2dnsqQvGWmgcefLB7XUaYdv38rjv1QluG+u6UXwepZcpATKf+VfWFxvqGs3911U/ugEGetYX5BU01dbWn7OfdL8KGMQaMv13JFjqzCt0ePDzTm7GvJdB6XF1ypk6diuwxVOYOwphz581zpeyKCSjTud/wOP/10eqVB/x6xP/9Eyz74MGD0aRJk9DGjRu7fWSYf/Y80efzkU1bNndtB6QA1CQI+nhg3Y7o2IqVOwOvpUvu7DxbZrEVUtJITHPDXv8cCCsFsyZOf/n002aFvly98qTpYtWT+kXYBEEAjvv26NAT04aNF/K88iO8XA8A3f5yRowYgW688UY+rxLNHLST+zXZn8iBPQGHcuXQq7VBnhX3Pr30uG9sbOv0WafjkdmIA4BuHbHz8/LwP5993rl+43odDo4CdmyUImpYHLVob53+ozb/d1tTPNC6ZMmSW6dkjJgwpHDoWYmN+8/XgtEStLLmJwAAN/xk8aoa1W/AcXyfA0Gfh23o0KFo8eLFOL0FMFR987i2rXq+vrvxtN/ccOfGvz3wp8ZdrftrY7EYee655zocB/BXv7xb4hEv5MkZeb/6/o+L8zbwF0lxWgiWJcgTit/jvLaWv33wyo6vW/cF1p67rttldblcSJYJgjbzfYyUCycRuws9dO//rA6r0Xh9Q8MxQzd62AjHXTfenpK2Wb/Stc88AG0Glz3suuuuQ2lpaUDqDDsxLAkAgJqEt6JqCjXMXhm+wS07HWmOVKfANfMAAIYv7jGDSrfGyF+2bBm96NwL9nEpcqhQ10ZkARzuOYzsHzf9ukRGDc/v+tObPi3k3xLYs43jOBAEAZVY6ZNziGfor97+3zebI76jB99tv7xuNxKcCAPASXHhvM/DxnEcOJ1ObItYCOCb8Wgsf6wAEKITL5zmRV57nKux4WAwCEuWLCFt719asmQJwhgDQgjmz53Hi4gXhjgLPaQ6XGB+vX8mWAfHw+fTnTV8nmf/nn8fCK7dvu64jqyiKCKOM6Dtd5vKuTIEwVs4ZsToDREzrtrs9mN+8VMmTRG5BLHLq/VhYoS2e4uIJEkgyzICQgWg9OAOTykGw5KA0F6ZJELgBF4WJImig+f0RDUlopndHiTozQ/eCd9///1RryVEstrsYnydMl5KseXNmTljfV28BUUbCRIEASRJwmPM/MwyK3OoTZC6fCARBRERCZ80XcP6dGKNr17/pBQD5iUkuA6Xp1srwIggjADbBQMJmNSGG+tNyyStoYC+fft264knnjjhe50KcvKFfz/1UglQQCLlnMdVzvZRAIDVW9aGb37ozu8M2vrOX14dWZiTLx+1rYPjXQLRKQLrpw/dVbN687oTngLpinMvybjr2p/mw6FG4EMPIwCgQA9u89UP/t3yyHN/qjue9d9x++3imNFjuGl00CU2IqZQxZSpjYtAjlwZsKItzSRU+/Sz/xd/9/3l3wp2QU4e/68/v1CIAfMSCE4AQIC++3mYpql/tXVd9Ke//2XV8ZQvWfq0ZluzZX0CA+YExB2uDbq3EyNEASOKJc5CHCatiYBhEYuGY1GrqqqqR44iqqaSrzaviyMAxFN8+BS2p46mtHx/RaK9JzaXb43VNtVp0G7YqAkAJBgJ90jLXqOvSV+9ZW0E4FtXW9Dh7QEFWllX3fkNsp2oqqoiAAA69ddLlA9RzRJAwgqtF3wxqkSCJK6314dS1TR6ZB8BzoIOwmZZlrnrwO52P8f+pM+njGKYU0W/vajNMAMNCxvDJAkLG8MkCQsbwyQJCxvDJEmfX9Tuzxafd2VhiuR0WfuDYwGAAiCANKkO5Tr2VTXVRpqCLYnO+kSOLx6ZNWfk9OLPd66p2lK1s91JLUryiuSFZy7IBAoYAaDPNq7yb6n4+pjzUB+vJVde49YNneyvq4qvXbuWNUUnEQtbJxafd0VhoTs7V//owFUAQAFhgCEpa/HEzPjn21ZbWw/sVODwtah2jCsekX3bguumhuJhFQDaDVtxbqHttkU3FSICPKLABaNhAwB6L2xXLHLHEnHz43WfJxYuXAhvv93/ZugcqFjY2nHjD693DR86TDytKe9ig290SqcXvk0pBXpooFXjjYpfjhTdB4qlyY2Ti0e/vaFqe/XR6zj77LPR7IzRuYntDTNNf3wPAGxrb1skonmNzc1zqG7K1CCi1RhTAeC4emp0RRZNHeoSbMrgwYP9hmEQODQdE9P7WNjacMoO0WN32+674+6MCSPHy8HNW90Bi3D2UVIFBQrUAmwEWzz6rrp0PtMdF1PtFFsgtbeu/Px85DYdDiuYyCaa6ehom6Zh4kggJFHdksGwRF3VutzvMSMjA2GEUHNL10ewUmOKoFmaaRgGMk2zWz1h0tPTkc/nYzXhcWI9SNpYPOviyfcv/Ok5RmOkgCqGc/7LN91eHWo8rgkElyxZgseb+RedaQy59XebX/zTy3s+/k7P/sPuv/9+ThRFEEUR3nnnHbJq1ap2v5Rhw4ah66677nAYUUFmrt1pc/Drtm0MK5pKHnvssWOG7tJLL0Wvv/56t770n//85zg1NZXLzs7mA4GA1dzcbHZlW8y3sZqtDaoYTrM1mkcdOEjdcjNwuNcnbRg1ZITt1mt+nC1wPOaAw3YQWwDgW1NZpbhT8OCSMnFkwRB3ekQqBZPwQAjvMAy7LKp8dtzh003BmjXltJ3BcNDcsbu8w36MpflFjpuW3kj++uzTx+xLOGfSzHSHbBfmjj2tyIlE0W2ZMk7wOq+41Bljp1R8tW19qAc+glMGC1sbZnOkQNlYNRdfOuwBXObZDM9wJ9yj/ljS+ZSMeSkTFhDDksGi0qeQ+hEAbGy7zOCSMvG3d96bJbdYo7I2aj8lcTWFqoYTrLgNaIzP8uZWIp4z5j3859tWrl8dBYDv/IY87NJ5CwtC0bC+ZMmSA8eaamnZb56cSCJaqvLOnhtJQnWTWCIN2WxhzpUeaCyb8IsLL7xw/VtvvcVOjbqIha0NJPAGtsvRnXV7GoMKqVF0NRnjZWAAEABABErFI/eutUUBU4vwVNVSzebWsa/Xr3nuC//O94FSDiig6afPVOyinV61LXcBV5k4AJ2ETRAELAhCp9dXL734EqG0pBRfO/+K1hYSaP3Vl4/dRS3Cg2WJgLGJeE6vp8HdB5pqWNC6gYWtLYwIEngzGG9NNGEllqShsxEAcECBAwAOOr59B1PLEqmiph8I19avat2xqu2TixYtQjigL0ZRo9O7nDHHYYQ7v+GytKQUjxs7lic8qHGq6Ssbt33nfjum+1jY2iCq5jT8gcIhp5VkFBXZvbk5uYGGxoZ+0zSOeCGOXZ7dSJSCRz/34osv0rpXt66TzNQTHtV5qJg/Zoo8NPPMRQv/a5omrV+08ERXyQAL27cgDhtYEmIuZPPYiT2PAxSG/nQdCgFBHKcDwu3WuFjmFSRy3R7G4Gg8x/MiLwrVdTWn5MA8vYX1jWwDu+ytYnH2Fm/cPjS7XvweZ6IOr48NZAZPYppIQkuXLj1pxvc4GbCarY3d/qrql3b85z/n5JwrFjgLuYumnDPyB6dfGG4UIuWHl3HqQm6KKpVaEcVLE7r7c9/2TxoU/4CakOPTdV/4qxtqlTGxzKsevewuZbtauy5mJOIhLRp1Cna7R3K5I0Y8ZBBDf/+jD06aOa37GgtbGxsay8sBoPyfv37q9OLUIbm3nLNkRoKo8bXOqj2HFkG5YcfQMr9noV7VOsJqCpfUJFqrAGBAhe2V/7zeAACw7dxn3kEpUsuFN1zlr401Ne0N1yj5jizvEE9RSWW8bm/UTERysnPMxqZG1irZBSxs7bjrb79db5Nk/h/fu+++bDl17Mia2DUAAEAByZliAyrAB7TpGc/GPWm7zUdteztYDUUIaYjnwgijjn9HIbAAgQIcogDIBIzau9xAAcAAhDTgcRg6WJ9FLJVQ0mlNk0gkDFVVu/Q71HHV2IepYji1Nypu9yiKPCam2gW5RdOcCWW1teGBA7S1kQWt61jY2tEUaFEBAD66+q8cIMsmR2nJob79SHBTFSG0n9q5IEnl66iAOx51CiGKECIAqPMdEiEKCCggRKG9uwi+GaeYIoQI6vhOgyNDz3XkYIfqrvXRwx7ZRzCyaFRP4xTDJcepFxlmjBI9lCBxPgoxFrRuYH0jGSZJWGskwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyQJCxvDJAkLG8MkCQsbwyTJ/wd0dczz1icbuwAAAABJRU5ErkJggg==",
+            white: "data:image/png;base64,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"
+        };
+
+        const logoObjects = {
+            pink: new Image(),
+            white: new Image()
+        };
+        logoObjects.pink.src = DEPRY_LOGOS.pink;
+        logoObjects.white.src = DEPRY_LOGOS.white;
+
         // State
         let beforeImage = null;
         let afterImage = null;
-        let currentRatio = '1:1'; // default 1:1
-        let currentLayout = 'horizontal'; // default side-by-side!
-        let currentFit = 'cover';
+        let currentRatio = "1:1"; // default 1:1
+        let currentLayout = "horizontal"; // default side-by-side!
+        let currentFit = "cover";
+        let currentLogoColor = "pink"; // default pink logo
         let isDiffActive = false;
 
         const imageState = {
@@ -1004,72 +1118,79 @@
         };
 
         // DOM Elements
-        const ratioPills = document.querySelectorAll('.ratio-pill');
-        const layoutSelect = document.getElementById('layoutSelect');
-        const fitSelect = document.getElementById('fitSelect');
-        const syncZoomPan = document.getElementById('syncZoomPan');
-        const gapControl = document.getElementById('gapControl');
-        const gapValue = document.getElementById('gapValue');
-        const bgColor = document.getElementById('bgColor');
-        const labelPos = document.getElementById('labelPos');
-        const fontSize = document.getElementById('fontSize');
-        const fontValue = document.getElementById('fontValue');
-        const labelColor = document.getElementById('labelColor');
-        const beforeLabelText = document.getElementById('beforeLabelText');
-        const afterLabelText = document.getElementById('afterLabelText');
-        const formatSelect = document.getElementById('formatSelect');
-        const qualityControl = document.getElementById('qualityControl');
-        const qualityValue = document.getElementById('qualityValue');
-        const qualityControlWrapper = document.getElementById('qualityControlWrapper');
+        const ratioPills = document.querySelectorAll(".ratio-pill");
+        const logoPills = document.querySelectorAll(".logo-pill");
+        const logoPosSelect = document.getElementById("logoPosSelect");
+        const logoSizeControl = document.getElementById("logoSizeControl");
+        const logoSizeVal = document.getElementById("logoSizeVal");
+
+        const layoutSelect = document.getElementById("layoutSelect");
+        const fitSelect = document.getElementById("fitSelect");
+        const syncZoomPan = document.getElementById("syncZoomPan");
+        const gapControl = document.getElementById("gapControl");
+        const gapValue = document.getElementById("gapValue");
+        const bgColor = document.getElementById("bgColor");
+        const labelPos = document.getElementById("labelPos");
+        const fontSize = document.getElementById("fontSize");
+        const fontValue = document.getElementById("fontValue");
+        const labelColor = document.getElementById("labelColor");
+        const beforeLabelText = document.getElementById("beforeLabelText");
+        const afterLabelText = document.getElementById("afterLabelText");
+        const formatSelect = document.getElementById("formatSelect");
+        const qualityControl = document.getElementById("qualityControl");
+        const qualityValue = document.getElementById("qualityValue");
+        const qualityControlWrapper = document.getElementById("qualityControlWrapper");
 
         // Workspace Elements
-        const workspaceTitleText = document.getElementById('workspaceTitleText');
-        const metaRatioTag = document.getElementById('metaRatioTag');
-        const metaResTag = document.getElementById('metaResTag');
-        const stageContainer = document.getElementById('stageContainer');
-        const canvasFrame = document.getElementById('canvasFrame');
-        const stageDivider = document.getElementById('stageDivider');
-        const slotBefore = document.getElementById('slotBefore');
-        const slotAfter = document.getElementById('slotAfter');
-        const beforeCanvas = document.getElementById('beforeCanvas');
-        const afterCanvas = document.getElementById('afterCanvas');
-        const beforeDropzone = document.getElementById('beforeDropzone');
-        const afterDropzone = document.getElementById('afterDropzone');
-        const beforeOverlay = document.getElementById('beforeOverlay');
-        const afterOverlay = document.getElementById('afterOverlay');
-        const beforeTag = document.getElementById('beforeTag');
-        const afterTag = document.getElementById('afterTag');
-        const diffStageCanvas = document.getElementById('diffStageCanvas');
+        const workspaceTitleText = document.getElementById("workspaceTitleText");
+        const metaRatioTag = document.getElementById("metaRatioTag");
+        const metaResTag = document.getElementById("metaResTag");
+        const stageContainer = document.getElementById("stageContainer");
+        const canvasFrame = document.getElementById("canvasFrame");
+        const stageDivider = document.getElementById("stageDivider");
+        const slotBefore = document.getElementById("slotBefore");
+        const slotAfter = document.getElementById("slotAfter");
+        const beforeCanvas = document.getElementById("beforeCanvas");
+        const afterCanvas = document.getElementById("afterCanvas");
+        const beforeDropzone = document.getElementById("beforeDropzone");
+        const afterDropzone = document.getElementById("afterDropzone");
+        const beforeOverlay = document.getElementById("beforeOverlay");
+        const afterOverlay = document.getElementById("afterOverlay");
+        const beforeTag = document.getElementById("beforeTag");
+        const afterTag = document.getElementById("afterTag");
+        const canvasLogoOverlay = document.getElementById("canvasLogoOverlay");
+        const canvasLogoImg = document.getElementById("canvasLogoImg");
+        const diffStageCanvas = document.getElementById("diffStageCanvas");
 
         // File Inputs & Clear
-        const beforeFileInput = document.getElementById('beforeFileInput');
-        const afterFileInput = document.getElementById('afterFileInput');
-        const beforeChangeInput = document.getElementById('beforeChangeInput');
-        const afterChangeInput = document.getElementById('afterChangeInput');
-        const beforeClearBtn = document.getElementById('beforeClearBtn');
-        const afterClearBtn = document.getElementById('afterClearBtn');
+        const beforeFileInput = document.getElementById("beforeFileInput");
+        const afterFileInput = document.getElementById("afterFileInput");
+        const beforeChangeInput = document.getElementById("beforeChangeInput");
+        const afterChangeInput = document.getElementById("afterChangeInput");
+        const beforeClearBtn = document.getElementById("beforeClearBtn");
+        const afterClearBtn = document.getElementById("afterClearBtn");
 
         // Zoom Controls
-        const beforeZoomSlider = document.getElementById('beforeZoomSlider');
-        const afterZoomSlider = document.getElementById('afterZoomSlider');
-        const beforeZoomOut = document.getElementById('beforeZoomOut');
-        const afterZoomOut = document.getElementById('afterZoomOut');
-        const beforeZoomIn = document.getElementById('beforeZoomIn');
-        const afterZoomIn = document.getElementById('afterZoomIn');
-        const beforeZoomVal = document.getElementById('beforeZoomVal');
-        const afterZoomVal = document.getElementById('afterZoomVal');
-        const beforeResetBtn = document.getElementById('beforeResetBtn');
-        const afterResetBtn = document.getElementById('afterResetBtn');
+        const beforeZoomSlider = document.getElementById("beforeZoomSlider");
+        const afterZoomSlider = document.getElementById("afterZoomSlider");
+        const beforeZoomOut = document.getElementById("beforeZoomOut");
+        const afterZoomOut = document.getElementById("afterZoomOut");
+        const beforeZoomIn = document.getElementById("beforeZoomIn");
+        const afterZoomIn = document.getElementById("afterZoomIn");
+        const beforeZoomVal = document.getElementById("beforeZoomVal");
+        const afterZoomVal = document.getElementById("afterZoomVal");
+        const beforeResetBtn = document.getElementById("beforeResetBtn");
+        const afterResetBtn = document.getElementById("afterResetBtn");
 
         // Actions
-        const downloadBtn = document.getElementById('downloadBtn');
-        const copyClipboardBtn = document.getElementById('copyClipboardBtn');
-        const toggleDiffBtn = document.getElementById('toggleDiffBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const downloadBtn = document.getElementById("downloadBtn");
+        const copyClipboardBtn = document.getElementById("copyClipboardBtn");
+        const toggleDiffBtn = document.getElementById("toggleDiffBtn");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
 
         // Toast notifications
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
+        function showToast(message, type = "success") {
+            const toast = document.createElement("div");
             toast.className = `toast ${type}`;
             toast.textContent = message;
             document.body.appendChild(toast);
@@ -1087,9 +1208,9 @@
 
         // --- ASPECT RATIO SELECTION ---
         ratioPills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                ratioPills.forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
+            pill.addEventListener("click", () => {
+                ratioPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
                 currentRatio = pill.dataset.ratio;
                 updateMeta();
                 updateFrameDimensions();
@@ -1097,73 +1218,127 @@
             });
         });
 
+        // --- LOGO COLOR SELECTION ---
+        logoPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                logoPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                currentLogoColor = pill.dataset.color;
+                updateLogoDisplay();
+            });
+        });
+
+        logoPosSelect.addEventListener("change", () => updateLogoDisplay());
+        logoSizeControl.addEventListener("input", e => {
+            logoSizeVal.textContent = `${e.target.value}%`;
+            updateLogoDisplay();
+        });
+
+        function updateLogoDisplay() {
+            if (currentLogoColor === "none" || !DEPRY_LOGOS[currentLogoColor]) {
+                canvasLogoOverlay.style.display = "none";
+                return;
+            }
+            canvasLogoOverlay.style.display = "block";
+            canvasLogoImg.src = DEPRY_LOGOS[currentLogoColor];
+
+            const pct = parseInt(logoSizeControl.value, 10) || 9;
+            canvasLogoOverlay.style.width = `${pct}%`;
+
+            const pos = logoPosSelect.value;
+            const margin = "3.5%";
+            canvasLogoOverlay.style.top = "";
+            canvasLogoOverlay.style.bottom = "";
+            canvasLogoOverlay.style.left = "";
+            canvasLogoOverlay.style.right = "";
+            canvasLogoOverlay.style.transform = "";
+
+            if (pos === "top-right") {
+                canvasLogoOverlay.style.top = margin;
+                canvasLogoOverlay.style.right = margin;
+            } else if (pos === "top-left") {
+                canvasLogoOverlay.style.top = margin;
+                canvasLogoOverlay.style.left = margin;
+            } else if (pos === "bottom-right") {
+                canvasLogoOverlay.style.bottom = margin;
+                canvasLogoOverlay.style.right = margin;
+            } else if (pos === "bottom-left") {
+                canvasLogoOverlay.style.bottom = margin;
+                canvasLogoOverlay.style.left = margin;
+            } else if (pos === "top-center") {
+                canvasLogoOverlay.style.top = margin;
+                canvasLogoOverlay.style.left = "50%";
+                canvasLogoOverlay.style.transform = "translateX(-50%)";
+            }
+        }
+
         // --- CONTROLS LISTENERS ---
-        layoutSelect.addEventListener('change', e => {
+        layoutSelect.addEventListener("change", e => {
             currentLayout = e.target.value;
-            canvasFrame.classList.toggle('layout-vertical', currentLayout === 'vertical');
+            canvasFrame.classList.toggle("layout-vertical", currentLayout === "vertical");
             updateMeta();
             updateFrameDimensions();
             renderBothSlots();
         });
 
-        fitSelect.addEventListener('change', e => {
+        fitSelect.addEventListener("change", e => {
             currentFit = e.target.value;
             renderBothSlots();
         });
 
-        gapControl.addEventListener('input', e => {
+        gapControl.addEventListener("input", e => {
             gapValue.textContent = `${e.target.value}px`;
             updateDivider();
             updateFrameDimensions();
             renderBothSlots();
         });
 
-        bgColor.addEventListener('input', () => {
+        bgColor.addEventListener("input", () => {
             updateDivider();
             canvasFrame.style.background = bgColor.value;
             renderBothSlots();
         });
 
-        fontSize.addEventListener('input', e => {
+        fontSize.addEventListener("input", e => {
             fontValue.textContent = `${e.target.value}px`;
             updateTags();
         });
 
-        labelColor.addEventListener('input', () => updateTags());
-        labelPos.addEventListener('change', () => updateTags());
-        beforeLabelText.addEventListener('input', () => updateTags());
-        afterLabelText.addEventListener('input', () => updateTags());
+        labelColor.addEventListener("input", () => updateTags());
+        labelPos.addEventListener("change", () => updateTags());
+        beforeLabelText.addEventListener("input", () => updateTags());
+        afterLabelText.addEventListener("input", () => updateTags());
 
-        formatSelect.addEventListener('change', e => {
-            const isLossy = e.target.value === 'jpeg' || e.target.value === 'webp';
-            qualityControlWrapper.style.opacity = isLossy ? '1' : '0.4';
+        formatSelect.addEventListener("change", e => {
+            const isLossy = e.target.value === "jpeg" || e.target.value === "webp";
+            qualityControlWrapper.style.opacity = isLossy ? "1" : "0.4";
             downloadBtn.textContent = `💾 ดาวน์โหลดภาพ (${e.target.value.toUpperCase()})`;
         });
 
-        qualityControl.addEventListener('input', e => {
+        qualityControl.addEventListener("input", e => {
             qualityValue.textContent = `${e.target.value}%`;
         });
 
         function updateMeta() {
-            metaRatioTag.textContent = `📐 สัดส่วน ${currentRatio === 'auto' ? 'Auto' : currentRatio}`;
-            const layoutText = currentLayout === 'vertical' ? 'ต่อกันบน-ล่าง' : 'ต่อกันซ้าย-ขวา';
+            metaRatioTag.textContent = `📐 สัดส่วน ${currentRatio === "auto" ? "Auto" : currentRatio}`;
+            const layoutText = currentLayout === "vertical" ? "ต่อกันบน-ล่าง" : "ต่อกันซ้าย-ขวา";
             workspaceTitleText.textContent = `🖼️ พื้นที่จัดภาพ (${layoutText} ในกรอบเดียว)`;
             if (beforeImage && afterImage) {
                 const geom = calculateGeometry();
                 metaResTag.textContent = `📏 ${geom.canvasWidth} × ${geom.canvasHeight} px`;
             } else {
-                metaResTag.textContent = '📏 รอโหลดภาพ';
+                metaResTag.textContent = "📏 รอโหลดภาพ";
             }
         }
 
         function updateDivider() {
             const gap = parseInt(gapControl.value, 10) || 0;
-            if (currentLayout === 'vertical') {
-                stageDivider.style.width = '100%';
+            if (currentLayout === "vertical") {
+                stageDivider.style.width = "100%";
                 stageDivider.style.height = `${gap}px`;
             } else {
                 stageDivider.style.width = `${gap}px`;
-                stageDivider.style.height = '100%';
+                stageDivider.style.height = "100%";
             }
             stageDivider.style.background = bgColor.value;
         }
@@ -1172,14 +1347,14 @@
             beforeTag.textContent = beforeLabelText.value;
             afterTag.textContent = afterLabelText.value;
 
-            const isTop = labelPos.value === 'top';
-            const isNone = labelPos.value === 'none';
+            const isTop = labelPos.value === "top";
+            const isNone = labelPos.value === "none";
 
-            beforeTag.style.display = isNone ? 'none' : 'block';
-            afterTag.style.display = isNone ? 'none' : 'block';
+            beforeTag.style.display = isNone ? "none" : "block";
+            afterTag.style.display = isNone ? "none" : "block";
 
-            beforeTag.className = `slot-tag ${isTop ? 'tag-top' : 'tag-bottom'}`;
-            afterTag.className = `slot-tag ${isTop ? 'tag-top' : 'tag-bottom'}`;
+            beforeTag.className = `slot-tag ${isTop ? "tag-top" : "tag-bottom"}`;
+            afterTag.className = `slot-tag ${isTop ? "tag-top" : "tag-bottom"}`;
 
             const size = parseInt(fontSize.value, 10) || 20;
             beforeTag.style.fontSize = `${Math.min(22, Math.max(12, size * 0.75))}px`;
@@ -1187,7 +1362,7 @@
 
             const rgb = hexToRgb(labelColor.value);
             const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-            const bgBadge = brightness > 130 ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+            const bgBadge = brightness > 130 ? "rgba(15, 23, 42, 0.75)" : "rgba(255, 255, 255, 0.85)";
             const txtColor = labelColor.value;
 
             beforeTag.style.background = bgBadge;
@@ -1196,16 +1371,16 @@
             afterTag.style.color = txtColor;
         }
 
-        // --- FRAME DIMENSION CALCULATION (Fits in stage while respecting target aspect ratio) ---
+        // --- FRAME DIMENSION CALCULATION ---
         function getTargetAspectRatio() {
-            if (currentRatio === 'auto') {
+            if (currentRatio === "auto") {
                 if (beforeImage && afterImage) {
                     const bW = beforeImage.naturalWidth;
                     const bH = beforeImage.naturalHeight;
                     const aW = afterImage.naturalWidth;
                     const aH = afterImage.naturalHeight;
                     const gap = parseInt(gapControl.value, 10) || 0;
-                    if (currentLayout === 'vertical') {
+                    if (currentLayout === "vertical") {
                         return Math.max(bW, aW) / (bH + aH + gap);
                     } else {
                         return (bW + aW + gap) / Math.max(bH, aH);
@@ -1218,7 +1393,7 @@
                 return 1.0;
             }
 
-            const parts = currentRatio.split(':').map(Number);
+            const parts = currentRatio.split(":").map(Number);
             return parts[0] / parts[1];
         }
 
@@ -1249,13 +1424,13 @@
             const aW = afterImage ? afterImage.naturalWidth : 1000;
             const aH = afterImage ? afterImage.naturalHeight : 1000;
             const gap = parseInt(gapControl.value, 10) || 0;
-            const isHorizontal = currentLayout !== 'vertical';
+            const isHorizontal = currentLayout !== "vertical";
 
             let canvasWidth, canvasHeight;
             let slotBefore = { x: 0, y: 0, w: 0, h: 0 };
             let slotAfter = { x: 0, y: 0, w: 0, h: 0 };
 
-            if (currentRatio === 'auto') {
+            if (currentRatio === "auto") {
                 if (isHorizontal) {
                     canvasWidth = bW + aW + gap;
                     canvasHeight = Math.max(bH, aH);
@@ -1268,7 +1443,7 @@
                     slotAfter = { x: 0, y: bH + gap, w: canvasWidth, h: aH };
                 }
             } else {
-                const parts = currentRatio.split(':').map(Number);
+                const parts = currentRatio.split(":").map(Number);
                 const targetRatio = parts[0] / parts[1];
 
                 let baseW, baseH;
@@ -1288,7 +1463,6 @@
                     canvasWidth = Math.round(baseH * targetRatio);
                 }
 
-                // Minimum crisp resolution
                 const minDim = 1200;
                 if (canvasWidth < minDim && canvasHeight < minDim) {
                     const scale = minDim / Math.min(canvasWidth, canvasHeight);
@@ -1312,7 +1486,7 @@
             return { canvasWidth, canvasHeight, isHorizontal, slotBefore, slotAfter, gap };
         }
 
-        // --- DRAW IMAGE IN SLOT (Identical logic for on-screen stage and full-res export) ---
+        // --- DRAW IMAGE IN SLOT ---
         function renderImageToSlot(ctx, img, slot, state, fitMode) {
             ctx.save();
             ctx.beginPath();
@@ -1323,9 +1497,9 @@
             const imgH = img.naturalHeight;
 
             let baseScale;
-            if (fitMode === 'contain') {
+            if (fitMode === "contain") {
                 baseScale = Math.min(slot.w / imgW, slot.h / imgH);
-            } else { // 'cover'
+            } else {
                 baseScale = Math.max(slot.w / imgW, slot.h / imgH);
             }
 
@@ -1348,23 +1522,23 @@
 
         // --- RENDER ON-SCREEN SLOT CANVASES ---
         function renderSlot(type) {
-            const img = type === 'before' ? beforeImage : afterImage;
-            const canvasEl = type === 'before' ? beforeCanvas : afterCanvas;
-            const slotEl = type === 'before' ? slotBefore : slotAfter;
-            const dropzoneEl = type === 'before' ? beforeDropzone : afterDropzone;
-            const overlayEl = type === 'before' ? beforeOverlay : afterOverlay;
+            const img = type === "before" ? beforeImage : afterImage;
+            const canvasEl = type === "before" ? beforeCanvas : afterCanvas;
+            const slotEl = type === "before" ? slotBefore : slotAfter;
+            const dropzoneEl = type === "before" ? beforeDropzone : afterDropzone;
+            const overlayEl = type === "before" ? beforeOverlay : afterOverlay;
             const state = imageState[type];
 
             if (!img) {
-                dropzoneEl.style.display = 'flex';
-                overlayEl.style.display = 'none';
-                const ctx = canvasEl.getContext('2d');
+                dropzoneEl.style.display = "flex";
+                overlayEl.style.display = "none";
+                const ctx = canvasEl.getContext("2d");
                 ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
                 return;
             }
 
-            dropzoneEl.style.display = 'none';
-            overlayEl.style.display = 'block';
+            dropzoneEl.style.display = "none";
+            overlayEl.style.display = "block";
 
             const w = slotEl.clientWidth;
             const h = slotEl.clientHeight;
@@ -1374,7 +1548,7 @@
             canvasEl.width = w * dpr;
             canvasEl.height = h * dpr;
 
-            const ctx = canvasEl.getContext('2d');
+            const ctx = canvasEl.getContext("2d");
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
             ctx.fillStyle = bgColor.value;
             ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
@@ -1388,14 +1562,14 @@
                 renderDiffStage();
                 return;
             }
-            renderSlot('before');
-            renderSlot('after');
+            renderSlot("before");
+            renderSlot("after");
         }
 
         // --- INTERACTIVE DRAG & MOUSE WHEEL ZOOM ON STAGE SLOTS ---
         function setupSlotInteractions(type) {
-            const slotEl = type === 'before' ? slotBefore : slotAfter;
-            const otherType = type === 'before' ? 'after' : 'before';
+            const slotEl = type === "before" ? slotBefore : slotAfter;
+            const otherType = type === "before" ? "after" : "before";
             const state = imageState[type];
             const otherState = imageState[otherType];
 
@@ -1403,11 +1577,10 @@
             let startX = 0, startY = 0;
             let initialPanX = 0, initialPanY = 0;
 
-            slotEl.addEventListener('pointerdown', e => {
-                const img = type === 'before' ? beforeImage : afterImage;
+            slotEl.addEventListener("pointerdown", e => {
+                const img = type === "before" ? beforeImage : afterImage;
                 if (!img) return;
-                // If clicked on buttons/inputs, don't drag
-                if (e.target.closest('.slot-quick-btns') || e.target.closest('.slot-dropzone')) return;
+                if (e.target.closest(".slot-quick-btns") || e.target.closest(".slot-dropzone")) return;
 
                 isDragging = true;
                 slotEl.setPointerCapture(e.pointerId);
@@ -1417,7 +1590,7 @@
                 initialPanY = state.panY;
             });
 
-            slotEl.addEventListener('pointermove', e => {
+            slotEl.addEventListener("pointermove", e => {
                 if (!isDragging) return;
                 const dx = e.clientX - startX;
                 const dy = e.clientY - startY;
@@ -1430,7 +1603,7 @@
                 state.panX = initialPanX + deltaPanX;
                 state.panY = initialPanY + deltaPanY;
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     otherState.panX = state.panX;
                     otherState.panY = state.panY;
                     renderSlot(otherType);
@@ -1445,19 +1618,17 @@
                 try { slotEl.releasePointerCapture(e.pointerId); } catch(err) {}
             };
 
-            slotEl.addEventListener('pointerup', endDrag);
-            slotEl.addEventListener('pointercancel', endDrag);
+            slotEl.addEventListener("pointerup", endDrag);
+            slotEl.addEventListener("pointercancel", endDrag);
 
-            // Wheel to zoom in / zoom out
-            slotEl.addEventListener('wheel', e => {
-                const img = type === 'before' ? beforeImage : afterImage;
+            slotEl.addEventListener("wheel", e => {
+                const img = type === "before" ? beforeImage : afterImage;
                 if (!img) return;
                 e.preventDefault();
 
                 const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
                 const newZoom = Math.max(0.2, Math.min(5.0, state.zoom * zoomFactor));
 
-                // Cursor-centered zoom
                 const rect = slotEl.getBoundingClientRect();
                 const mouseRelX = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
                 const mouseRelY = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
@@ -1470,7 +1641,7 @@
                 updateZoomUI(type);
                 renderSlot(type);
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     otherState.zoom = state.zoom;
                     otherState.panX = state.panX;
                     otherState.panY = state.panY;
@@ -1480,75 +1651,75 @@
             }, { passive: false });
         }
 
-        setupSlotInteractions('before');
-        setupSlotInteractions('after');
+        setupSlotInteractions("before");
+        setupSlotInteractions("after");
 
         // --- ZOOM SLIDER & BUTTONS ---
         function updateZoomUI(type) {
             const state = imageState[type];
-            const slider = type === 'before' ? beforeZoomSlider : afterZoomSlider;
-            const valEl = type === 'before' ? beforeZoomVal : afterZoomVal;
+            const slider = type === "before" ? beforeZoomSlider : afterZoomSlider;
+            const valEl = type === "before" ? beforeZoomVal : afterZoomVal;
             const percent = Math.round(state.zoom * 100);
             slider.value = percent;
             valEl.textContent = `${percent}%`;
         }
 
         function setupZoomControls(type) {
-            const slider = type === 'before' ? beforeZoomSlider : afterZoomSlider;
-            const zoomOut = type === 'before' ? beforeZoomOut : afterZoomOut;
-            const zoomIn = type === 'before' ? beforeZoomIn : afterZoomIn;
-            const resetBtn = type === 'before' ? beforeResetBtn : afterResetBtn;
-            const otherType = type === 'before' ? 'after' : 'before';
+            const slider = type === "before" ? beforeZoomSlider : afterZoomSlider;
+            const zoomOut = type === "before" ? beforeZoomOut : afterZoomOut;
+            const zoomIn = type === "before" ? beforeZoomIn : afterZoomIn;
+            const resetBtn = type === "before" ? beforeResetBtn : afterResetBtn;
+            const otherType = type === "before" ? "after" : "before";
 
-            slider.addEventListener('input', e => {
+            slider.addEventListener("input", e => {
                 const newZoom = parseInt(e.target.value, 10) / 100;
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
                 renderSlot(type);
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
                     renderSlot(otherType);
                 }
             });
 
-            zoomOut.addEventListener('click', () => {
+            zoomOut.addEventListener("click", () => {
                 const current = imageState[type].zoom;
                 const newZoom = Math.max(0.2, Math.round((current - 0.1) * 10) / 10);
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
                 renderSlot(type);
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
                     renderSlot(otherType);
                 }
             });
 
-            zoomIn.addEventListener('click', () => {
+            zoomIn.addEventListener("click", () => {
                 const current = imageState[type].zoom;
                 const newZoom = Math.min(5.0, Math.round((current + 0.1) * 10) / 10);
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
                 renderSlot(type);
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
                     renderSlot(otherType);
                 }
             });
 
-            resetBtn.addEventListener('click', () => {
+            resetBtn.addEventListener("click", () => {
                 imageState[type].zoom = 1.0;
                 imageState[type].panX = 0;
                 imageState[type].panY = 0;
                 updateZoomUI(type);
                 renderSlot(type);
 
-                if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
+                if (syncZoomPan.checked && (otherType === "before" ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = 1.0;
                     imageState[otherType].panX = 0;
                     imageState[otherType].panY = 0;
@@ -1556,16 +1727,16 @@
                     renderSlot(otherType);
                 }
 
-                showToast(`รีเซ็ตการซูมและตำแหน่งฝั่ง ${type === 'before' ? 'ซ้าย' : 'ขวา'}`);
+                showToast(`รีเซ็ตการซูมและตำแหน่งฝั่ง ${type === "before" ? "ซ้าย" : "ขวา"}`);
             });
         }
 
-        setupZoomControls('before');
-        setupZoomControls('after');
+        setupZoomControls("before");
+        setupZoomControls("after");
 
         // --- FILE INPUT & DROP HANDLERS ---
         function handleImageLoaded(img, type) {
-            if (type === 'before') {
+            if (type === "before") {
                 beforeImage = img;
             } else {
                 afterImage = img;
@@ -1581,62 +1752,60 @@
             renderBothSlots();
             checkReadyState();
 
-            showToast(`โหลดภาพฝั่ง ${type === 'before' ? 'ซ้าย (Before)' : 'ขวา (After)'} สำเร็จ`);
+            showToast(`โหลดภาพฝั่ง ${type === "before" ? "ซ้าย (Before)" : "ขวา (After)"} สำเร็จ`);
         }
 
         function processFile(file, type) {
-            if (!file || !file.type.startsWith('image/')) {
-                showToast('กรุณาเลือกไฟล์รูปภาพที่ถูกต้อง', 'error');
+            if (!file || !file.type.startsWith("image/")) {
+                showToast("กรุณาเลือกไฟล์รูปภาพที่ถูกต้อง", "error");
                 return;
             }
             const img = new Image();
             img.onload = () => handleImageLoaded(img, type);
-            img.onerror = () => showToast('โหลดภาพไม่สำเร็จ', 'error');
+            img.onerror = () => showToast("โหลดภาพไม่สำเร็จ", "error");
             img.src = URL.createObjectURL(file);
         }
 
-        beforeFileInput.addEventListener('change', e => {
-            if (e.target.files[0]) processFile(e.target.files[0], 'before');
+        beforeFileInput.addEventListener("change", e => {
+            if (e.target.files[0]) processFile(e.target.files[0], "before");
         });
-        afterFileInput.addEventListener('change', e => {
-            if (e.target.files[0]) processFile(e.target.files[0], 'after');
+        afterFileInput.addEventListener("change", e => {
+            if (e.target.files[0]) processFile(e.target.files[0], "after");
         });
-        beforeChangeInput.addEventListener('change', e => {
-            if (e.target.files[0]) processFile(e.target.files[0], 'before');
+        beforeChangeInput.addEventListener("change", e => {
+            if (e.target.files[0]) processFile(e.target.files[0], "before");
         });
-        afterChangeInput.addEventListener('change', e => {
-            if (e.target.files[0]) processFile(e.target.files[0], 'after');
+        afterChangeInput.addEventListener("change", e => {
+            if (e.target.files[0]) processFile(e.target.files[0], "after");
         });
 
-        // Setup Drag and drop per slot
         function setupSlotDropzone(slotEl, type) {
-            slotEl.addEventListener('dragover', e => {
+            slotEl.addEventListener("dragover", e => {
                 e.preventDefault();
-                slotEl.classList.add('drag-over');
+                slotEl.classList.add("drag-over");
             });
-            slotEl.addEventListener('dragleave', () => slotEl.classList.remove('drag-over'));
-            slotEl.addEventListener('drop', e => {
+            slotEl.addEventListener("dragleave", () => slotEl.classList.remove("drag-over"));
+            slotEl.addEventListener("drop", e => {
                 e.preventDefault();
-                slotEl.classList.remove('drag-over');
+                slotEl.classList.remove("drag-over");
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                     processFile(e.dataTransfer.files[0], type);
                 }
             });
         }
 
-        setupSlotDropzone(slotBefore, 'before');
-        setupSlotDropzone(slotAfter, 'after');
+        setupSlotDropzone(slotBefore, "before");
+        setupSlotDropzone(slotAfter, "after");
 
-        // Paste Handler (Smart paste to left or right)
-        let lastHoveredSlot = 'before';
-        slotBefore.addEventListener('pointerenter', () => { lastHoveredSlot = 'before'; });
-        slotAfter.addEventListener('pointerenter', () => { lastHoveredSlot = 'after'; });
+        let lastHoveredSlot = "before";
+        slotBefore.addEventListener("pointerenter", () => { lastHoveredSlot = "before"; });
+        slotAfter.addEventListener("pointerenter", () => { lastHoveredSlot = "after"; });
 
-        window.addEventListener('paste', e => {
+        window.addEventListener("paste", e => {
             const items = (e.clipboardData || window.clipboardData).items;
             let imageBlob = null;
             for (let item of items) {
-                if (item.type.indexOf('image') !== -1) {
+                if (item.type.indexOf("image") !== -1) {
                     imageBlob = item.getAsFile();
                     break;
                 }
@@ -1644,37 +1813,36 @@
             if (!imageBlob) return;
 
             let target = lastHoveredSlot;
-            if (beforeImage && !afterImage) target = 'after';
-            else if (!beforeImage && afterImage) target = 'before';
+            if (beforeImage && !afterImage) target = "after";
+            else if (!beforeImage && afterImage) target = "before";
 
             processFile(imageBlob, target);
         });
 
-        // Clear buttons
         function clearImage(type) {
-            if (type === 'before') {
+            if (type === "before") {
                 beforeImage = null;
-                beforeFileInput.value = '';
-                beforeChangeInput.value = '';
+                beforeFileInput.value = "";
+                beforeChangeInput.value = "";
             } else {
                 afterImage = null;
-                afterFileInput.value = '';
-                afterChangeInput.value = '';
+                afterFileInput.value = "";
+                afterChangeInput.value = "";
             }
             checkReadyState();
             updateMeta();
             updateFrameDimensions();
             renderBothSlots();
-            showToast(`ลบภาพฝั่ง ${type === 'before' ? 'ซ้าย' : 'ขวา'} เรียบร้อย`);
+            showToast(`ลบภาพฝั่ง ${type === "before" ? "ซ้าย" : "ขวา"} เรียบร้อย`);
         }
 
-        beforeClearBtn.addEventListener('click', (e) => {
+        beforeClearBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            clearImage('before');
+            clearImage("before");
         });
-        afterClearBtn.addEventListener('click', (e) => {
+        afterClearBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            clearImage('after');
+            clearImage("after");
         });
 
         function checkReadyState() {
@@ -1685,17 +1853,17 @@
             fullscreenBtn.disabled = !ready;
         }
 
-        // --- FULL RESOLUTION CANVAS GENERATION (FOR DOWNLOAD & CLIPBOARD) ---
+        // --- FULL RESOLUTION CANVAS GENERATION (WITH LABELS & DEPRY LOGO) ---
         function generateFullResolutionCanvas() {
             if (!beforeImage || !afterImage) return null;
 
             const geom = calculateGeometry();
             if (!geom) return null;
 
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = geom.canvasWidth;
             canvas.height = geom.canvasHeight;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext("2d");
 
             // Background
             ctx.fillStyle = bgColor.value;
@@ -1706,7 +1874,7 @@
             renderImageToSlot(ctx, afterImage, geom.slotAfter, imageState.after, currentFit);
 
             // Draw Labels
-            if (labelPos.value !== 'none') {
+            if (labelPos.value !== "none") {
                 const bText = beforeLabelText.value.trim();
                 const aText = afterLabelText.value.trim();
 
@@ -1716,12 +1884,12 @@
 
                 ctx.save();
                 ctx.font = `bold ${actualFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
 
                 const padding = actualFontSize * 1.3;
                 let bY, aY;
-                if (labelPos.value === 'top') {
+                if (labelPos.value === "top") {
                     bY = geom.slotBefore.y + padding;
                     aY = geom.slotAfter.y + padding;
                 } else {
@@ -1742,7 +1910,7 @@
                     const badgeY = y - badgeH / 2;
 
                     ctx.beginPath();
-                    if (typeof ctx.roundRect === 'function') {
+                    if (typeof ctx.roundRect === "function") {
                         ctx.roundRect(badgeX, badgeY, badgeW, badgeH, badgeH / 2);
                     } else {
                         ctx.rect(badgeX, badgeY, badgeW, badgeH);
@@ -1750,7 +1918,7 @@
 
                     const rgb = hexToRgb(labelColor.value);
                     const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-                    ctx.fillStyle = brightness > 130 ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+                    ctx.fillStyle = brightness > 130 ? "rgba(15, 23, 42, 0.75)" : "rgba(255, 255, 255, 0.85)";
                     ctx.fill();
 
                     ctx.fillStyle = labelColor.value;
@@ -1760,6 +1928,44 @@
                 renderPillLabel(bText, bX, bY);
                 renderPillLabel(aText, aX, aY);
                 ctx.restore();
+            }
+
+            // Draw de Pry Clinic Logo on Canvas
+            if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
+                const logoImg = logoObjects[currentLogoColor];
+                if (logoImg.complete && logoImg.naturalWidth) {
+                    const pct = (parseInt(logoSizeControl.value, 10) || 9) / 100;
+                    const logoW = Math.round(canvas.width * pct);
+                    const aspect = logoImg.naturalHeight / logoImg.naturalWidth;
+                    const logoH = Math.round(logoW * aspect);
+                    const margin = Math.round(canvas.width * 0.035);
+
+                    let lx, ly;
+                    const pos = logoPosSelect.value;
+                    if (pos === "top-right") {
+                        lx = canvas.width - logoW - margin;
+                        ly = margin;
+                    } else if (pos === "top-left") {
+                        lx = margin;
+                        ly = margin;
+                    } else if (pos === "bottom-right") {
+                        lx = canvas.width - logoW - margin;
+                        ly = canvas.height - logoH - margin;
+                    } else if (pos === "bottom-left") {
+                        lx = margin;
+                        ly = canvas.height - logoH - margin;
+                    } else if (pos === "top-center") {
+                        lx = Math.round((canvas.width - logoW) / 2);
+                        ly = margin;
+                    }
+
+                    ctx.save();
+                    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+                    ctx.shadowBlur = Math.round(logoW * 0.08);
+                    ctx.shadowOffsetY = Math.round(logoW * 0.03);
+                    ctx.drawImage(logoImg, lx, ly, logoW, logoH);
+                    ctx.restore();
+                }
             }
 
             return canvas;
@@ -1773,32 +1979,32 @@
             const h = canvasFrame.clientHeight;
             diffStageCanvas.width = w * (window.devicePixelRatio || 1);
             diffStageCanvas.height = h * (window.devicePixelRatio || 1);
-            diffStageCanvas.style.display = 'block';
-            slotBefore.style.display = 'none';
-            slotAfter.style.display = 'none';
-            stageDivider.style.display = 'none';
+            diffStageCanvas.style.display = "block";
+            slotBefore.style.display = "none";
+            slotAfter.style.display = "none";
+            stageDivider.style.display = "none";
 
             const dW = diffStageCanvas.width;
             const dH = diffStageCanvas.height;
             const slot = { x: 0, y: 0, w: dW, h: dH };
 
-            const beforeC = document.createElement('canvas');
+            const beforeC = document.createElement("canvas");
             beforeC.width = dW;
             beforeC.height = dH;
-            const bCtx = beforeC.getContext('2d');
+            const bCtx = beforeC.getContext("2d");
             bCtx.fillStyle = bgColor.value;
             bCtx.fillRect(0, 0, dW, dH);
             renderImageToSlot(bCtx, beforeImage, slot, imageState.before, currentFit);
 
-            const afterC = document.createElement('canvas');
+            const afterC = document.createElement("canvas");
             afterC.width = dW;
             afterC.height = dH;
-            const aCtx = afterC.getContext('2d');
+            const aCtx = afterC.getContext("2d");
             aCtx.fillStyle = bgColor.value;
             aCtx.fillRect(0, 0, dW, dH);
             renderImageToSlot(aCtx, afterImage, slot, imageState.after, currentFit);
 
-            const dCtx = diffStageCanvas.getContext('2d');
+            const dCtx = diffStageCanvas.getContext("2d");
             const bData = bCtx.getImageData(0, 0, dW, dH).data;
             const aData = aCtx.getImageData(0, 0, dW, dH).data;
             const outImgData = dCtx.createImageData(dW, dH);
@@ -1825,56 +2031,56 @@
 
             dCtx.putImageData(outImgData, 0, 0);
 
-            // Diff Title
             dCtx.save();
-            dCtx.font = 'bold 22px sans-serif';
-            dCtx.textAlign = 'center';
-            dCtx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+            dCtx.font = "bold 22px sans-serif";
+            dCtx.textAlign = "center";
+            dCtx.fillStyle = "rgba(15, 23, 42, 0.8)";
             dCtx.fillRect(dW / 2 - 180, 20, 360, 40);
-            dCtx.fillStyle = '#ffffff';
-            dCtx.fillText('Visual Diff (จุดต่างแสดงสีแดง)', dW / 2, 48);
+            dCtx.fillStyle = "#ffffff";
+            dCtx.fillText("Visual Diff (จุดต่างแสดงสีแดง)", dW / 2, 48);
             dCtx.restore();
         }
 
-        toggleDiffBtn.addEventListener('click', () => {
+        toggleDiffBtn.addEventListener("click", () => {
             isDiffActive = !isDiffActive;
             if (isDiffActive) {
-                toggleDiffBtn.textContent = '🖼️ ดูแบบต่อกันซ้าย-ขวา';
-                toggleDiffBtn.classList.remove('btn-secondary');
-                toggleDiffBtn.classList.add('btn-primary');
+                toggleDiffBtn.textContent = "🖼️ ดูแบบต่อกันซ้าย-ขวา";
+                toggleDiffBtn.classList.remove("btn-secondary");
+                toggleDiffBtn.classList.add("btn-primary");
                 renderDiffStage();
             } else {
-                toggleDiffBtn.textContent = '🔍 ดูจุดต่าง (Visual Diff)';
-                toggleDiffBtn.classList.remove('btn-primary');
-                toggleDiffBtn.classList.add('btn-secondary');
-                diffStageCanvas.style.display = 'none';
-                slotBefore.style.display = 'flex';
-                slotAfter.style.display = 'flex';
-                stageDivider.style.display = 'block';
+                toggleDiffBtn.textContent = "🔍 ดูจุดต่าง (Visual Diff)";
+                toggleDiffBtn.classList.remove("btn-primary");
+                toggleDiffBtn.classList.add("btn-secondary");
+                diffStageCanvas.style.display = "none";
+                slotBefore.style.display = "flex";
+                slotAfter.style.display = "flex";
+                stageDivider.style.display = "block";
                 renderBothSlots();
             }
         });
 
         // --- DOWNLOAD ACTION ---
-        downloadBtn.addEventListener('click', () => {
+        downloadBtn.addEventListener("click", () => {
             const canvas = generateFullResolutionCanvas();
             if (!canvas) return;
 
             const format = formatSelect.value;
-            const quality = (format === 'jpeg' || format === 'webp') ? (qualityControl.value / 100) : undefined;
+            const quality = (format === "jpeg" || format === "webp") ? (qualityControl.value / 100) : undefined;
             const mimeType = `image/${format}`;
             const dataUrl = canvas.toDataURL(mimeType, quality);
 
-            const ratioName = currentRatio === 'auto' ? 'auto' : currentRatio.replace(':', 'x');
-            const link = document.createElement('a');
-            link.download = `before-after-${ratioName}.${format}`;
+            const ratioName = currentRatio === "auto" ? "auto" : currentRatio.replace(":", "x");
+            const logoSuffix = currentLogoColor !== "none" ? `-logo-${currentLogoColor}` : "";
+            const link = document.createElement("a");
+            link.download = `before-after-${ratioName}${logoSuffix}.${format}`;
             link.href = dataUrl;
             link.click();
-            showToast('ดาวน์โหลดภาพรวมเรียบร้อยแล้ว!');
+            showToast("ดาวน์โหลดภาพรวมพร้อมโลโก้เรียบร้อยแล้ว!");
         });
 
         // --- COPY TO CLIPBOARD ---
-        copyClipboardBtn.addEventListener('click', async () => {
+        copyClipboardBtn.addEventListener("click", async () => {
             const canvas = generateFullResolutionCanvas();
             if (!canvas) return;
 
@@ -1882,33 +2088,33 @@
                 if (canvas.toBlob) {
                     canvas.toBlob(async (blob) => {
                         if (!blob) {
-                            showToast('เกิดข้อผิดพลาดในการแปลงรูปภาพ', 'error');
+                            showToast("เกิดข้อผิดพลาดในการแปลงรูปภาพ", "error");
                             return;
                         }
                         try {
-                            const item = new ClipboardItem({ 'image/png': blob });
+                            const item = new ClipboardItem({ "image/png": blob });
                             await navigator.clipboard.write([item]);
-                            showToast('คัดลอกภาพลง Clipboard สำเร็จแล้ว!');
+                            showToast("คัดลอกภาพลง Clipboard สำเร็จแล้ว!");
                         } catch(err) {
                             console.error(err);
-                            showToast('เบราว์เซอร์ไม่อนุญาตให้คัดลอกโดยตรง กรุณากดดาวน์โหลดแทน', 'error');
+                            showToast("เบราว์เซอร์ไม่อนุญาตให้คัดลอกโดยตรง กรุณากดดาวน์โหลดแทน", "error");
                         }
-                    }, 'image/png');
+                    }, "image/png");
                 }
             } catch(err) {
                 console.error(err);
-                showToast('ไม่สามารถคัดลอกรูปภาพได้', 'error');
+                showToast("ไม่สามารถคัดลอกรูปภาพได้", "error");
             }
         });
 
         // --- FULLSCREEN LIGHTBOX ---
-        fullscreenBtn.addEventListener('click', () => {
+        fullscreenBtn.addEventListener("click", () => {
             const canvas = generateFullResolutionCanvas();
             if (!canvas) return;
 
-            const dataUrl = canvas.toDataURL('image/png');
-            const modal = document.createElement('div');
-            modal.className = 'lightbox-modal';
+            const dataUrl = canvas.toDataURL("image/png");
+            const modal = document.createElement("div");
+            modal.className = "lightbox-modal";
             modal.innerHTML = `
                 <button class="lightbox-close-btn" title="ปิด (Esc)">✕</button>
                 <div class="lightbox-content">
@@ -1918,34 +2124,33 @@
             document.body.appendChild(modal);
 
             const close = () => modal.remove();
-            modal.querySelector('.lightbox-close-btn').onclick = close;
-            modal.onclick = (e) => { if (e.target === modal || e.target.classList.contains('lightbox-content')) close(); };
+            modal.querySelector(".lightbox-close-btn").onclick = close;
+            modal.onclick = (e) => { if (e.target === modal || e.target.classList.contains("lightbox-content")) close(); };
             const onKey = (e) => {
-                if (e.key === 'Escape') {
+                if (e.key === "Escape") {
                     close();
-                    window.removeEventListener('keydown', onKey);
+                    window.removeEventListener("keydown", onKey);
                 }
             };
-            window.addEventListener('keydown', onKey);
+            window.addEventListener("keydown", onKey);
         });
 
         // --- KEYBOARD SHORTCUTS ---
-        document.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        document.addEventListener("keydown", e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
                 if (!downloadBtn.disabled) {
                     e.preventDefault();
                     downloadBtn.click();
                 }
             }
-            if (e.key === 'Delete' || e.key === 'Backspace') {
-                if (document.activeElement.tagName === 'INPUT') return;
-                if (lastHoveredSlot === 'before' && beforeImage) clearImage('before');
-                else if (lastHoveredSlot === 'after' && afterImage) clearImage('after');
+            if (e.key === "Delete" || e.key === "Backspace") {
+                if (document.activeElement.tagName === "INPUT") return;
+                if (lastHoveredSlot === "before" && beforeImage) clearImage("before");
+                else if (lastHoveredSlot === "after" && afterImage) clearImage("after");
             }
         });
 
-        // Window resize
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             updateFrameDimensions();
             renderBothSlots();
         });
@@ -1955,6 +2160,7 @@
         updateTags();
         updateDivider();
         updateFrameDimensions();
+        updateLogoDisplay();
         renderBothSlots();
     </script>
 </body>
