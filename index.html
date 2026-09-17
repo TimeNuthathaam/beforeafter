@@ -12,16 +12,17 @@
             --secondary: #475569;
             --secondary-hover: #334155;
             --surface: #ffffff;
-            --bg: #f1f5f9;
-            --border: #cbd5e1;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+            --border-hover: #94a3b8;
             --text: #0f172a;
             --text-muted: #64748b;
-            --radius-lg: 12px;
-            --radius-md: 8px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
             --radius-sm: 6px;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 24px -4px rgba(0,0,0,0.12), 0 4px 8px -2px rgba(0,0,0,0.06);
         }
 
         * {
@@ -32,9 +33,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            max-width: 1280px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 24px 20px 48px;
+            padding: 20px 16px 60px;
             background: var(--bg);
             color: var(--text);
             line-height: 1.5;
@@ -43,10 +44,10 @@
         /* App Header */
         .app-header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .app-header h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--text);
             display: flex;
@@ -57,27 +58,27 @@
         .app-header .subtitle {
             font-size: 14px;
             color: var(--text-muted);
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
-        /* Main Card Controls */
+        /* Top Controls Card */
         .controls-card {
             background: var(--surface);
-            padding: 20px 24px;
+            padding: 18px 22px;
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 24px;
-            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
         }
 
         /* Aspect Ratio Section */
         .aspect-ratio-section {
-            margin-bottom: 18px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
         }
         .section-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text);
             margin-bottom: 10px;
@@ -91,40 +92,40 @@
             gap: 8px;
         }
         .ratio-pill {
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px solid var(--border);
             color: var(--text);
             padding: 8px 16px;
             border-radius: 9999px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
         .ratio-pill:hover {
             background: #f1f5f9;
-            border-color: #94a3b8;
+            border-color: var(--border-hover);
         }
         .ratio-pill.active {
             background: var(--primary);
             color: #ffffff;
             border-color: var(--primary);
-            box-shadow: 0 2px 4px rgba(37,99,235,0.25);
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
         }
         .ratio-pill .ratio-desc {
             font-size: 11px;
-            opacity: 0.8;
+            opacity: 0.85;
             font-weight: 400;
         }
 
         /* Control Rows & Groups */
         .control-row {
             display: flex;
-            gap: 20px;
-            margin-bottom: 14px;
+            gap: 18px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -173,22 +174,16 @@
             padding: 2px;
             background: white;
         }
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-        input[type="color"]::-webkit-color-swatch {
-            border: none;
-            border-radius: 4px;
-        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 
         .val-badge {
             font-size: 12px;
             color: var(--text-muted);
-            min-width: 42px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            min-width: 36px;
+            font-family: ui-monospace, SFMono-Regular, monospace;
         }
 
-        /* Checkbox & Switch */
         .toggle-label {
             display: inline-flex;
             align-items: center;
@@ -198,14 +193,14 @@
             color: #1e293b;
             cursor: pointer;
             user-select: none;
-            background: #f8fafc;
+            background: #f1f5f9;
             padding: 6px 12px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border);
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
         .toggle-label:hover {
-            background: #f1f5f9;
+            background: #e2e8f0;
         }
         .toggle-label input[type="checkbox"] {
             accent-color: var(--primary);
@@ -214,58 +209,28 @@
             height: 15px;
         }
 
-        /* Layout selection pill buttons */
-        .layout-btn-group {
-            display: inline-flex;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .layout-btn {
-            background: #ffffff;
-            border: none;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            color: var(--text);
-            transition: all 0.15s;
-            border-right: 1px solid var(--border);
-        }
-        .layout-btn:last-child {
-            border-right: none;
-        }
-        .layout-btn:hover {
-            background: #f1f5f9;
-        }
-        .layout-btn.active {
-            background: var(--primary);
-            color: #ffffff;
-        }
-
-        /* Two Column Container */
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-        .image-box {
+        /* =========================================
+           UNIFIED CANVAS WORKSPACE (ต่อกันซ้ายและขวา)
+           ========================================= */
+        .workspace-card {
             background: var(--surface);
             padding: 20px;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
         }
-        .box-header {
+
+        .workspace-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .box-header h2 {
+        .workspace-title {
             font-size: 16px;
             font-weight: 700;
             color: var(--text);
@@ -273,142 +238,252 @@
             align-items: center;
             gap: 8px;
         }
-        .box-header .badge-tag {
-            font-size: 11px;
-            background: #e2e8f0;
+        .workspace-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .meta-tag {
+            background: #f1f5f9;
             color: #334155;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
             font-weight: 600;
+            border: 1px solid var(--border);
         }
 
-        /* Empty Drop Area */
-        .paste-area {
-            width: 100%;
-            height: 280px;
-            border: 2px dashed #cbd5e1;
+        /* The Stage Container */
+        .stage-container {
+            background: #0f172a;
             border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+            min-height: 420px;
+            overflow: hidden;
+        }
+
+        /* The Unified Connected Frame (Single box having the chosen aspect ratio) */
+        .canvas-frame {
+            position: relative;
+            display: flex;
+            flex-direction: row; /* Joined side by side! */
+            background: #ffffff;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            border-radius: 6px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            transition: width 0.2s ease, height 0.2s ease;
+        }
+
+        .canvas-frame.layout-vertical {
+            flex-direction: column; /* Stacked if explicitly chosen */
+        }
+
+        /* Each half of the connected image */
+        .stage-slot {
+            position: relative;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            background: #1e293b;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stage-slot:active {
+            cursor: grabbing;
+        }
+
+        .slot-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+        }
+
+        /* Divider between slots */
+        .stage-divider {
+            flex-shrink: 0;
+            background: #ffffff;
+            width: 0px;
+            height: 100%;
+            transition: width 0.15s ease, background 0.15s ease;
+            position: relative;
+            z-index: 5;
+        }
+        .canvas-frame.layout-vertical .stage-divider {
+            width: 100%;
+            height: 0px;
+        }
+
+        /* Upload Dropzone inside empty slot */
+        .slot-dropzone {
+            position: absolute;
+            inset: 12px;
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: var(--radius-sm);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            color: #cbd5e1;
+            padding: 16px;
             cursor: pointer;
-            position: relative;
-            background: #f8fafc;
-            transition: all 0.2s ease;
-            outline: none;
-            overflow: hidden;
-        }
-        .paste-area:hover, .paste-area:focus {
-            border-color: var(--primary);
-            background: #f1f5f9;
-        }
-        .paste-area.drag-over {
-            border-color: var(--primary);
-            background: rgba(37,99,235,0.08);
-            transform: scale(0.99);
-        }
-        .paste-area .upload-icon {
-            font-size: 38px;
-            margin-bottom: 8px;
-            color: #94a3b8;
-        }
-        .paste-area .instructions {
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        .paste-area .instructions strong {
-            color: var(--text);
-        }
-        .paste-area input[type="file"] {
-            display: none;
-        }
-
-        .browse-btn {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            padding: 8px 18px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            box-shadow: var(--shadow-sm);
             transition: all 0.2s;
+            background: rgba(15, 23, 42, 0.4);
+            z-index: 10;
         }
-        .browse-btn:hover {
-            background: #f8fafc;
-            border-color: #94a3b8;
+        .slot-dropzone:hover, .slot-dropzone.drag-over {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.2);
+            color: #ffffff;
+        }
+        .slot-dropzone .drop-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+        .slot-dropzone .drop-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .slot-dropzone .drop-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .btn-browse {
+            background: rgba(255,255,255,0.9);
+            color: #0f172a;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.15s;
+        }
+        .btn-browse:hover {
+            background: #ffffff;
+            transform: scale(1.03);
         }
 
-        /* Interactive Viewport Box */
-        .viewport-wrapper {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            background: #0f172a;
-            border-radius: var(--radius-md);
-            overflow: hidden;
+        /* Floating Overlays & Tags */
+        .slot-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 8;
+        }
+        .slot-tag {
+            position: absolute;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .slot-tag.tag-top {
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .slot-tag.tag-bottom {
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .slot-quick-btns {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 6px;
+            pointer-events: auto;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .stage-slot:hover .slot-quick-btns {
+            opacity: 1;
+        }
+        .btn-icon {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
         }
-        .viewport-frame {
-            position: relative;
-            background: #1e293b;
-            overflow: hidden;
-            box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 8px 16px rgba(0,0,0,0.4);
-            cursor: grab;
-            user-select: none;
-            touch-action: none;
+        .btn-icon:hover {
+            background: rgba(15, 23, 42, 1);
+            transform: scale(1.1);
         }
-        .viewport-frame:active {
-            cursor: grabbing;
-        }
-        .viewport-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        .viewport-guide-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(4px);
-            color: #ffffff;
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            pointer-events: none;
-            font-family: monospace;
-            border: 1px solid rgba(255,255,255,0.15);
+        .btn-icon-danger:hover {
+            background: #ef4444;
+            border-color: #ef4444;
         }
 
-        /* Zoom & Pan Toolbar */
-        .zoom-toolbar {
+        /* Diff Canvas (replaces side-by-side during diff mode) */
+        #diffStageCanvas {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        /* =========================================
+           ZOOM & PAN CONTROLS TOOLBAR
+           ========================================= */
+        .zoom-bars-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
             margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            text-align: left;
+        }
+        .zoom-side-panel {
             background: #f8fafc;
             padding: 10px 14px;
             border-radius: var(--radius-md);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .zoom-control-group {
+            border: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 8px;
-            flex: 1;
-            min-width: 180px;
+            flex-wrap: wrap;
+        }
+        .zoom-side-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 80px;
         }
         .zoom-btn {
             background: #ffffff;
@@ -424,35 +499,28 @@
             font-weight: 600;
             color: var(--text);
             transition: all 0.15s;
-            padding: 0;
             box-shadow: var(--shadow-sm);
         }
         .zoom-btn:hover {
             background: #f1f5f9;
-            border-color: #94a3b8;
+            border-color: var(--border-hover);
         }
         .zoom-slider {
             flex: 1;
-            min-width: 70px;
+            min-width: 80px;
         }
         .zoom-value {
             font-size: 12px;
             font-weight: 600;
             color: var(--text);
-            min-width: 46px;
+            min-width: 44px;
             text-align: right;
             font-family: ui-monospace, SFMono-Regular, monospace;
-        }
-
-        .zoom-quick-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
         .btn-sm {
             background: #ffffff;
             border: 1px solid var(--border);
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 12px;
@@ -462,181 +530,22 @@
         }
         .btn-sm:hover {
             background: #f1f5f9;
-            border-color: #94a3b8;
-        }
-        .btn-sm.btn-danger-sm:hover {
-            background: #fee2e2;
-            color: #dc2626;
-            border-color: #fca5a5;
+            border-color: var(--border-hover);
         }
 
-        .drag-hint {
-            margin-top: 8px;
-            font-size: 11px;
-            color: var(--text-muted);
-            text-align: center;
+        .sync-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 16px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         /* Action Buttons */
         .action-buttons-wrap {
-            text-align: center;
-            margin: 10px 0 20px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-        button.btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(37,99,235,0.25);
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        button.btn-primary:hover:not(:disabled) {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 14px rgba(37,99,235,0.3);
-        }
-        button.btn-secondary {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        button.btn-secondary:hover:not(:disabled) {
-            background: var(--secondary-hover);
-        }
-        button:disabled {
-            background: #cbd5e1 !important;
-            color: #94a3b8 !important;
-            cursor: not-allowed !important;
-            box-shadow: none !important;
-            transform: none !important;
-        }
-
-        /* Keyboard shortcuts */
-        .keyboard-shortcuts {
-            background: #f8fafc;
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .shortcut {
-            display: inline-block;
-            background: #e2e8f0;
-            color: #334155;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: 600;
-        }
-
-        /* Result Section */
-        #result {
-            margin-top: 10px;
-        }
-        .result-card {
-            background: var(--surface);
-            padding: 24px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        .result-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .result-title {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .result-meta-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .meta-tag {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid #e2e8f0;
-        }
-
-        .result-preview-tools {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            background: #f8fafc;
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid #e2e8f0;
-            flex-wrap: wrap;
-        }
-
-        .result-viewport-container {
-            background: #0f172a;
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
-            max-height: 600px;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
-        }
-        #combinedImage {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            transition: transform 0.15s ease-out;
-            transform-origin: center center;
-        }
-
-        .result-actions {
+            margin-top: 16px;
             display: flex;
             justify-content: center;
             gap: 12px;
@@ -646,20 +555,21 @@
             background: #10b981;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: var(--radius-md);
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(16,185,129,0.25);
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             background: #059669;
             transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16,185,129,0.4);
         }
         .btn-outline {
             background: #ffffff;
@@ -675,19 +585,69 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-outline:hover {
+        .btn-outline:hover:not(:disabled) {
             background: #f8fafc;
-            border-color: #94a3b8;
+            border-color: var(--border-hover);
+        }
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--secondary-hover);
+        }
+        button:disabled {
+            background: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
-        /* Fullscreen Lightbox Modal */
+        /* Shortcuts Footer */
+        .keyboard-shortcuts {
+            background: #f1f5f9;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            border: 1px solid var(--border);
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .shortcut {
+            background: #ffffff;
+            color: #334155;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        /* Fullscreen Lightbox */
         .lightbox-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15,23,42,0.92);
+            background: rgba(15,23,42,0.94);
             backdrop-filter: blur(8px);
             z-index: 9999;
             display: flex;
@@ -699,17 +659,16 @@
             position: relative;
             max-width: 95vw;
             max-height: 85vh;
-            overflow: auto;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .lightbox-img {
-            max-width: 90vw;
-            max-height: 80vh;
+            max-width: 92vw;
+            max-height: 82vh;
             object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 6px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.6);
         }
         .lightbox-close-btn {
             position: absolute;
@@ -726,11 +685,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
         }
-        .lightbox-close-btn:hover {
-            background: rgba(255,255,255,0.4);
-        }
+        .lightbox-close-btn:hover { background: rgba(255,255,255,0.4); }
 
         /* Toast notifications */
         .toast {
@@ -741,7 +697,7 @@
             border-radius: var(--radius-md);
             color: white;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             box-shadow: var(--shadow-lg);
             z-index: 10000;
             animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
@@ -752,20 +708,6 @@
         .toast.error { background: #ef4444; }
         .toast.success { background: #10b981; }
 
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(37,99,235,0.2);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            position: absolute;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
@@ -775,25 +717,23 @@
             to { opacity: 0; transform: translateY(12px); }
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 860px) {
-            .container {
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .zoom-bars-grid {
                 grid-template-columns: 1fr;
             }
-            .paste-area, .viewport-wrapper {
-                height: 240px;
+            .stage-container {
+                padding: 10px;
+                min-height: 320px;
             }
             .control-row {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 10px;
             }
             .control-item {
                 width: 100%;
                 justify-content: space-between;
-            }
-            .ratio-pill-group {
-                justify-content: flex-start;
             }
         }
     </style>
@@ -801,7 +741,7 @@
 <body>
     <header class="app-header">
         <h1>Before/After Image Combiner</h1>
-        <p class="subtitle">รวมและเปรียบเทียบภาพ ก่อน/หลัง พร้อมเลือกอัตราส่วนภาพ (1:1, 16:9, 9:16, 4:5, 5:4) และซูมจัดองค์ประกอบได้อย่างอิสระ</p>
+        <p class="subtitle">รวมภาพแบบต่อกันซ้าย-ขวาในเฟรมเดียว (1:1, 16:9, 9:16, 4:5, 5:4) พร้อมซูมและเลื่อนจัดตำแหน่งได้อย่างอิสระ</p>
     </header>
 
     <!-- Controls Panel -->
@@ -809,14 +749,10 @@
         <!-- Aspect Ratio Selection -->
         <div class="aspect-ratio-section">
             <div class="section-label">
-                <span>📐 อัตราส่วนภาพ (Aspect Ratio):</span>
+                <span>📐 ขนาดอัตราส่วนภาพ (Aspect Ratio):</span>
             </div>
             <div class="ratio-pill-group" id="ratioPills">
-                <button type="button" class="ratio-pill active" data-ratio="auto">
-                    <span>Auto</span>
-                    <span class="ratio-desc">(ต้นฉบับ)</span>
-                </button>
-                <button type="button" class="ratio-pill" data-ratio="1:1">
+                <button type="button" class="ratio-pill active" data-ratio="1:1">
                     <span>1:1</span>
                     <span class="ratio-desc">(Square จัตุรัส)</span>
                 </button>
@@ -836,17 +772,20 @@
                     <span>9:16</span>
                     <span class="ratio-desc">(Story / Reels / TikTok)</span>
                 </button>
+                <button type="button" class="ratio-pill" data-ratio="auto">
+                    <span>Auto</span>
+                    <span class="ratio-desc">(ขนาดตามรูป)</span>
+                </button>
             </div>
         </div>
 
-        <!-- Layout, Fit Mode, and Sync -->
+        <!-- Row 2: Layout, Fit Mode, and Sync -->
         <div class="control-row">
             <div class="control-item">
-                <label for="layoutSelect">การจัดวาง (Layout):</label>
+                <label for="layoutSelect">การจัดวางภาพ:</label>
                 <select id="layoutSelect">
-                    <option value="auto">Auto (อัตโนมัติตามสัดส่วน)</option>
-                    <option value="horizontal">Side-by-Side (แนวนอน ◄ ►)</option>
-                    <option value="vertical">Stacked (แนวตั้ง ▲ ▼)</option>
+                    <option value="horizontal">ต่อกันซ้าย-ขวา (Side by Side ◄ ►)</option>
+                    <option value="vertical">ต่อกันบน-ล่าง (Stacked ▲ ▼)</option>
                 </select>
             </div>
 
@@ -859,30 +798,30 @@
             </div>
 
             <div class="control-item">
-                <label class="toggle-label" title="เมื่อซูมหรือเลื่อนตำแหน่งภาพหนึ่ง อีกภาพจะเคลื่อนไหวตามเท่ากัน">
+                <label class="toggle-label" title="เมื่อซูมหรือเลื่อนตำแหน่งภาพหนึ่ง อีกภาพจะขยับตามเท่ากันทันที">
                     <input type="checkbox" id="syncZoomPan">
-                    <span>🔗 Sync Zoom & Pan (ซิงค์การซูม/ตำแหน่ง)</span>
+                    <span>🔗 Sync Zoom & Pan (ซิงค์การซูมและตำแหน่ง)</span>
                 </label>
             </div>
         </div>
 
-        <!-- Spacing & Background -->
+        <!-- Row 3: Gap, Background, Labels -->
         <div class="control-row">
             <div class="control-item">
-                <label for="gapControl">ระยะห่าง (Gap):</label>
-                <input type="range" min="0" max="80" value="0" id="gapControl">
+                <label for="gapControl">เส้นคั่น/ระยะห่าง (Gap):</label>
+                <input type="range" min="0" max="40" value="0" id="gapControl">
                 <span id="gapValue" class="val-badge">0px</span>
             </div>
             <div class="control-item">
-                <label for="bgColor">สีพื้นหลัง (Background):</label>
+                <label for="bgColor">สีพื้นหลัง/เส้นคั่น:</label>
                 <input type="color" value="#ffffff" id="bgColor">
             </div>
             <div class="control-item">
-                <label for="labelPos">ตำแหน่งข้อความ (Label):</label>
+                <label for="labelPos">ตำแหน่งข้อความ:</label>
                 <select id="labelPos">
                     <option value="top">Top (ด้านบน)</option>
                     <option value="bottom">Bottom (ด้านล่าง)</option>
-                    <option value="none">Hidden (ไม่แสดงข้อความ)</option>
+                    <option value="none">Hidden (ไม่แสดง)</option>
                 </select>
             </div>
             <div class="control-item">
@@ -892,18 +831,18 @@
             </div>
             <div class="control-item">
                 <label for="labelColor">สีตัวอักษร:</label>
-                <input type="color" value="#000000" id="labelColor">
+                <input type="color" value="#ffffff" id="labelColor">
             </div>
         </div>
 
-        <!-- Labels & Export Format -->
+        <!-- Row 4: Custom label texts & Export format -->
         <div class="control-row">
             <div class="control-item">
-                <label for="beforeLabelText">ข้อความรูป Before:</label>
+                <label for="beforeLabelText">ข้อความฝั่งซ้าย:</label>
                 <input type="text" id="beforeLabelText" value="Before" style="width: 100px;">
             </div>
             <div class="control-item">
-                <label for="afterLabelText">ข้อความรูป After:</label>
+                <label for="afterLabelText">ข้อความฝั่งขวา:</label>
                 <input type="text" id="afterLabelText" value="After" style="width: 100px;">
             </div>
             <div class="control-item">
@@ -922,157 +861,149 @@
         </div>
     </div>
 
-    <!-- Image Input & Zoom Manipulation Cards -->
-    <div class="container">
-        <!-- Before Card -->
-        <div class="image-box" id="beforeBox">
-            <div class="box-header">
-                <h2>
-                    <span>Before Image</span>
-                    <span class="badge-tag" id="beforeDimTag" style="display:none;"></span>
-                </h2>
-                <div class="box-actions">
-                    <button type="button" class="btn-sm btn-danger-sm" id="beforeClearBtn" style="display: none;" title="ลบภาพ Before">✕ Clear</button>
-                </div>
+    <!-- ==============================================================
+         UNIFIED CONNECTED STAGE: TWO IMAGES JOINED SIDE-BY-SIDE IN 1 FRAME
+         ============================================================== -->
+    <div class="workspace-card">
+        <div class="workspace-header">
+            <div class="workspace-title">
+                <span id="workspaceTitleText">🖼️ พื้นที่จัดภาพ (ต่อกันซ้าย-ขวา ในกรอบเดียว)</span>
             </div>
-
-            <!-- Upload Area (shown when empty) -->
-            <div id="beforePasteArea" class="paste-area" tabindex="0">
-                <div class="upload-icon">📷</div>
-                <div class="instructions">
-                    <strong>วางภาพ Before ที่นี่</strong><br>
-                    ลากไฟล์มาวาง หรือ กดคลิกแล้วกด Ctrl+V / ⌘+V
-                </div>
-                <label class="browse-btn">
-                    Browse Image
-                    <input type="file" accept="image/*" id="beforeFileInput">
-                </label>
-            </div>
-
-            <!-- Interactive Viewport (shown when image loaded) -->
-            <div id="beforeViewportWrapper" class="viewport-wrapper" style="display: none;">
-                <div id="beforeViewportFrame" class="viewport-frame" title="คลิกแล้วลากเพื่อเลื่อนตำแหน่ง • หมุนล้อเมาส์เพื่อซูม">
-                    <canvas id="beforeCanvas" class="viewport-canvas"></canvas>
-                </div>
-                <div class="viewport-guide-badge" id="beforeGuideBadge">Before Slot</div>
-            </div>
-
-            <!-- Zoom & Pan Toolbar -->
-            <div class="zoom-toolbar" id="beforeZoomBar" style="display: none;">
-                <div class="zoom-control-group">
-                    <button type="button" class="zoom-btn" id="beforeZoomOut" title="Zoom Out (−)">−</button>
-                    <input type="range" id="beforeZoomSlider" min="20" max="500" value="100" class="zoom-slider">
-                    <button type="button" class="zoom-btn" id="beforeZoomIn" title="Zoom In (+)">+</button>
-                    <span class="zoom-value" id="beforeZoomVal">100%</span>
-                </div>
-                <div class="zoom-quick-actions">
-                    <button type="button" class="btn-sm" id="beforeResetBtn" title="รีเซ็ตการซูมและตำแหน่ง">⟲ Reset</button>
-                    <label class="btn-sm" style="cursor: pointer;" title="เปลี่ยนภาพ">
-                        Change
-                        <input type="file" accept="image/*" id="beforeChangeInput" style="display: none;">
-                    </label>
-                </div>
-            </div>
-            <div class="drag-hint" id="beforeDragHint" style="display: none;">
-                <span>🖱️ คลิกค้างแล้วลากเพื่อขยับภาพ • เลื่อนล้อเมาส์เพื่อซูม In / Out</span>
+            <div class="workspace-meta">
+                <span class="meta-tag" id="metaRatioTag">📐 สัดส่วน 1:1</span>
+                <span class="meta-tag" id="metaResTag">📏 รอโหลดภาพ</span>
             </div>
         </div>
 
-        <!-- After Card -->
-        <div class="image-box" id="afterBox">
-            <div class="box-header">
-                <h2>
-                    <span>After Image</span>
-                    <span class="badge-tag" id="afterDimTag" style="display:none;"></span>
-                </h2>
-                <div class="box-actions">
-                    <button type="button" class="btn-sm btn-danger-sm" id="afterClearBtn" style="display: none;" title="ลบภาพ After">✕ Clear</button>
+        <!-- The Canvas Stage -->
+        <div class="stage-container" id="stageContainer">
+            <!-- Unified Single Frame -->
+            <div class="canvas-frame" id="canvasFrame">
+                <!-- Left Slot: Before Image -->
+                <div class="stage-slot" id="slotBefore" title="คลิกค้างแล้วลากเพื่อขยับภาพซ้าย • เลื่อนลูกกลิ้งเมาส์เพื่อซูม">
+                    <canvas id="beforeCanvas" class="slot-canvas"></canvas>
+                    <div class="slot-dropzone" id="beforeDropzone">
+                        <div class="drop-icon">📷</div>
+                        <div class="drop-title">Before (ภาพด้านซ้าย)</div>
+                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
+                        <label class="btn-browse">
+                            Browse Image
+                            <input type="file" accept="image/*" id="beforeFileInput" style="display:none;">
+                        </label>
+                    </div>
+                    <div class="slot-overlay" id="beforeOverlay" style="display: none;">
+                        <span class="slot-tag tag-top" id="beforeTag">Before</span>
+                        <div class="slot-quick-btns">
+                            <label class="btn-icon" title="เปลี่ยนภาพด้านซ้าย">
+                                ✏️
+                                <input type="file" accept="image/*" id="beforeChangeInput" style="display:none;">
+                            </label>
+                            <button type="button" class="btn-icon btn-icon-danger" id="beforeClearBtn" title="ลบภาพด้านซ้าย">✕</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Upload Area (shown when empty) -->
-            <div id="afterPasteArea" class="paste-area" tabindex="0">
-                <div class="upload-icon">✨</div>
-                <div class="instructions">
-                    <strong>วางภาพ After ที่นี่</strong><br>
-                    ลากไฟล์มาวาง หรือ กดคลิกแล้วกด Ctrl+V / ⌘+V
-                </div>
-                <label class="browse-btn">
-                    Browse Image
-                    <input type="file" accept="image/*" id="afterFileInput">
-                </label>
-            </div>
+                <!-- Divider / Seam between slots -->
+                <div class="stage-divider" id="stageDivider"></div>
 
-            <!-- Interactive Viewport (shown when image loaded) -->
-            <div id="afterViewportWrapper" class="viewport-wrapper" style="display: none;">
-                <div id="afterViewportFrame" class="viewport-frame" title="คลิกแล้วลากเพื่อเลื่อนตำแหน่ง • หมุนล้อเมาส์เพื่อซูม">
-                    <canvas id="afterCanvas" class="viewport-canvas"></canvas>
+                <!-- Right Slot: After Image -->
+                <div class="stage-slot" id="slotAfter" title="คลิกค้างแล้วลากเพื่อขยับภาพขวา • เลื่อนลูกกลิ้งเมาส์เพื่อซูม">
+                    <canvas id="afterCanvas" class="slot-canvas"></canvas>
+                    <div class="slot-dropzone" id="afterDropzone">
+                        <div class="drop-icon">✨</div>
+                        <div class="drop-title">After (ภาพด้านขวา)</div>
+                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
+                        <label class="btn-browse">
+                            Browse Image
+                            <input type="file" accept="image/*" id="afterFileInput" style="display:none;">
+                        </label>
+                    </div>
+                    <div class="slot-overlay" id="afterOverlay" style="display: none;">
+                        <span class="slot-tag tag-top" id="afterTag">After</span>
+                        <div class="slot-quick-btns">
+                            <label class="btn-icon" title="เปลี่ยนภาพด้านขวา">
+                                ✏️
+                                <input type="file" accept="image/*" id="afterChangeInput" style="display:none;">
+                            </label>
+                            <button type="button" class="btn-icon btn-icon-danger" id="afterClearBtn" title="ลบภาพด้านขวา">✕</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="viewport-guide-badge" id="afterGuideBadge">After Slot</div>
-            </div>
 
-            <!-- Zoom & Pan Toolbar -->
-            <div class="zoom-toolbar" id="afterZoomBar" style="display: none;">
-                <div class="zoom-control-group">
-                    <button type="button" class="zoom-btn" id="afterZoomOut" title="Zoom Out (−)">−</button>
-                    <input type="range" id="afterZoomSlider" min="20" max="500" value="100" class="zoom-slider">
-                    <button type="button" class="zoom-btn" id="afterZoomIn" title="Zoom In (+)">+</button>
-                    <span class="zoom-value" id="afterZoomVal">100%</span>
-                </div>
-                <div class="zoom-quick-actions">
-                    <button type="button" class="btn-sm" id="afterResetBtn" title="รีเซ็ตการซูมและตำแหน่ง">⟲ Reset</button>
-                    <label class="btn-sm" style="cursor: pointer;" title="เปลี่ยนภาพ">
-                        Change
-                        <input type="file" accept="image/*" id="afterChangeInput" style="display: none;">
-                    </label>
-                </div>
-            </div>
-            <div class="drag-hint" id="afterDragHint" style="display: none;">
-                <span>🖱️ คลิกค้างแล้วลากเพื่อขยับภาพ • เลื่อนล้อเมาส์เพื่อซูม In / Out</span>
+                <!-- Diff Image (shown when diff mode is active) -->
+                <canvas id="diffStageCanvas"></canvas>
             </div>
         </div>
-    </div>
 
-    <!-- Combine / Diff Action Buttons -->
-    <div class="action-buttons-wrap">
-        <button id="combineBtn" class="btn-primary" disabled>
-            <span>✨ Combine Images</span>
-        </button>
-        <button id="diffBtn" class="btn-secondary" disabled>
-            <span>🔍 Show Diff</span>
-        </button>
+        <!-- Zoom Controls for Both Sides -->
+        <div class="zoom-bars-grid">
+            <!-- Left Side Zoom -->
+            <div class="zoom-side-panel">
+                <span class="zoom-side-label">ซูมภาพซ้าย:</span>
+                <button type="button" class="zoom-btn" id="beforeZoomOut">−</button>
+                <input type="range" id="beforeZoomSlider" min="20" max="500" value="100" class="zoom-slider">
+                <button type="button" class="zoom-btn" id="beforeZoomIn">+</button>
+                <span class="zoom-value" id="beforeZoomVal">100%</span>
+                <button type="button" class="btn-sm" id="beforeResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
+            </div>
+
+            <!-- Right Side Zoom -->
+            <div class="zoom-side-panel">
+                <span class="zoom-side-label">ซูมภาพขวา:</span>
+                <button type="button" class="zoom-btn" id="afterZoomOut">−</button>
+                <input type="range" id="afterZoomSlider" min="20" max="500" value="100" class="zoom-slider">
+                <button type="button" class="zoom-btn" id="afterZoomIn">+</button>
+                <span class="zoom-value" id="afterZoomVal">100%</span>
+                <button type="button" class="btn-sm" id="afterResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
+            </div>
+        </div>
+
+        <div class="sync-row">
+            <span>💡 <strong>วิธีใช้งาน:</strong> คลิกค้างแล้วลากบนรูปเพื่อเลื่อนตำแหน่ง • หมุนล้อเมาส์เพื่อซูม In/Out บนรูปได้โดยตรง</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons-wrap">
+            <button class="btn-success" id="downloadBtn" disabled>
+                <span>💾 ดาวน์โหลดภาพ (Download)</span>
+            </button>
+            <button class="btn-outline" id="copyClipboardBtn" disabled>
+                <span>📋 คัดลอกภาพ (Copy to Clipboard)</span>
+            </button>
+            <button class="btn-secondary" id="toggleDiffBtn" disabled>
+                <span>🔍 ดูจุดต่าง (Visual Diff)</span>
+            </button>
+            <button class="btn-outline" id="fullscreenBtn" disabled>
+                <span>⛶ ขยายเต็มจอ</span>
+            </button>
+        </div>
     </div>
 
     <!-- Shortcuts Footer -->
     <div class="keyboard-shortcuts">
         <strong>คีย์ลัด:</strong>
-        <span><span class="shortcut">Ctrl+V / ⌘+V</span> แปะภาพ</span>
-        <span><span class="shortcut">Ctrl+Enter / ⌘+Enter</span> รวมภาพทันที</span>
-        <span><span class="shortcut">Delete</span> ลบภาพที่เลือก</span>
-        <span><span class="shortcut">Mouse Wheel</span> ซูมเข้า/ออก</span>
-        <span><span class="shortcut">Click & Drag</span> เลื่อนตำแหน่งภาพ</span>
+        <span><span class="shortcut">Ctrl+V / ⌘+V</span> วางภาพจาก Clipboard</span>
+        <span><span class="shortcut">Ctrl+Enter / ⌘+Enter</span> ดาวน์โหลดภาพทันที</span>
+        <span><span class="shortcut">Delete</span> ลบภาพ</span>
+        <span><span class="shortcut">Scroll Wheel</span> ซูมเข้า/ออก</span>
+        <span><span class="shortcut">Click & Drag</span> เลื่อนจัดตำแหน่ง</span>
     </div>
-
-    <!-- Result Section -->
-    <div id="result"></div>
 
     <script>
         // State
         let beforeImage = null;
         let afterImage = null;
-        let currentRatio = 'auto'; // 'auto', '1:1', '16:9', '9:16', '4:5', '5:4'
-        let currentLayout = 'auto'; // 'auto', 'horizontal', 'vertical'
-        let currentFit = 'cover'; // 'cover', 'contain'
-        let isDiffMode = false;
-        let lastRenderedCanvas = null;
-        let resultZoomPercent = 100;
+        let currentRatio = '1:1'; // default 1:1
+        let currentLayout = 'horizontal'; // default side-by-side!
+        let currentFit = 'cover';
+        let isDiffActive = false;
 
         const imageState = {
             before: { zoom: 1.0, panX: 0, panY: 0 },
             after: { zoom: 1.0, panX: 0, panY: 0 }
         };
 
-        // DOM Elements - Controls
+        // DOM Elements
         const ratioPills = document.querySelectorAll('.ratio-pill');
         const layoutSelect = document.getElementById('layoutSelect');
         const fitSelect = document.getElementById('fitSelect');
@@ -1091,31 +1022,34 @@
         const qualityValue = document.getElementById('qualityValue');
         const qualityControlWrapper = document.getElementById('qualityControlWrapper');
 
-        // DOM Elements - Cards
-        const beforePasteArea = document.getElementById('beforePasteArea');
-        const afterPasteArea = document.getElementById('afterPasteArea');
+        // Workspace Elements
+        const workspaceTitleText = document.getElementById('workspaceTitleText');
+        const metaRatioTag = document.getElementById('metaRatioTag');
+        const metaResTag = document.getElementById('metaResTag');
+        const stageContainer = document.getElementById('stageContainer');
+        const canvasFrame = document.getElementById('canvasFrame');
+        const stageDivider = document.getElementById('stageDivider');
+        const slotBefore = document.getElementById('slotBefore');
+        const slotAfter = document.getElementById('slotAfter');
+        const beforeCanvas = document.getElementById('beforeCanvas');
+        const afterCanvas = document.getElementById('afterCanvas');
+        const beforeDropzone = document.getElementById('beforeDropzone');
+        const afterDropzone = document.getElementById('afterDropzone');
+        const beforeOverlay = document.getElementById('beforeOverlay');
+        const afterOverlay = document.getElementById('afterOverlay');
+        const beforeTag = document.getElementById('beforeTag');
+        const afterTag = document.getElementById('afterTag');
+        const diffStageCanvas = document.getElementById('diffStageCanvas');
+
+        // File Inputs & Clear
         const beforeFileInput = document.getElementById('beforeFileInput');
         const afterFileInput = document.getElementById('afterFileInput');
         const beforeChangeInput = document.getElementById('beforeChangeInput');
         const afterChangeInput = document.getElementById('afterChangeInput');
         const beforeClearBtn = document.getElementById('beforeClearBtn');
         const afterClearBtn = document.getElementById('afterClearBtn');
-        const beforeDimTag = document.getElementById('beforeDimTag');
-        const afterDimTag = document.getElementById('afterDimTag');
 
-        // DOM Elements - Viewports
-        const beforeViewportWrapper = document.getElementById('beforeViewportWrapper');
-        const afterViewportWrapper = document.getElementById('afterViewportWrapper');
-        const beforeViewportFrame = document.getElementById('beforeViewportFrame');
-        const afterViewportFrame = document.getElementById('afterViewportFrame');
-        const beforeCanvas = document.getElementById('beforeCanvas');
-        const afterCanvas = document.getElementById('afterCanvas');
-        const beforeGuideBadge = document.getElementById('beforeGuideBadge');
-        const afterGuideBadge = document.getElementById('afterGuideBadge');
-
-        // DOM Elements - Zoom Controls
-        const beforeZoomBar = document.getElementById('beforeZoomBar');
-        const afterZoomBar = document.getElementById('afterZoomBar');
+        // Zoom Controls
         const beforeZoomSlider = document.getElementById('beforeZoomSlider');
         const afterZoomSlider = document.getElementById('afterZoomSlider');
         const beforeZoomOut = document.getElementById('beforeZoomOut');
@@ -1126,15 +1060,14 @@
         const afterZoomVal = document.getElementById('afterZoomVal');
         const beforeResetBtn = document.getElementById('beforeResetBtn');
         const afterResetBtn = document.getElementById('afterResetBtn');
-        const beforeDragHint = document.getElementById('beforeDragHint');
-        const afterDragHint = document.getElementById('afterDragHint');
 
-        // DOM Elements - Actions & Result
-        const combineBtn = document.getElementById('combineBtn');
-        const diffBtn = document.getElementById('diffBtn');
-        const result = document.getElementById('result');
+        // Actions
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyClipboardBtn = document.getElementById('copyClipboardBtn');
+        const toggleDiffBtn = document.getElementById('toggleDiffBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-        // Toast
+        // Toast notifications
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1143,98 +1076,180 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Color helper
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
                 r: parseInt(result[1], 16),
                 g: parseInt(result[2], 16),
                 b: parseInt(result[3], 16)
-            } : { r: 0, g: 0, b: 0 };
+            } : { r: 255, g: 255, b: 255 };
         }
 
-        // --- ASPECT RATIO PILLS ---
+        // --- ASPECT RATIO SELECTION ---
         ratioPills.forEach(pill => {
             pill.addEventListener('click', () => {
                 ratioPills.forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
                 currentRatio = pill.dataset.ratio;
-                updateViewports();
-                scheduleAutoCombine();
+                updateMeta();
+                updateFrameDimensions();
+                renderBothSlots();
             });
         });
 
-        // --- EVENT LISTENERS FOR CONTROLS ---
+        // --- CONTROLS LISTENERS ---
         layoutSelect.addEventListener('change', e => {
             currentLayout = e.target.value;
-            updateViewports();
-            scheduleAutoCombine();
+            canvasFrame.classList.toggle('layout-vertical', currentLayout === 'vertical');
+            updateMeta();
+            updateFrameDimensions();
+            renderBothSlots();
         });
 
         fitSelect.addEventListener('change', e => {
             currentFit = e.target.value;
-            updateViewports();
-            scheduleAutoCombine();
+            renderBothSlots();
         });
 
         gapControl.addEventListener('input', e => {
             gapValue.textContent = `${e.target.value}px`;
-            scheduleAutoCombine();
+            updateDivider();
+            updateFrameDimensions();
+            renderBothSlots();
+        });
+
+        bgColor.addEventListener('input', () => {
+            updateDivider();
+            canvasFrame.style.background = bgColor.value;
+            renderBothSlots();
         });
 
         fontSize.addEventListener('input', e => {
             fontValue.textContent = `${e.target.value}px`;
-            scheduleAutoCombine();
+            updateTags();
         });
 
-        bgColor.addEventListener('input', () => {
-            updateViewports();
-            scheduleAutoCombine();
-        });
-
-        labelColor.addEventListener('input', () => scheduleAutoCombine());
-        labelPos.addEventListener('change', () => scheduleAutoCombine());
-        beforeLabelText.addEventListener('input', () => scheduleAutoCombine());
-        afterLabelText.addEventListener('input', () => scheduleAutoCombine());
+        labelColor.addEventListener('input', () => updateTags());
+        labelPos.addEventListener('change', () => updateTags());
+        beforeLabelText.addEventListener('input', () => updateTags());
+        afterLabelText.addEventListener('input', () => updateTags());
 
         formatSelect.addEventListener('change', e => {
             const isLossy = e.target.value === 'jpeg' || e.target.value === 'webp';
             qualityControlWrapper.style.opacity = isLossy ? '1' : '0.4';
-            scheduleAutoCombine();
+            downloadBtn.textContent = `💾 ดาวน์โหลดภาพ (${e.target.value.toUpperCase()})`;
         });
 
         qualityControl.addEventListener('input', e => {
             qualityValue.textContent = `${e.target.value}%`;
-            scheduleAutoCombine();
         });
 
-        // --- MATH: Calculate Canvas Dimensions and Slot Rectangles ---
-        function calculateGeometry() {
-            if (!beforeImage || !afterImage) return null;
-
-            const bW = beforeImage.naturalWidth;
-            const bH = beforeImage.naturalHeight;
-            const aW = afterImage.naturalWidth;
-            const aH = afterImage.naturalHeight;
-            const gap = parseInt(gapControl.value, 10) || 0;
-
-            // Determine if layout is horizontal or vertical
-            let isHorizontal;
-            if (currentLayout === 'horizontal') {
-                isHorizontal = true;
-            } else if (currentLayout === 'vertical') {
-                isHorizontal = false;
-            } else { // 'auto'
-                if (currentRatio === '9:16') {
-                    isHorizontal = false; // vertical stacking is best for tall 9:16
-                } else if (currentRatio === '16:9') {
-                    isHorizontal = true; // side-by-side is best for wide 16:9
-                } else {
-                    const beforeAspect = bW / bH;
-                    const afterAspect = aW / aH;
-                    isHorizontal = (beforeAspect < 1 && afterAspect < 1) || (bH >= bW);
-                }
+        function updateMeta() {
+            metaRatioTag.textContent = `📐 สัดส่วน ${currentRatio === 'auto' ? 'Auto' : currentRatio}`;
+            const layoutText = currentLayout === 'vertical' ? 'ต่อกันบน-ล่าง' : 'ต่อกันซ้าย-ขวา';
+            workspaceTitleText.textContent = `🖼️ พื้นที่จัดภาพ (${layoutText} ในกรอบเดียว)`;
+            if (beforeImage && afterImage) {
+                const geom = calculateGeometry();
+                metaResTag.textContent = `📏 ${geom.canvasWidth} × ${geom.canvasHeight} px`;
+            } else {
+                metaResTag.textContent = '📏 รอโหลดภาพ';
             }
+        }
+
+        function updateDivider() {
+            const gap = parseInt(gapControl.value, 10) || 0;
+            if (currentLayout === 'vertical') {
+                stageDivider.style.width = '100%';
+                stageDivider.style.height = `${gap}px`;
+            } else {
+                stageDivider.style.width = `${gap}px`;
+                stageDivider.style.height = '100%';
+            }
+            stageDivider.style.background = bgColor.value;
+        }
+
+        function updateTags() {
+            beforeTag.textContent = beforeLabelText.value;
+            afterTag.textContent = afterLabelText.value;
+
+            const isTop = labelPos.value === 'top';
+            const isNone = labelPos.value === 'none';
+
+            beforeTag.style.display = isNone ? 'none' : 'block';
+            afterTag.style.display = isNone ? 'none' : 'block';
+
+            beforeTag.className = `slot-tag ${isTop ? 'tag-top' : 'tag-bottom'}`;
+            afterTag.className = `slot-tag ${isTop ? 'tag-top' : 'tag-bottom'}`;
+
+            const size = parseInt(fontSize.value, 10) || 20;
+            beforeTag.style.fontSize = `${Math.min(22, Math.max(12, size * 0.75))}px`;
+            afterTag.style.fontSize = `${Math.min(22, Math.max(12, size * 0.75))}px`;
+
+            const rgb = hexToRgb(labelColor.value);
+            const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+            const bgBadge = brightness > 130 ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+            const txtColor = labelColor.value;
+
+            beforeTag.style.background = bgBadge;
+            beforeTag.style.color = txtColor;
+            afterTag.style.background = bgBadge;
+            afterTag.style.color = txtColor;
+        }
+
+        // --- FRAME DIMENSION CALCULATION (Fits in stage while respecting target aspect ratio) ---
+        function getTargetAspectRatio() {
+            if (currentRatio === 'auto') {
+                if (beforeImage && afterImage) {
+                    const bW = beforeImage.naturalWidth;
+                    const bH = beforeImage.naturalHeight;
+                    const aW = afterImage.naturalWidth;
+                    const aH = afterImage.naturalHeight;
+                    const gap = parseInt(gapControl.value, 10) || 0;
+                    if (currentLayout === 'vertical') {
+                        return Math.max(bW, aW) / (bH + aH + gap);
+                    } else {
+                        return (bW + aW + gap) / Math.max(bH, aH);
+                    }
+                } else if (beforeImage) {
+                    return beforeImage.naturalWidth / beforeImage.naturalHeight;
+                } else if (afterImage) {
+                    return afterImage.naturalWidth / afterImage.naturalHeight;
+                }
+                return 1.0;
+            }
+
+            const parts = currentRatio.split(':').map(Number);
+            return parts[0] / parts[1];
+        }
+
+        function updateFrameDimensions() {
+            const targetRatio = getTargetAspectRatio();
+            const stageW = stageContainer.clientWidth - 40;
+            const maxStageH = 500;
+
+            let frameW, frameH;
+            if (stageW / maxStageH > targetRatio) {
+                frameH = maxStageH;
+                frameW = Math.round(maxStageH * targetRatio);
+            } else {
+                frameW = stageW;
+                frameH = Math.round(stageW / targetRatio);
+            }
+
+            canvasFrame.style.width = `${frameW}px`;
+            canvasFrame.style.height = `${frameH}px`;
+
+            updateDivider();
+        }
+
+        // --- FULL RESOLUTION EXPORT GEOMETRY MATH ---
+        function calculateGeometry() {
+            const bW = beforeImage ? beforeImage.naturalWidth : 1000;
+            const bH = beforeImage ? beforeImage.naturalHeight : 1000;
+            const aW = afterImage ? afterImage.naturalWidth : 1000;
+            const aH = afterImage ? afterImage.naturalHeight : 1000;
+            const gap = parseInt(gapControl.value, 10) || 0;
+            const isHorizontal = currentLayout !== 'vertical';
 
             let canvasWidth, canvasHeight;
             let slotBefore = { x: 0, y: 0, w: 0, h: 0 };
@@ -1297,29 +1312,7 @@
             return { canvasWidth, canvasHeight, isHorizontal, slotBefore, slotAfter, gap };
         }
 
-        // Single slot geometry when only one image is loaded
-        function getSingleSlotAspect(type) {
-            const img = type === 'before' ? beforeImage : afterImage;
-            if (!img) return 1;
-
-            if (beforeImage && afterImage) {
-                const geom = calculateGeometry();
-                const slot = type === 'before' ? geom.slotBefore : geom.slotAfter;
-                return slot.w / slot.h;
-            }
-
-            if (currentRatio === 'auto') {
-                return img.naturalWidth / img.naturalHeight;
-            }
-
-            const parts = currentRatio.split(':').map(Number);
-            const r = parts[0] / parts[1];
-            // If horizontal layout assumed, slot ratio is r / 2
-            let isHoriz = currentLayout === 'horizontal' || (currentLayout === 'auto' && currentRatio !== '9:16');
-            return isHoriz ? (r / 2) : (r * 2);
-        }
-
-        // --- DRAW IMAGE IN SLOT (WYSIWYG identical math for both preview and final export) ---
+        // --- DRAW IMAGE IN SLOT (Identical logic for on-screen stage and full-res export) ---
         function renderImageToSlot(ctx, img, slot, state, fitMode) {
             ctx.save();
             ctx.beginPath();
@@ -1353,59 +1346,55 @@
             ctx.restore();
         }
 
-        // --- UPDATE CARD VIEWPORT DISPLAY ---
-        function updateViewport(type) {
+        // --- RENDER ON-SCREEN SLOT CANVASES ---
+        function renderSlot(type) {
             const img = type === 'before' ? beforeImage : afterImage;
             const canvasEl = type === 'before' ? beforeCanvas : afterCanvas;
-            const frameEl = type === 'before' ? beforeViewportFrame : afterViewportFrame;
-            const wrapperEl = type === 'before' ? beforeViewportWrapper : afterViewportWrapper;
-            const guideBadge = type === 'before' ? beforeGuideBadge : afterGuideBadge;
+            const slotEl = type === 'before' ? slotBefore : slotAfter;
+            const dropzoneEl = type === 'before' ? beforeDropzone : afterDropzone;
+            const overlayEl = type === 'before' ? beforeOverlay : afterOverlay;
             const state = imageState[type];
 
-            if (!img) return;
-
-            const slotAspect = getSingleSlotAspect(type);
-            const maxW = wrapperEl.clientWidth - 20 || 320;
-            const maxH = 250;
-
-            let frameW, frameH;
-            if (maxW / maxH > slotAspect) {
-                frameH = maxH;
-                frameW = Math.round(maxH * slotAspect);
-            } else {
-                frameW = maxW;
-                frameH = Math.round(maxW / slotAspect);
+            if (!img) {
+                dropzoneEl.style.display = 'flex';
+                overlayEl.style.display = 'none';
+                const ctx = canvasEl.getContext('2d');
+                ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                return;
             }
 
-            frameEl.style.width = `${frameW}px`;
-            frameEl.style.height = `${frameH}px`;
+            dropzoneEl.style.display = 'none';
+            overlayEl.style.display = 'block';
+
+            const w = slotEl.clientWidth;
+            const h = slotEl.clientHeight;
+            if (!w || !h) return;
 
             const dpr = window.devicePixelRatio || 1;
-            canvasEl.width = frameW * dpr;
-            canvasEl.height = frameH * dpr;
+            canvasEl.width = w * dpr;
+            canvasEl.height = h * dpr;
 
             const ctx = canvasEl.getContext('2d');
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
             ctx.fillStyle = bgColor.value;
             ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
 
-            const slot = { x: 0, y: 0, w: canvasEl.width, h: canvasEl.height };
-            renderImageToSlot(ctx, img, slot, state, currentFit);
+            const slotRect = { x: 0, y: 0, w: canvasEl.width, h: canvasEl.height };
+            renderImageToSlot(ctx, img, slotRect, state, currentFit);
+        }
 
-            if (guideBadge) {
-                const ratioLabel = currentRatio === 'auto' ? 'Original' : currentRatio;
-                guideBadge.textContent = `${type === 'before' ? 'Before' : 'After'} (${ratioLabel} ${Math.round(state.zoom * 100)}%)`;
+        function renderBothSlots() {
+            if (isDiffActive) {
+                renderDiffStage();
+                return;
             }
+            renderSlot('before');
+            renderSlot('after');
         }
 
-        function updateViewports() {
-            if (beforeImage) updateViewport('before');
-            if (afterImage) updateViewport('after');
-        }
-
-        // --- INTERACTIVE DRAG & MOUSE WHEEL ZOOM ON CARD VIEWPORTS ---
-        function setupInteractiveViewport(type) {
-            const frameEl = type === 'before' ? beforeViewportFrame : afterViewportFrame;
+        // --- INTERACTIVE DRAG & MOUSE WHEEL ZOOM ON STAGE SLOTS ---
+        function setupSlotInteractions(type) {
+            const slotEl = type === 'before' ? slotBefore : slotAfter;
             const otherType = type === 'before' ? 'after' : 'before';
             const state = imageState[type];
             const otherState = imageState[otherType];
@@ -1414,20 +1403,25 @@
             let startX = 0, startY = 0;
             let initialPanX = 0, initialPanY = 0;
 
-            frameEl.addEventListener('pointerdown', e => {
+            slotEl.addEventListener('pointerdown', e => {
+                const img = type === 'before' ? beforeImage : afterImage;
+                if (!img) return;
+                // If clicked on buttons/inputs, don't drag
+                if (e.target.closest('.slot-quick-btns') || e.target.closest('.slot-dropzone')) return;
+
                 isDragging = true;
-                frameEl.setPointerCapture(e.pointerId);
+                slotEl.setPointerCapture(e.pointerId);
                 startX = e.clientX;
                 startY = e.clientY;
                 initialPanX = state.panX;
                 initialPanY = state.panY;
             });
 
-            frameEl.addEventListener('pointermove', e => {
+            slotEl.addEventListener('pointermove', e => {
                 if (!isDragging) return;
                 const dx = e.clientX - startX;
                 const dy = e.clientY - startY;
-                const rect = frameEl.getBoundingClientRect();
+                const rect = slotEl.getBoundingClientRect();
                 if (!rect.width || !rect.height) return;
 
                 const deltaPanX = dx / rect.width;
@@ -1439,30 +1433,32 @@
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     otherState.panX = state.panX;
                     otherState.panY = state.panY;
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
 
-                updateViewport(type);
-                scheduleAutoCombine();
+                renderSlot(type);
             });
 
             const endDrag = (e) => {
                 if (!isDragging) return;
                 isDragging = false;
-                try { frameEl.releasePointerCapture(e.pointerId); } catch(err) {}
+                try { slotEl.releasePointerCapture(e.pointerId); } catch(err) {}
             };
 
-            frameEl.addEventListener('pointerup', endDrag);
-            frameEl.addEventListener('pointercancel', endDrag);
+            slotEl.addEventListener('pointerup', endDrag);
+            slotEl.addEventListener('pointercancel', endDrag);
 
             // Wheel to zoom in / zoom out
-            frameEl.addEventListener('wheel', e => {
+            slotEl.addEventListener('wheel', e => {
+                const img = type === 'before' ? beforeImage : afterImage;
+                if (!img) return;
                 e.preventDefault();
+
                 const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
                 const newZoom = Math.max(0.2, Math.min(5.0, state.zoom * zoomFactor));
 
                 // Cursor-centered zoom
-                const rect = frameEl.getBoundingClientRect();
+                const rect = slotEl.getBoundingClientRect();
                 const mouseRelX = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
                 const mouseRelY = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
 
@@ -1472,24 +1468,22 @@
                 state.zoom = newZoom;
 
                 updateZoomUI(type);
-                updateViewport(type);
+                renderSlot(type);
 
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     otherState.zoom = state.zoom;
                     otherState.panX = state.panX;
                     otherState.panY = state.panY;
                     updateZoomUI(otherType);
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
-
-                scheduleAutoCombine();
             }, { passive: false });
         }
 
-        setupInteractiveViewport('before');
-        setupInteractiveViewport('after');
+        setupSlotInteractions('before');
+        setupSlotInteractions('after');
 
-        // --- ZOOM SLIDER & BUTTONS HANDLERS ---
+        // --- ZOOM SLIDER & BUTTONS ---
         function updateZoomUI(type) {
             const state = imageState[type];
             const slider = type === 'before' ? beforeZoomSlider : afterZoomSlider;
@@ -1510,15 +1504,13 @@
                 const newZoom = parseInt(e.target.value, 10) / 100;
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
-                updateViewport(type);
+                renderSlot(type);
 
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
-
-                scheduleAutoCombine();
             });
 
             zoomOut.addEventListener('click', () => {
@@ -1526,15 +1518,13 @@
                 const newZoom = Math.max(0.2, Math.round((current - 0.1) * 10) / 10);
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
-                updateViewport(type);
+                renderSlot(type);
 
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
-
-                scheduleAutoCombine();
             });
 
             zoomIn.addEventListener('click', () => {
@@ -1542,15 +1532,13 @@
                 const newZoom = Math.min(5.0, Math.round((current + 0.1) * 10) / 10);
                 imageState[type].zoom = newZoom;
                 updateZoomUI(type);
-                updateViewport(type);
+                renderSlot(type);
 
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = newZoom;
                     updateZoomUI(otherType);
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
-
-                scheduleAutoCombine();
             });
 
             resetBtn.addEventListener('click', () => {
@@ -1558,44 +1546,29 @@
                 imageState[type].panX = 0;
                 imageState[type].panY = 0;
                 updateZoomUI(type);
-                updateViewport(type);
+                renderSlot(type);
 
                 if (syncZoomPan.checked && (otherType === 'before' ? beforeImage : afterImage)) {
                     imageState[otherType].zoom = 1.0;
                     imageState[otherType].panX = 0;
                     imageState[otherType].panY = 0;
                     updateZoomUI(otherType);
-                    updateViewport(otherType);
+                    renderSlot(otherType);
                 }
 
-                scheduleAutoCombine();
-                showToast(`Reset ${type === 'before' ? 'Before' : 'After'} zoom & position`);
+                showToast(`รีเซ็ตการซูมและตำแหน่งฝั่ง ${type === 'before' ? 'ซ้าย' : 'ขวา'}`);
             });
         }
 
         setupZoomControls('before');
         setupZoomControls('after');
 
-        // --- FILE INPUT & DRAG/DROP HANDLING ---
+        // --- FILE INPUT & DROP HANDLERS ---
         function handleImageLoaded(img, type) {
             if (type === 'before') {
                 beforeImage = img;
-                beforePasteArea.style.display = 'none';
-                beforeViewportWrapper.style.display = 'flex';
-                beforeZoomBar.style.display = 'flex';
-                beforeDragHint.style.display = 'flex';
-                beforeClearBtn.style.display = 'inline-block';
-                beforeDimTag.style.display = 'inline-block';
-                beforeDimTag.textContent = `${img.naturalWidth}×${img.naturalHeight}`;
             } else {
                 afterImage = img;
-                afterPasteArea.style.display = 'none';
-                afterViewportWrapper.style.display = 'flex';
-                afterZoomBar.style.display = 'flex';
-                afterDragHint.style.display = 'flex';
-                afterClearBtn.style.display = 'inline-block';
-                afterDimTag.style.display = 'inline-block';
-                afterDimTag.textContent = `${img.naturalWidth}×${img.naturalHeight}`;
             }
 
             imageState[type].zoom = 1.0;
@@ -1603,20 +1576,22 @@
             imageState[type].panY = 0;
             updateZoomUI(type);
 
-            updateViewports();
+            updateMeta();
+            updateFrameDimensions();
+            renderBothSlots();
             checkReadyState();
-            showToast(`${type === 'before' ? 'Before' : 'After'} image loaded`);
-            scheduleAutoCombine();
+
+            showToast(`โหลดภาพฝั่ง ${type === 'before' ? 'ซ้าย (Before)' : 'ขวา (After)'} สำเร็จ`);
         }
 
         function processFile(file, type) {
             if (!file || !file.type.startsWith('image/')) {
-                showToast('Please select a valid image file', 'error');
+                showToast('กรุณาเลือกไฟล์รูปภาพที่ถูกต้อง', 'error');
                 return;
             }
             const img = new Image();
             img.onload = () => handleImageLoaded(img, type);
-            img.onerror = () => showToast('Failed to load image', 'error');
+            img.onerror = () => showToast('โหลดภาพไม่สำเร็จ', 'error');
             img.src = URL.createObjectURL(file);
         }
 
@@ -1633,28 +1608,31 @@
             if (e.target.files[0]) processFile(e.target.files[0], 'after');
         });
 
-        function setupDragDropArea(area, type) {
-            area.addEventListener('dragover', e => {
+        // Setup Drag and drop per slot
+        function setupSlotDropzone(slotEl, type) {
+            slotEl.addEventListener('dragover', e => {
                 e.preventDefault();
-                area.classList.add('drag-over');
+                slotEl.classList.add('drag-over');
             });
-            area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
-            area.addEventListener('drop', e => {
+            slotEl.addEventListener('dragleave', () => slotEl.classList.remove('drag-over'));
+            slotEl.addEventListener('drop', e => {
                 e.preventDefault();
-                area.classList.remove('drag-over');
+                slotEl.classList.remove('drag-over');
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                     processFile(e.dataTransfer.files[0], type);
                 }
             });
         }
 
-        setupDragDropArea(beforePasteArea, 'before');
-        setupDragDropArea(afterPasteArea, 'after');
-        setupDragDropArea(beforeViewportWrapper, 'before');
-        setupDragDropArea(afterViewportWrapper, 'after');
+        setupSlotDropzone(slotBefore, 'before');
+        setupSlotDropzone(slotAfter, 'after');
 
-        // Paste handler
-        function handleGlobalPaste(e) {
+        // Paste Handler (Smart paste to left or right)
+        let lastHoveredSlot = 'before';
+        slotBefore.addEventListener('pointerenter', () => { lastHoveredSlot = 'before'; });
+        slotAfter.addEventListener('pointerenter', () => { lastHoveredSlot = 'after'; });
+
+        window.addEventListener('paste', e => {
             const items = (e.clipboardData || window.clipboardData).items;
             let imageBlob = null;
             for (let item of items) {
@@ -1665,149 +1643,54 @@
             }
             if (!imageBlob) return;
 
-            // Determine target: focused box, or first empty box, or before
-            let targetType = 'before';
-            if (document.activeElement === afterPasteArea || afterViewportWrapper.contains(document.activeElement)) {
-                targetType = 'after';
-            } else if (document.activeElement === beforePasteArea || beforeViewportWrapper.contains(document.activeElement)) {
-                targetType = 'before';
-            } else if (beforeImage && !afterImage) {
-                targetType = 'after';
-            }
+            let target = lastHoveredSlot;
+            if (beforeImage && !afterImage) target = 'after';
+            else if (!beforeImage && afterImage) target = 'before';
 
-            processFile(imageBlob, targetType);
-        }
-
-        window.addEventListener('paste', handleGlobalPaste);
+            processFile(imageBlob, target);
+        });
 
         // Clear buttons
         function clearImage(type) {
             if (type === 'before') {
                 beforeImage = null;
-                beforePasteArea.style.display = 'flex';
-                beforeViewportWrapper.style.display = 'none';
-                beforeZoomBar.style.display = 'none';
-                beforeDragHint.style.display = 'none';
-                beforeClearBtn.style.display = 'none';
-                beforeDimTag.style.display = 'none';
                 beforeFileInput.value = '';
                 beforeChangeInput.value = '';
             } else {
                 afterImage = null;
-                afterPasteArea.style.display = 'flex';
-                afterViewportWrapper.style.display = 'none';
-                afterZoomBar.style.display = 'none';
-                afterDragHint.style.display = 'none';
-                afterClearBtn.style.display = 'none';
-                afterDimTag.style.display = 'none';
                 afterFileInput.value = '';
                 afterChangeInput.value = '';
             }
             checkReadyState();
-            result.innerHTML = '';
-            showToast(`Cleared ${type} image`);
+            updateMeta();
+            updateFrameDimensions();
+            renderBothSlots();
+            showToast(`ลบภาพฝั่ง ${type === 'before' ? 'ซ้าย' : 'ขวา'} เรียบร้อย`);
         }
 
-        beforeClearBtn.addEventListener('click', () => clearImage('before'));
-        afterClearBtn.addEventListener('click', () => clearImage('after'));
+        beforeClearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearImage('before');
+        });
+        afterClearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearImage('after');
+        });
 
         function checkReadyState() {
             const ready = beforeImage && afterImage;
-            combineBtn.disabled = !ready;
-            diffBtn.disabled = !ready;
+            downloadBtn.disabled = !ready;
+            copyClipboardBtn.disabled = !ready;
+            toggleDiffBtn.disabled = !ready;
+            fullscreenBtn.disabled = !ready;
         }
 
-        // --- DEBOUNCED / RAF AUTO COMBINE ---
-        let autoCombineRaf = null;
-        function scheduleAutoCombine() {
-            if (!beforeImage || !afterImage) return;
-            if (autoCombineRaf) cancelAnimationFrame(autoCombineRaf);
-            autoCombineRaf = requestAnimationFrame(() => {
-                if (isDiffMode) {
-                    executeDiff();
-                } else {
-                    executeCombine();
-                }
-            });
-        }
-
-        // --- DRAW LABELS HELPER ---
-        function drawCanvasLabels(ctx, geom) {
-            if (labelPos.value === 'none') return;
-
-            const bText = beforeLabelText.value.trim();
-            const aText = afterLabelText.value.trim();
-            if (!bText && !aText) return;
-
-            const canvasW = geom.canvasWidth;
-            const canvasH = geom.canvasHeight;
-            const slotBefore = geom.slotBefore;
-            const slotAfter = geom.slotAfter;
-
-            // Scale font size proportionally to canvas dimensions
-            const fontScale = Math.max(1, Math.min(canvasW, canvasH) / 1000);
-            const userSize = parseInt(fontSize.value, 10) || 22;
-            const actualFontSize = Math.round(userSize * fontScale);
-
-            ctx.save();
-            ctx.font = `bold ${actualFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            const padding = actualFontSize * 1.3;
-            let bY, aY;
-            if (labelPos.value === 'top') {
-                bY = slotBefore.y + padding;
-                aY = slotAfter.y + padding;
-            } else {
-                bY = slotBefore.y + slotBefore.h - padding;
-                aY = slotAfter.y + slotAfter.h - padding;
-            }
-            const bX = slotBefore.x + slotBefore.w / 2;
-            const aX = slotAfter.x + slotAfter.w / 2;
-
-            function renderPillLabel(text, x, y) {
-                if (!text) return;
-                const metrics = ctx.measureText(text);
-                const textW = metrics.width;
-                const padX = actualFontSize * 0.7;
-                const padY = actualFontSize * 0.4;
-                const badgeW = textW + padX * 2;
-                const badgeH = actualFontSize + padY * 2;
-                const badgeX = x - badgeW / 2;
-                const badgeY = y - badgeH / 2;
-                const radius = badgeH / 2;
-
-                // High contrast background pill
-                ctx.beginPath();
-                if (typeof ctx.roundRect === 'function') {
-                    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, radius);
-                } else {
-                    ctx.rect(badgeX, badgeY, badgeW, badgeH);
-                }
-
-                const rgb = hexToRgb(labelColor.value);
-                const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-                ctx.fillStyle = brightness > 130 ? 'rgba(15, 23, 42, 0.65)' : 'rgba(255, 255, 255, 0.85)';
-                ctx.fill();
-
-                // Text
-                ctx.fillStyle = labelColor.value;
-                ctx.fillText(text, x, y);
-            }
-
-            renderPillLabel(bText, bX, bY);
-            renderPillLabel(aText, aX, aY);
-            ctx.restore();
-        }
-
-        // --- EXECUTE COMBINE ---
-        function executeCombine() {
-            if (!beforeImage || !afterImage) return;
-            isDiffMode = false;
+        // --- FULL RESOLUTION CANVAS GENERATION (FOR DOWNLOAD & CLIPBOARD) ---
+        function generateFullResolutionCanvas() {
+            if (!beforeImage || !afterImage) return null;
 
             const geom = calculateGeometry();
-            if (!geom) return;
+            if (!geom) return null;
 
             const canvas = document.createElement('canvas');
             canvas.width = geom.canvasWidth;
@@ -1823,65 +1706,116 @@
             renderImageToSlot(ctx, afterImage, geom.slotAfter, imageState.after, currentFit);
 
             // Draw Labels
-            drawCanvasLabels(ctx, geom);
+            if (labelPos.value !== 'none') {
+                const bText = beforeLabelText.value.trim();
+                const aText = afterLabelText.value.trim();
 
-            lastRenderedCanvas = canvas;
-            renderResultUI(canvas, 'combined');
+                const fontScale = Math.max(1, Math.min(geom.canvasWidth, geom.canvasHeight) / 1000);
+                const userSize = parseInt(fontSize.value, 10) || 22;
+                const actualFontSize = Math.round(userSize * fontScale);
+
+                ctx.save();
+                ctx.font = `bold ${actualFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const padding = actualFontSize * 1.3;
+                let bY, aY;
+                if (labelPos.value === 'top') {
+                    bY = geom.slotBefore.y + padding;
+                    aY = geom.slotAfter.y + padding;
+                } else {
+                    bY = geom.slotBefore.y + geom.slotBefore.h - padding;
+                    aY = geom.slotAfter.y + geom.slotAfter.h - padding;
+                }
+                const bX = geom.slotBefore.x + geom.slotBefore.w / 2;
+                const aX = geom.slotAfter.x + geom.slotAfter.w / 2;
+
+                function renderPillLabel(text, x, y) {
+                    if (!text) return;
+                    const metrics = ctx.measureText(text);
+                    const padX = actualFontSize * 0.7;
+                    const padY = actualFontSize * 0.4;
+                    const badgeW = metrics.width + padX * 2;
+                    const badgeH = actualFontSize + padY * 2;
+                    const badgeX = x - badgeW / 2;
+                    const badgeY = y - badgeH / 2;
+
+                    ctx.beginPath();
+                    if (typeof ctx.roundRect === 'function') {
+                        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, badgeH / 2);
+                    } else {
+                        ctx.rect(badgeX, badgeY, badgeW, badgeH);
+                    }
+
+                    const rgb = hexToRgb(labelColor.value);
+                    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+                    ctx.fillStyle = brightness > 130 ? 'rgba(15, 23, 42, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+                    ctx.fill();
+
+                    ctx.fillStyle = labelColor.value;
+                    ctx.fillText(text, x, y);
+                }
+
+                renderPillLabel(bText, bX, bY);
+                renderPillLabel(aText, aX, aY);
+                ctx.restore();
+            }
+
+            return canvas;
         }
 
-        // --- EXECUTE DIFF ---
-        function executeDiff() {
+        // --- DIFF MODE ---
+        function renderDiffStage() {
             if (!beforeImage || !afterImage) return;
-            isDiffMode = true;
 
-            const geom = calculateGeometry();
-            if (!geom) return;
+            const w = canvasFrame.clientWidth;
+            const h = canvasFrame.clientHeight;
+            diffStageCanvas.width = w * (window.devicePixelRatio || 1);
+            diffStageCanvas.height = h * (window.devicePixelRatio || 1);
+            diffStageCanvas.style.display = 'block';
+            slotBefore.style.display = 'none';
+            slotAfter.style.display = 'none';
+            stageDivider.style.display = 'none';
 
-            // In Diff mode, both images are rendered into identical slot dimensions
-            const diffW = Math.max(geom.slotBefore.w, geom.slotAfter.w);
-            const diffH = Math.max(geom.slotBefore.h, geom.slotAfter.h);
-            const slot = { x: 0, y: 0, w: diffW, h: diffH };
+            const dW = diffStageCanvas.width;
+            const dH = diffStageCanvas.height;
+            const slot = { x: 0, y: 0, w: dW, h: dH };
 
             const beforeC = document.createElement('canvas');
-            beforeC.width = diffW;
-            beforeC.height = diffH;
+            beforeC.width = dW;
+            beforeC.height = dH;
             const bCtx = beforeC.getContext('2d');
             bCtx.fillStyle = bgColor.value;
-            bCtx.fillRect(0, 0, diffW, diffH);
+            bCtx.fillRect(0, 0, dW, dH);
             renderImageToSlot(bCtx, beforeImage, slot, imageState.before, currentFit);
 
             const afterC = document.createElement('canvas');
-            afterC.width = diffW;
-            afterC.height = diffH;
+            afterC.width = dW;
+            afterC.height = dH;
             const aCtx = afterC.getContext('2d');
             aCtx.fillStyle = bgColor.value;
-            aCtx.fillRect(0, 0, diffW, diffH);
+            aCtx.fillRect(0, 0, dW, dH);
             renderImageToSlot(aCtx, afterImage, slot, imageState.after, currentFit);
 
-            const diffCanvas = document.createElement('canvas');
-            diffCanvas.width = diffW;
-            diffCanvas.height = diffH;
-            const dCtx = diffCanvas.getContext('2d');
-
-            const bData = bCtx.getImageData(0, 0, diffW, diffH).data;
-            const aData = aCtx.getImageData(0, 0, diffW, diffH).data;
-            const outImgData = dCtx.createImageData(diffW, diffH);
+            const dCtx = diffStageCanvas.getContext('2d');
+            const bData = bCtx.getImageData(0, 0, dW, dH).data;
+            const aData = aCtx.getImageData(0, 0, dW, dH).data;
+            const outImgData = dCtx.createImageData(dW, dH);
             const out = outImgData.data;
 
-            const threshold = 18; // slight tolerance for compression artifacts
+            const threshold = 18;
             for (let i = 0; i < bData.length; i += 4) {
                 const dr = Math.abs(bData[i] - aData[i]);
                 const dg = Math.abs(bData[i + 1] - aData[i + 1]);
                 const db = Math.abs(bData[i + 2] - aData[i + 2]);
 
                 if (dr > threshold || dg > threshold || db > threshold) {
-                    // Highlight difference in red
                     out[i] = 255;
                     out[i + 1] = 40;
                     out[i + 2] = 60;
                     out[i + 3] = 220;
                 } else {
-                    // Retain After image pixel with slight fade
                     out[i] = aData[i];
                     out[i + 1] = aData[i + 1];
                     out[i + 2] = aData[i + 2];
@@ -1891,194 +1825,137 @@
 
             dCtx.putImageData(outImgData, 0, 0);
 
-            // Diff Label
-            const fontScale = Math.max(1, Math.min(diffW, diffH) / 1000);
-            const actualFontSize = Math.round(20 * fontScale);
+            // Diff Title
             dCtx.save();
-            dCtx.font = `bold ${actualFontSize}px -apple-system, sans-serif`;
+            dCtx.font = 'bold 22px sans-serif';
             dCtx.textAlign = 'center';
-            dCtx.textBaseline = 'middle';
-            const labelText = 'Visual Diff (Differences highlighted in Red)';
-            const textMetrics = dCtx.measureText(labelText);
-            const badgeW = textMetrics.width + actualFontSize * 1.5;
-            const badgeH = actualFontSize * 2;
-            dCtx.fillStyle = 'rgba(15, 23, 42, 0.75)';
-            if (typeof dCtx.roundRect === 'function') {
-                dCtx.beginPath();
-                dCtx.roundRect(diffW / 2 - badgeW / 2, actualFontSize * 0.8, badgeW, badgeH, badgeH / 2);
-                dCtx.fill();
-            } else {
-                dCtx.fillRect(diffW / 2 - badgeW / 2, actualFontSize * 0.8, badgeW, badgeH);
-            }
+            dCtx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+            dCtx.fillRect(dW / 2 - 180, 20, 360, 40);
             dCtx.fillStyle = '#ffffff';
-            dCtx.fillText(labelText, diffW / 2, actualFontSize * 0.8 + badgeH / 2);
+            dCtx.fillText('Visual Diff (จุดต่างแสดงสีแดง)', dW / 2, 48);
             dCtx.restore();
-
-            lastRenderedCanvas = diffCanvas;
-            renderResultUI(diffCanvas, 'diff');
         }
 
-        // --- RENDER RESULT UI (with Zoom, Download, Clipboard, Lightbox) ---
-        function renderResultUI(canvas, mode) {
+        toggleDiffBtn.addEventListener('click', () => {
+            isDiffActive = !isDiffActive;
+            if (isDiffActive) {
+                toggleDiffBtn.textContent = '🖼️ ดูแบบต่อกันซ้าย-ขวา';
+                toggleDiffBtn.classList.remove('btn-secondary');
+                toggleDiffBtn.classList.add('btn-primary');
+                renderDiffStage();
+            } else {
+                toggleDiffBtn.textContent = '🔍 ดูจุดต่าง (Visual Diff)';
+                toggleDiffBtn.classList.remove('btn-primary');
+                toggleDiffBtn.classList.add('btn-secondary');
+                diffStageCanvas.style.display = 'none';
+                slotBefore.style.display = 'flex';
+                slotAfter.style.display = 'flex';
+                stageDivider.style.display = 'block';
+                renderBothSlots();
+            }
+        });
+
+        // --- DOWNLOAD ACTION ---
+        downloadBtn.addEventListener('click', () => {
+            const canvas = generateFullResolutionCanvas();
+            if (!canvas) return;
+
             const format = formatSelect.value;
             const quality = (format === 'jpeg' || format === 'webp') ? (qualityControl.value / 100) : undefined;
             const mimeType = `image/${format}`;
             const dataUrl = canvas.toDataURL(mimeType, quality);
 
-            const ratioLabel = currentRatio === 'auto' ? 'Original' : currentRatio;
-            const layoutLabel = geomIsHorizontal(canvas) ? 'Side-by-Side (แนวนอน)' : 'Stacked (แนวตั้ง)';
+            const ratioName = currentRatio === 'auto' ? 'auto' : currentRatio.replace(':', 'x');
+            const link = document.createElement('a');
+            link.download = `before-after-${ratioName}.${format}`;
+            link.href = dataUrl;
+            link.click();
+            showToast('ดาวน์โหลดภาพรวมเรียบร้อยแล้ว!');
+        });
 
-            result.innerHTML = `
-                <div class="result-card">
-                    <div class="result-header">
-                        <div class="result-title">
-                            <span>${mode === 'combined' ? '✨ ภาพผลลัพธ์ (Combined Result)' : '🔍 การเปรียบเทียบ (Visual Diff)'}</span>
-                        </div>
-                        <div class="result-meta-tags">
-                            <span class="meta-tag">📐 ${canvas.width} × ${canvas.height} px</span>
-                            <span class="meta-tag">⚖️ สัดส่วน ${ratioLabel}</span>
-                            <span class="meta-tag">🖼️ ${layoutLabel}</span>
-                            <span class="meta-tag">📁 ${format.toUpperCase()}</span>
-                        </div>
-                    </div>
+        // --- COPY TO CLIPBOARD ---
+        copyClipboardBtn.addEventListener('click', async () => {
+            const canvas = generateFullResolutionCanvas();
+            if (!canvas) return;
 
-                    <div class="result-preview-tools">
-                        <span style="font-size: 13px; font-weight: 500;">Preview Zoom:</span>
-                        <button type="button" class="zoom-btn" id="resZoomOut">">−</button>
-                        <input type="range" id="resZoomSlider" min="20" max="300" value="100" class="zoom-slider" style="max-width: 150px;">
-                        <button type="button" class="zoom-btn" id="resZoomIn">+</button>
-                        <span class="zoom-value" id="resZoomVal">100%</span>
-                        <button type="button" class="btn-sm" id="resZoomFit">Fit</button>
-                        <button type="button" class="btn-sm" id="resFullscreenBtn">⛶ ขยายเต็มจอ</button>
-                    </div>
+            try {
+                if (canvas.toBlob) {
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) {
+                            showToast('เกิดข้อผิดพลาดในการแปลงรูปภาพ', 'error');
+                            return;
+                        }
+                        try {
+                            const item = new ClipboardItem({ 'image/png': blob });
+                            await navigator.clipboard.write([item]);
+                            showToast('คัดลอกภาพลง Clipboard สำเร็จแล้ว!');
+                        } catch(err) {
+                            console.error(err);
+                            showToast('เบราว์เซอร์ไม่อนุญาตให้คัดลอกโดยตรง กรุณากดดาวน์โหลดแทน', 'error');
+                        }
+                    }, 'image/png');
+                }
+            } catch(err) {
+                console.error(err);
+                showToast('ไม่สามารถคัดลอกรูปภาพได้', 'error');
+            }
+        });
 
-                    <div class="result-viewport-container" id="resViewportContainer">
-                        <img id="combinedImage" src="${dataUrl}" alt="Result Image">
-                    </div>
+        // --- FULLSCREEN LIGHTBOX ---
+        fullscreenBtn.addEventListener('click', () => {
+            const canvas = generateFullResolutionCanvas();
+            if (!canvas) return;
 
-                    <div class="result-actions">
-                        <button class="btn-success" id="downloadBtn">
-                            <span>💾 ดาวน์โหลดภาพ (${format.toUpperCase()})</span>
-                        </button>
-                        <button class="btn-outline" id="copyClipboardBtn">
-                            <span>📋 คัดลอกภาพลง Clipboard</span>
-                        </button>
-                    </div>
+            const dataUrl = canvas.toDataURL('image/png');
+            const modal = document.createElement('div');
+            modal.className = 'lightbox-modal';
+            modal.innerHTML = `
+                <button class="lightbox-close-btn" title="ปิด (Esc)">✕</button>
+                <div class="lightbox-content">
+                    <img class="lightbox-img" src="${dataUrl}" alt="Fullscreen Combined Image">
                 </div>
             `;
+            document.body.appendChild(modal);
 
-            // Result preview zoom logic
-            const combinedImg = document.getElementById('combinedImage');
-            const resSlider = document.getElementById('resZoomSlider');
-            const resZoomVal = document.getElementById('resZoomVal');
-            const resZoomOut = document.getElementById('resZoomOut');
-            const resZoomIn = document.getElementById('resZoomIn');
-            const resZoomFit = document.getElementById('resZoomFit');
-            const resFullscreenBtn = document.getElementById('resFullscreenBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const copyClipboardBtn = document.getElementById('copyClipboardBtn');
-
-            function applyResultZoom(val) {
-                resultZoomPercent = Math.max(20, Math.min(300, val));
-                resSlider.value = resultZoomPercent;
-                resZoomVal.textContent = `${resultZoomPercent}%`;
-                combinedImg.style.transform = `scale(${resultZoomPercent / 100})`;
-            }
-
-            resSlider.addEventListener('input', e => applyResultZoom(parseInt(e.target.value, 10)));
-            resZoomOut.addEventListener('click', () => applyResultZoom(resultZoomPercent - 15));
-            resZoomIn.addEventListener('click', () => applyResultZoom(resultZoomPercent + 15));
-            resZoomFit.addEventListener('click', () => applyResultZoom(100));
-
-            // Fullscreen Lightbox
-            resFullscreenBtn.addEventListener('click', () => {
-                const modal = document.createElement('div');
-                modal.className = 'lightbox-modal';
-                modal.innerHTML = `
-                    <button class="lightbox-close-btn" title="ปิด (Esc)">✕</button>
-                    <div class="lightbox-content">
-                        <img class="lightbox-img" src="${dataUrl}" alt="Fullscreen Preview">
-                    </div>
-                `;
-                document.body.appendChild(modal);
-
-                const close = () => modal.remove();
-                modal.querySelector('.lightbox-close-btn').onclick = close;
-                modal.onclick = (e) => { if (e.target === modal || e.target.classList.contains('lightbox-content')) close(); };
-                const onKey = (e) => {
-                    if (e.key === 'Escape') {
-                        close();
-                        window.removeEventListener('keydown', onKey);
-                    }
-                };
-                window.addEventListener('keydown', onKey);
-            });
-
-            // Download
-            downloadBtn.addEventListener('click', () => {
-                const link = document.createElement('a');
-                const ratioName = currentRatio === 'auto' ? 'original' : currentRatio.replace(':', 'x');
-                link.download = `before-after-${ratioName}.${format}`;
-                link.href = dataUrl;
-                link.click();
-                showToast('ดาวน์โหลดภาพเรียบร้อยแล้ว!');
-            });
-
-            // Copy to Clipboard
-            copyClipboardBtn.addEventListener('click', async () => {
-                try {
-                    if (canvas.toBlob) {
-                        canvas.toBlob(async (blob) => {
-                            if (!blob) {
-                                showToast('เกิดข้อผิดพลาดในการแปลงรูปภาพ', 'error');
-                                return;
-                            }
-                            try {
-                                const item = new ClipboardItem({ 'image/png': blob });
-                                await navigator.clipboard.write([item]);
-                                showToast('คัดลอกภาพลง Clipboard สำเร็จแล้ว!');
-                            } catch(err) {
-                                console.error(err);
-                                showToast('เบราว์เซอร์ไม่อนุญาตให้คัดลอกโดยตรง กรุณากดดาวน์โหลดแทน', 'error');
-                            }
-                        }, 'image/png');
-                    }
-                } catch(err) {
-                    console.error(err);
-                    showToast('ไม่สามารถคัดลอกรูปภาพได้', 'error');
+            const close = () => modal.remove();
+            modal.querySelector('.lightbox-close-btn').onclick = close;
+            modal.onclick = (e) => { if (e.target === modal || e.target.classList.contains('lightbox-content')) close(); };
+            const onKey = (e) => {
+                if (e.key === 'Escape') {
+                    close();
+                    window.removeEventListener('keydown', onKey);
                 }
-            });
-        }
+            };
+            window.addEventListener('keydown', onKey);
+        });
 
-        function geomIsHorizontal(canvas) {
-            return canvas.width >= canvas.height;
-        }
-
-        // Button clicks
-        combineBtn.addEventListener('click', () => executeCombine());
-        diffBtn.addEventListener('click', () => executeDiff());
-
-        // Keyboard shortcuts
+        // --- KEYBOARD SHORTCUTS ---
         document.addEventListener('keydown', e => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                if (!combineBtn.disabled) {
+                if (!downloadBtn.disabled) {
                     e.preventDefault();
-                    executeCombine();
+                    downloadBtn.click();
                 }
             }
             if (e.key === 'Delete' || e.key === 'Backspace') {
-                if (document.activeElement === beforePasteArea || beforeViewportWrapper.contains(document.activeElement)) {
-                    if (beforeImage) clearImage('before');
-                } else if (document.activeElement === afterPasteArea || afterViewportWrapper.contains(document.activeElement)) {
-                    if (afterImage) clearImage('after');
-                }
+                if (document.activeElement.tagName === 'INPUT') return;
+                if (lastHoveredSlot === 'before' && beforeImage) clearImage('before');
+                else if (lastHoveredSlot === 'after' && afterImage) clearImage('after');
             }
         });
 
-        // Window resize adjusts card viewports
+        // Window resize
         window.addEventListener('resize', () => {
-            updateViewports();
+            updateFrameDimensions();
+            renderBothSlots();
         });
+
+        // Initialize
+        updateMeta();
+        updateTags();
+        updateDivider();
+        updateFrameDimensions();
+        renderBothSlots();
     </script>
 </body>
 </html>
