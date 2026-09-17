@@ -788,6 +788,150 @@
         .toast.error { background: #ef4444; }
         .toast.success { background: #10b981; }
 
+        /* Preset Manager Bar */
+        .preset-manager-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            padding: 12px 18px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .preset-bar-left, .preset-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .preset-title {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .preset-dropdown {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            padding: 6px 12px !important;
+            border-radius: var(--radius-sm) !important;
+            border: none !important;
+            font-size: 13px !important;
+            min-width: 220px;
+            max-width: 320px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-preset-action {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .btn-preset-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+        .btn-preset-action.btn-load { background: #3b82f6; color: white; }
+        .btn-preset-action.btn-save { background: #10b981; color: white; }
+        .btn-preset-action.btn-update { background: #f59e0b; color: white; }
+        .btn-preset-action.btn-delete { background: #ef4444; color: white; }
+        .btn-preset-action.btn-io { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); }
+        .btn-preset-action.btn-io:hover { background: rgba(255,255,255,0.28); }
+
+        /* Censor Independent Left/Right Panel */
+        .censor-sides-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .censor-sides-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .censor-side-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .censor-side-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 6px;
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 520px;
+            padding: 22px 24px;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
+            line-height: 1;
+        }
+        .modal-close-btn:hover { color: #0f172a; }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
@@ -821,8 +965,27 @@
 <body>
     <header class="app-header">
         <h1>Before/After Image Combiner</h1>
-        <p class="subtitle">รวมภาพต่อกันซ้าย-ขวา (1:1, 16:9, 9:16, 4:5, 5:4) ใส่ชื่อโปรแกรม วันที่ ข้อความกำกับ และโลโก้ de Pry สไตล์คลินิก</p>
     </header>
+
+    <!-- Preset Manager Bar -->
+    <div class="preset-manager-card">
+        <div class="preset-bar-left">
+            <span class="preset-title">⭐ ระบบพรีเซ็ต (Presets):</span>
+            <select id="presetSelect" class="preset-dropdown">
+                <option value="__default__">✨ de Pry Standard (เคสรีวิวปกติ)</option>
+                <option value="__privacy_60__">🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)</option>
+                <option value="__clean__">🌿 คลีน มินิมอล (ไม่มีลายน้ำ/ปิดตา)</option>
+            </select>
+            <button type="button" class="btn-preset-action btn-load" id="btnLoadPreset" title="โหลดการตั้งค่าจากพรีเซ็ตที่เลือก">📂 โหลด</button>
+            <button type="button" class="btn-preset-action btn-save" id="btnSaveNewPreset" title="บันทึกการตั้งค่าปัจจุบันทั้งหมดเป็น Preset ใหม่">💾 บันทึกเป็น Preset ใหม่</button>
+            <button type="button" class="btn-preset-action btn-update" id="btnUpdatePreset" title="บันทึกทับ Preset ที่เลือกอยู่">✏️ บันทึกทับ</button>
+            <button type="button" class="btn-preset-action btn-delete" id="btnDeletePreset" title="ลบ Preset ที่เลือก">🗑️ ลบ</button>
+        </div>
+        <div class="preset-bar-right">
+            <button type="button" class="btn-preset-action btn-io" id="btnExportPresets" title="ส่งออกข้อมูลพรีเซ็ตเป็นไฟล์ JSON หรือคัดลอก เพื่อย้ายไปใช้เครื่องอื่น">📤 ย้ายข้อมูล (Export)</button>
+            <button type="button" class="btn-preset-action btn-io" id="btnImportPresets" title="นำเข้าข้อมูลพรีเซ็ตจากเครื่องอื่น">📥 นำเข้า (Import)</button>
+        </div>
+    </div>
 
     <!-- Controls Panel -->
     <div class="controls-card">
@@ -958,9 +1121,13 @@
         <!-- Section 3: Eye Privacy Censor Bar (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว) -->
         <div class="settings-section">
             <div class="section-label">
-                <span class="section-title-left">🕶️ แถบปิดตาคนไข้ (Eye Privacy Censor):</span>
-                <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn-preset" id="censorResetBtn" title="คืนค่าตำแหน่งและขนาดมาตรฐาน">🔄 รีเซ็ตตำแหน่งกลาง (Default)</button>
+                <span class="section-title-left">🕶️ แถบปิดตาคนไข้ (Eye Privacy Censor Bar):</span>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <label class="toggle-label" style="padding: 4px 10px; font-size: 11px;" title="สลับระหว่างการปรับทั้งสองฝั่งเท่ากัน หรือแยกปรับซ้าย-ขวาอิสระ">
+                        <input type="checkbox" id="censorSeparateCheckbox">
+                        <span>✂️ แยกปรับซ้าย-ขวาอิสระ</span>
+                    </label>
+                    <button type="button" class="btn-preset" id="censorResetBtn" title="คืนค่าตำแหน่งและขนาดมาตรฐาน">🔄 รีเซ็ตค่าเริ่มต้น</button>
                 </div>
             </div>
 
@@ -991,14 +1158,20 @@
                         <option value="right">เฉพาะฝั่งขวา (After)</option>
                     </select>
                 </div>
+
+                <div class="control-item">
+                    <label for="censorRadiusSlider">🔘 ขอบโค้งมน:</label>
+                    <input type="range" min="0" max="50" value="14" step="1" id="censorRadiusSlider">
+                    <span id="censorRadiusVal" class="val-badge">14px</span>
+                </div>
             </div>
 
-            <!-- Position Sliders & Quick Nudges -->
-            <div class="control-row" style="background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px dashed var(--border); gap: 14px;">
+            <!-- 1. Unified Controls (ปรับพร้อมกันทั้ง 2 ฝั่ง) -->
+            <div id="censorUnifiedPanel" class="control-row" style="background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px dashed var(--border); gap: 14px;">
                 <!-- Y Position -->
                 <div class="control-item" style="min-width: 240px;">
                     <label for="censorYSlider">↕️ ระดับสายตา (Y):</label>
-                    <input type="range" min="15" max="65" value="36.5" step="0.5" id="censorYSlider">
+                    <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorYSlider">
                     <span id="censorYVal" class="val-badge" style="color: var(--primary); font-weight: 700;">36.5%</span>
                     <button type="button" class="btn-sm" id="censorUpBtn" title="เลื่อนขึ้น 0.5%">⬆️</button>
                     <button type="button" class="btn-sm" id="censorDownBtn" title="เลื่อนลง 0.5%">⬇️</button>
@@ -1007,8 +1180,8 @@
                 <!-- X Position -->
                 <div class="control-item" style="min-width: 230px;">
                     <label for="censorXSlider">↔️ แนวนอน (X):</label>
-                    <input type="range" min="30" max="70" value="50" step="0.5" id="censorXSlider">
-                    <span id="censorXVal" class="val-badge" style="color: var(--primary); font-weight: 700;">50%</span>
+                    <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorXSlider">
+                    <span id="censorXVal" class="val-badge" style="color: var(--primary); font-weight: 700;">49.5%</span>
                     <button type="button" class="btn-sm" id="censorLeftBtn" title="เลื่อนซ้าย 0.5%">⬅️</button>
                     <button type="button" class="btn-sm" id="censorRightBtn" title="เลื่อนขวา 0.5%">➡️</button>
                 </div>
@@ -1016,8 +1189,8 @@
                 <!-- Width -->
                 <div class="control-item" style="min-width: 210px;">
                     <label for="censorWSlider">↔️ ความกว้าง:</label>
-                    <input type="range" min="20" max="60" value="38" step="1" id="censorWSlider">
-                    <span id="censorWVal" class="val-badge">38%</span>
+                    <input type="range" min="10" max="95" value="60" step="1" id="censorWSlider">
+                    <span id="censorWVal" class="val-badge">60%</span>
                     <button type="button" class="btn-sm" id="censorWiderBtn" title="กว้างขึ้น 1%">➕</button>
                     <button type="button" class="btn-sm" id="censorNarrowBtn" title="แคบลง 1%">➖</button>
                 </div>
@@ -1025,15 +1198,71 @@
                 <!-- Height -->
                 <div class="control-item" style="min-width: 170px;">
                     <label for="censorHSlider">↕️ ความสูง:</label>
-                    <input type="range" min="3" max="15" value="6.5" step="0.5" id="censorHSlider">
-                    <span id="censorHVal" class="val-badge">6.5%</span>
+                    <input type="range" min="2" max="30" value="7" step="0.5" id="censorHSlider">
+                    <span id="censorHVal" class="val-badge">7%</span>
+                </div>
+            </div>
+
+            <!-- 2. Independent Controls (แยกปรับซ้าย vs ขวา) -->
+            <div id="censorSeparatePanel" class="censor-sides-grid" style="display: none; margin-top: 8px;">
+                <!-- Left Side (Before) -->
+                <div class="censor-side-box">
+                    <div class="censor-side-header">
+                        <span>👈 ฝั่งซ้าย (Before)</span>
+                        <button type="button" class="btn-sm" id="btnCopyLeftToRight" title="ก๊อปปี้ค่าฝั่งซ้ายไปฝั่งขวา">ก๊อปปี้ไปขวา ➡️</button>
+                    </div>
+                    <div class="control-row" style="gap: 10px;">
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorLeftYSlider">↕️ ระดับสายตา (Y):</label>
+                            <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorLeftYSlider">
+                            <span id="censorLeftYVal" class="val-badge">36.5%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorLeftXSlider">↔️ แนวนอน (X):</label>
+                            <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorLeftXSlider">
+                            <span id="censorLeftXVal" class="val-badge">49.5%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorLeftWSlider">↔️ ความกว้าง:</label>
+                            <input type="range" min="10" max="95" value="60" step="1" id="censorLeftWSlider">
+                            <span id="censorLeftWVal" class="val-badge">60%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorLeftHSlider">↕️ ความสูง:</label>
+                            <input type="range" min="2" max="30" value="7" step="0.5" id="censorLeftHSlider">
+                            <span id="censorLeftHVal" class="val-badge">7%</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Corner Radius -->
-                <div class="control-item" style="min-width: 180px;">
-                    <label for="censorRadiusSlider">🔘 ขอบโค้งมน:</label>
-                    <input type="range" min="0" max="30" value="14" step="1" id="censorRadiusSlider">
-                    <span id="censorRadiusVal" class="val-badge">14px</span>
+                <!-- Right Side (After) -->
+                <div class="censor-side-box">
+                    <div class="censor-side-header">
+                        <span>👉 ฝั่งขวา (After)</span>
+                        <button type="button" class="btn-sm" id="btnCopyRightToLeft" title="ก๊อปปี้ค่าฝั่งขวามาฝั่งซ้าย">⬅️ ก๊อปปี้มาจากซ้าย</button>
+                    </div>
+                    <div class="control-row" style="gap: 10px;">
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorRightYSlider">↕️ ระดับสายตา (Y):</label>
+                            <input type="range" min="5" max="85" value="36.5" step="0.5" id="censorRightYSlider">
+                            <span id="censorRightYVal" class="val-badge">36.5%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorRightXSlider">↔️ แนวนอน (X):</label>
+                            <input type="range" min="10" max="90" value="49.5" step="0.5" id="censorRightXSlider">
+                            <span id="censorRightXVal" class="val-badge">49.5%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorRightWSlider">↔️ ความกว้าง:</label>
+                            <input type="range" min="10" max="95" value="60" step="1" id="censorRightWSlider">
+                            <span id="censorRightWVal" class="val-badge">60%</span>
+                        </div>
+                        <div class="control-item" style="width: 100%;">
+                            <label for="censorRightHSlider">↕️ ความสูง:</label>
+                            <input type="range" min="2" max="30" value="7" step="0.5" id="censorRightHSlider">
+                            <span id="censorRightHVal" class="val-badge">7%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1318,9 +1547,39 @@
         const watermarkOpacitySlider = document.getElementById("watermarkOpacitySlider");
         const watermarkOpacityVal = document.getElementById("watermarkOpacityVal");
 
+        // Preset Manager Elements
+        const presetSelect = document.getElementById("presetSelect");
+        const btnLoadPreset = document.getElementById("btnLoadPreset");
+        const btnSaveNewPreset = document.getElementById("btnSaveNewPreset");
+        const btnUpdatePreset = document.getElementById("btnUpdatePreset");
+        const btnDeletePreset = document.getElementById("btnDeletePreset");
+        const btnExportPresets = document.getElementById("btnExportPresets");
+        const btnImportPresets = document.getElementById("btnImportPresets");
+
+        // Preset Modal Elements
+        const savePresetModal = document.getElementById("savePresetModal");
+        const newPresetNameInput = document.getElementById("newPresetNameInput");
+        const confirmSavePresetBtn = document.getElementById("confirmSavePresetBtn");
+        const cancelSavePresetBtn = document.getElementById("cancelSavePresetBtn");
+        const closeSaveModalBtn = document.getElementById("closeSaveModalBtn");
+
+        const ioPresetModal = document.getElementById("ioPresetModal");
+        const ioModalTitle = document.getElementById("ioModalTitle");
+        const ioJsonTextarea = document.getElementById("ioJsonTextarea");
+        const btnCopyExportJson = document.getElementById("btnCopyExportJson");
+        const btnDownloadJsonFile = document.getElementById("btnDownloadJsonFile");
+        const importJsonFileInput = document.getElementById("importJsonFileInput");
+        const btnSelectJsonFile = document.getElementById("btnSelectJsonFile");
+        const btnConfirmImportJson = document.getElementById("btnConfirmImportJson");
+        const closeIOModalBtn = document.getElementById("closeIOModalBtn");
+
+        // Eye Privacy Censor Elements
         const showCensorCheckbox = document.getElementById("showCensorCheckbox");
         const censorColorSelect = document.getElementById("censorColorSelect");
         const censorTargetSelect = document.getElementById("censorTargetSelect");
+        const censorSeparateCheckbox = document.getElementById("censorSeparateCheckbox");
+        const censorUnifiedPanel = document.getElementById("censorUnifiedPanel");
+        const censorSeparatePanel = document.getElementById("censorSeparatePanel");
         const censorYSlider = document.getElementById("censorYSlider");
         const censorYVal = document.getElementById("censorYVal");
         const censorXSlider = document.getElementById("censorXSlider");
@@ -1338,6 +1597,28 @@
         const censorWiderBtn = document.getElementById("censorWiderBtn");
         const censorNarrowBtn = document.getElementById("censorNarrowBtn");
         const censorResetBtn = document.getElementById("censorResetBtn");
+
+        // Independent Left/Right Censor Elements
+        const censorLeftYSlider = document.getElementById("censorLeftYSlider");
+        const censorLeftYVal = document.getElementById("censorLeftYVal");
+        const censorLeftXSlider = document.getElementById("censorLeftXSlider");
+        const censorLeftXVal = document.getElementById("censorLeftXVal");
+        const censorLeftWSlider = document.getElementById("censorLeftWSlider");
+        const censorLeftWVal = document.getElementById("censorLeftWVal");
+        const censorLeftHSlider = document.getElementById("censorLeftHSlider");
+        const censorLeftHVal = document.getElementById("censorLeftHVal");
+
+        const censorRightYSlider = document.getElementById("censorRightYSlider");
+        const censorRightYVal = document.getElementById("censorRightYVal");
+        const censorRightXSlider = document.getElementById("censorRightXSlider");
+        const censorRightXVal = document.getElementById("censorRightXVal");
+        const censorRightWSlider = document.getElementById("censorRightWSlider");
+        const censorRightWVal = document.getElementById("censorRightWVal");
+        const censorRightHSlider = document.getElementById("censorRightHSlider");
+        const censorRightHVal = document.getElementById("censorRightHVal");
+
+        const btnCopyLeftToRight = document.getElementById("btnCopyLeftToRight");
+        const btnCopyRightToLeft = document.getElementById("btnCopyRightToLeft");
 
         const sampleDataBtn = document.getElementById("sampleDataBtn");
         const clearTextBtn = document.getElementById("clearTextBtn");
@@ -1561,6 +1842,16 @@
         // --- EYE PRIVACY CENSOR LOGIC & LOCALSTORAGE PERSISTENCE ---
         const CENSOR_STORAGE_KEY = "beforeafter_eye_censor_settings";
 
+        function updateCensorSeparateDisplay() {
+            if (censorSeparateCheckbox.checked) {
+                censorSeparatePanel.style.display = "grid";
+                censorUnifiedPanel.style.display = "none";
+            } else {
+                censorSeparatePanel.style.display = "none";
+                censorUnifiedPanel.style.display = "flex";
+            }
+        }
+
         function saveCensorSettings() {
             const settings = {
                 enabled: showCensorCheckbox.checked,
@@ -1570,7 +1861,16 @@
                 h: censorHSlider.value,
                 r: censorRadiusSlider.value,
                 color: censorColorSelect.value,
-                target: censorTargetSelect.value
+                target: censorTargetSelect.value,
+                separate: censorSeparateCheckbox.checked,
+                leftY: censorLeftYSlider.value,
+                leftX: censorLeftXSlider.value,
+                leftW: censorLeftWSlider.value,
+                leftH: censorLeftHSlider.value,
+                rightY: censorRightYSlider.value,
+                rightX: censorRightXSlider.value,
+                rightW: censorRightWSlider.value,
+                rightH: censorRightHSlider.value
             };
             try {
                 localStorage.setItem(CENSOR_STORAGE_KEY, JSON.stringify(settings));
@@ -1583,15 +1883,28 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     if (typeof data.enabled === "boolean") showCensorCheckbox.checked = data.enabled;
-                    if (data.y) { censorYSlider.value = data.y; censorYVal.textContent = `${data.y}%`; }
-                    if (data.x) { censorXSlider.value = data.x; censorXVal.textContent = `${data.x}%`; }
-                    if (data.w) { censorWSlider.value = data.w; censorWVal.textContent = `${data.w}%`; }
-                    if (data.h) { censorHSlider.value = data.h; censorHVal.textContent = `${data.h}%`; }
-                    if (data.r) { censorRadiusSlider.value = data.r; censorRadiusVal.textContent = `${data.r}px`; }
+                    if (data.y !== undefined) censorYSlider.value = data.y;
+                    if (data.x !== undefined) censorXSlider.value = data.x;
+                    if (data.w !== undefined) censorWSlider.value = data.w;
+                    if (data.h !== undefined) censorHSlider.value = data.h;
+                    if (data.r !== undefined) censorRadiusSlider.value = data.r;
                     if (data.color) censorColorSelect.value = data.color;
                     if (data.target) censorTargetSelect.value = data.target;
+                    if (typeof data.separate === "boolean") censorSeparateCheckbox.checked = data.separate;
+
+                    if (data.leftY !== undefined) censorLeftYSlider.value = data.leftY;
+                    if (data.leftX !== undefined) censorLeftXSlider.value = data.leftX;
+                    if (data.leftW !== undefined) censorLeftWSlider.value = data.leftW;
+                    if (data.leftH !== undefined) censorLeftHSlider.value = data.leftH;
+
+                    if (data.rightY !== undefined) censorRightYSlider.value = data.rightY;
+                    if (data.rightX !== undefined) censorRightXSlider.value = data.rightX;
+                    if (data.rightW !== undefined) censorRightWSlider.value = data.rightW;
+                    if (data.rightH !== undefined) censorRightHSlider.value = data.rightH;
                 }
             } catch (e) {}
+            updateCensorSeparateDisplay();
+            updateCensorUI();
         }
 
         function updateCensorUI() {
@@ -1600,6 +1913,17 @@
             censorWVal.textContent = `${censorWSlider.value}%`;
             censorHVal.textContent = `${censorHSlider.value}%`;
             censorRadiusVal.textContent = `${censorRadiusSlider.value}px`;
+
+            censorLeftYVal.textContent = `${censorLeftYSlider.value}%`;
+            censorLeftXVal.textContent = `${censorLeftXSlider.value}%`;
+            censorLeftWVal.textContent = `${censorLeftWSlider.value}%`;
+            censorLeftHVal.textContent = `${censorLeftHSlider.value}%`;
+
+            censorRightYVal.textContent = `${censorRightYSlider.value}%`;
+            censorRightXVal.textContent = `${censorRightXSlider.value}%`;
+            censorRightWVal.textContent = `${censorRightWSlider.value}%`;
+            censorRightHVal.textContent = `${censorRightHSlider.value}%`;
+
             saveCensorSettings();
             renderStageOverlays();
         }
@@ -1617,11 +1941,53 @@
             renderStageOverlays();
         });
 
+        censorSeparateCheckbox.addEventListener("change", () => {
+            updateCensorSeparateDisplay();
+            if (censorSeparateCheckbox.checked && !censorSeparateCheckbox.dataset.synced) {
+                censorLeftYSlider.value = censorYSlider.value;
+                censorLeftXSlider.value = censorXSlider.value;
+                censorLeftWSlider.value = censorWSlider.value;
+                censorLeftHSlider.value = censorHSlider.value;
+
+                censorRightYSlider.value = censorYSlider.value;
+                censorRightXSlider.value = censorXSlider.value;
+                censorRightWSlider.value = censorWSlider.value;
+                censorRightHSlider.value = censorHSlider.value;
+                censorSeparateCheckbox.dataset.synced = "true";
+            }
+            updateCensorUI();
+        });
+
         censorYSlider.addEventListener("input", updateCensorUI);
         censorXSlider.addEventListener("input", updateCensorUI);
         censorWSlider.addEventListener("input", updateCensorUI);
         censorHSlider.addEventListener("input", updateCensorUI);
         censorRadiusSlider.addEventListener("input", updateCensorUI);
+
+        [
+            censorLeftYSlider, censorLeftXSlider, censorLeftWSlider, censorLeftHSlider,
+            censorRightYSlider, censorRightXSlider, censorRightWSlider, censorRightHSlider
+        ].forEach(slider => {
+            if (slider) slider.addEventListener("input", updateCensorUI);
+        });
+
+        btnCopyLeftToRight.addEventListener("click", () => {
+            censorRightYSlider.value = censorLeftYSlider.value;
+            censorRightXSlider.value = censorLeftXSlider.value;
+            censorRightWSlider.value = censorLeftWSlider.value;
+            censorRightHSlider.value = censorLeftHSlider.value;
+            updateCensorUI();
+            showToast("ก๊อปปี้ค่าแถบปิดตาซ้าย ➡️ ขวา สำเร็จ!");
+        });
+
+        btnCopyRightToLeft.addEventListener("click", () => {
+            censorLeftYSlider.value = censorRightYSlider.value;
+            censorLeftXSlider.value = censorRightXSlider.value;
+            censorLeftWSlider.value = censorRightWSlider.value;
+            censorLeftHSlider.value = censorRightHSlider.value;
+            updateCensorUI();
+            showToast("ก๊อปปี้ค่าแถบปิดตาขวา ⬅️ ซ้าย สำเร็จ!");
+        });
 
         censorUpBtn.addEventListener("click", () => {
             censorYSlider.value = (Math.max(parseFloat(censorYSlider.min), parseFloat(censorYSlider.value) - 0.5)).toFixed(1);
@@ -1651,14 +2017,27 @@
         censorResetBtn.addEventListener("click", () => {
             showCensorCheckbox.checked = true;
             censorYSlider.value = 36.5;
-            censorXSlider.value = 50;
-            censorWSlider.value = 38;
-            censorHSlider.value = 6.5;
+            censorXSlider.value = 49.5;
+            censorWSlider.value = 60;
+            censorHSlider.value = 7;
             censorRadiusSlider.value = 14;
             censorColorSelect.value = "#000000";
             censorTargetSelect.value = "both";
+            censorSeparateCheckbox.checked = false;
+
+            censorLeftYSlider.value = 36.5;
+            censorLeftXSlider.value = 49.5;
+            censorLeftWSlider.value = 60;
+            censorLeftHSlider.value = 7;
+
+            censorRightYSlider.value = 36.5;
+            censorRightXSlider.value = 49.5;
+            censorRightWSlider.value = 60;
+            censorRightHSlider.value = 7;
+
+            updateCensorSeparateDisplay();
             updateCensorUI();
-            showToast("รีเซ็ตแถบปิดตาเป็นค่ามาตรฐานกลางเรียบร้อย");
+            showToast("รีเซ็ตแถบปิดตาเป็นค่าเริ่มต้น de Pry (ดำสนิท กว้าง 60%) เรียบร้อย");
         });
 
         // Initialize saved censor settings
@@ -1734,6 +2113,601 @@
             renderStageOverlays();
             showToast("ล้างข้อความเรียบร้อย");
         });
+
+        // ==============================================================
+        // --- PRESET MANAGER SUBSYSTEM (Save, Load, Export, Import) ---
+        // ==============================================================
+        const PRESETS_STORAGE_KEY = "beforeafter_custom_presets_v1";
+
+        const BUILT_IN_PRESETS = {
+            "__default__": {
+                name: "✨ de Pry Standard (เคสรีวิวปกติ)",
+                data: {
+                    ratio: "1:1",
+                    layout: "horizontal",
+                    fit: "contain",
+                    gap: 0,
+                    bgColor: "#000000",
+                    showTitle: true,
+                    title: "✨ โปรแกรม Thermatix และ Sculptra",
+                    showDates: true,
+                    dateLeft: "25 Jul 2026",
+                    dateRight: "4 Sep 2026",
+                    dateFormat: "en-short",
+                    showDisclaimers: true,
+                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                    bottomTextSize: 7.0,
+                    showWatermark: true,
+                    watermarkText: "de Pry clinic",
+                    watermarkOpacity: 35,
+                    logoColor: "badge",
+                    logoPos: "top-right",
+                    logoSize: 12,
+                    censor: {
+                        enabled: false,
+                        color: "#000000",
+                        target: "both",
+                        radius: 14,
+                        separate: false,
+                        y: 36.5,
+                        x: 49.5,
+                        w: 60,
+                        h: 7,
+                        leftY: 36.5,
+                        leftX: 49.5,
+                        leftW: 60,
+                        leftH: 7,
+                        rightY: 36.5,
+                        rightX: 49.5,
+                        rightW: 60,
+                        rightH: 7
+                    }
+                }
+            },
+            "__privacy_60__": {
+                name: "🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)",
+                data: {
+                    ratio: "1:1",
+                    layout: "horizontal",
+                    fit: "contain",
+                    gap: 0,
+                    bgColor: "#000000",
+                    showTitle: true,
+                    title: "✨ โปรแกรมปรับรูปหน้า de Pry Clinic",
+                    showDates: true,
+                    dateLeft: "25 Jul 2026",
+                    dateRight: "4 Sep 2026",
+                    dateFormat: "en-short",
+                    showDisclaimers: true,
+                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                    bottomTextSize: 7.0,
+                    showWatermark: true,
+                    watermarkText: "de Pry clinic",
+                    watermarkOpacity: 35,
+                    logoColor: "badge",
+                    logoPos: "top-right",
+                    logoSize: 12,
+                    censor: {
+                        enabled: true,
+                        color: "#000000",
+                        target: "both",
+                        radius: 14,
+                        separate: false,
+                        y: 36.5,
+                        x: 49.5,
+                        w: 60,
+                        h: 7,
+                        leftY: 36.5,
+                        leftX: 49.5,
+                        leftW: 60,
+                        leftH: 7,
+                        rightY: 36.5,
+                        rightX: 49.5,
+                        rightW: 60,
+                        rightH: 7
+                    }
+                }
+            },
+            "__clean__": {
+                name: "🌿 คลีน มินิมอล (ไม่มีลายน้ำ/ปิดตา)",
+                data: {
+                    ratio: "1:1",
+                    layout: "horizontal",
+                    fit: "contain",
+                    gap: 0,
+                    bgColor: "#000000",
+                    showTitle: false,
+                    title: "",
+                    showDates: true,
+                    dateLeft: "BEFORE",
+                    dateRight: "AFTER",
+                    dateFormat: "en-short",
+                    showDisclaimers: true,
+                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                    bottomTextSize: 7.0,
+                    showWatermark: false,
+                    watermarkText: "de Pry clinic",
+                    watermarkOpacity: 35,
+                    logoColor: "badge",
+                    logoPos: "top-right",
+                    logoSize: 12,
+                    censor: {
+                        enabled: false,
+                        color: "#000000",
+                        target: "both",
+                        radius: 14,
+                        separate: false,
+                        y: 36.5,
+                        x: 49.5,
+                        w: 60,
+                        h: 7,
+                        leftY: 36.5,
+                        leftX: 49.5,
+                        leftW: 60,
+                        leftH: 7,
+                        rightY: 36.5,
+                        rightX: 49.5,
+                        rightW: 60,
+                        rightH: 7
+                    }
+                }
+            }
+        };
+
+        function getCustomPresets() {
+            try {
+                const raw = localStorage.getItem(PRESETS_STORAGE_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch(e) {
+                console.error("Error reading presets from localStorage:", e);
+            }
+            return {};
+        }
+
+        function saveCustomPresets(presetsObj) {
+            try {
+                localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presetsObj));
+            } catch(e) {
+                console.error("Error saving presets to localStorage:", e);
+            }
+        }
+
+        function refreshPresetDropdown(selectedId) {
+            presetSelect.innerHTML = "";
+
+            // 1. Built-in optgroup
+            const grpBuiltIn = document.createElement("optgroup");
+            grpBuiltIn.label = "─── พรีเซ็ตมาตรฐานคลินิก ───";
+            for (const [key, item] of Object.entries(BUILT_IN_PRESETS)) {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = item.name;
+                grpBuiltIn.appendChild(opt);
+            }
+            presetSelect.appendChild(grpBuiltIn);
+
+            // 2. Custom optgroup
+            const customPresets = getCustomPresets();
+            const keys = Object.keys(customPresets);
+            if (keys.length > 0) {
+                const grpCustom = document.createElement("optgroup");
+                grpCustom.label = "─── พรีเซ็ตที่คุณบันทึกไว้ ───";
+                for (const [key, item] of Object.entries(customPresets)) {
+                    const opt = document.createElement("option");
+                    opt.value = key;
+                    opt.textContent = `⭐ ${item.name}`;
+                    grpCustom.appendChild(opt);
+                }
+                presetSelect.appendChild(grpCustom);
+            }
+
+            if (selectedId && (BUILT_IN_PRESETS[selectedId] || customPresets[selectedId])) {
+                presetSelect.value = selectedId;
+            }
+        }
+
+        function getCurrentAppStateAsPreset() {
+            return {
+                ratio: currentRatio,
+                layout: layoutSelect.value,
+                fit: fitSelect.value,
+                gap: parseInt(gapControl.value, 10) || 0,
+                bgColor: bgColor.value,
+                format: formatSelect.value,
+                quality: parseInt(qualityControl.value, 10) || 92,
+                showTitle: showTitleCheckbox.checked,
+                title: titleInput.value,
+                showDates: showDatesCheckbox.checked,
+                dateLeft: dateLeftInput.value,
+                dateRight: dateRightInput.value,
+                dateFormat: dateFormatSelect.value,
+                showDisclaimers: showDisclaimersCheckbox.checked,
+                discLeft: discLeftInput.value,
+                discRight: discRightInput.value,
+                bottomTextSize: parseFloat(bottomTextSizeSlider.value) || 7.0,
+                showWatermark: showWatermarkCheckbox.checked,
+                watermarkText: watermarkTextInput.value,
+                watermarkOpacity: parseInt(watermarkOpacitySlider.value, 10) || 35,
+                logoColor: currentLogoColor,
+                logoPos: logoPosSelect.value,
+                logoSize: parseInt(logoSizeControl.value, 10) || 12,
+                censor: {
+                    enabled: showCensorCheckbox.checked,
+                    color: censorColorSelect.value,
+                    target: censorTargetSelect.value,
+                    radius: parseFloat(censorRadiusSlider.value) || 14,
+                    separate: censorSeparateCheckbox.checked,
+                    y: parseFloat(censorYSlider.value) || 36.5,
+                    x: parseFloat(censorXSlider.value) || 49.5,
+                    w: parseFloat(censorWSlider.value) || 60,
+                    h: parseFloat(censorHSlider.value) || 7,
+                    leftY: parseFloat(censorLeftYSlider.value) || 36.5,
+                    leftX: parseFloat(censorLeftXSlider.value) || 49.5,
+                    leftW: parseFloat(censorLeftWSlider.value) || 60,
+                    leftH: parseFloat(censorLeftHSlider.value) || 7,
+                    rightY: parseFloat(censorRightYSlider.value) || 36.5,
+                    rightX: parseFloat(censorRightXSlider.value) || 49.5,
+                    rightW: parseFloat(censorRightWSlider.value) || 60,
+                    rightH: parseFloat(censorRightHSlider.value) || 7
+                }
+            };
+        }
+
+        function applyPresetData(p) {
+            if (!p) return;
+
+            // Ratio
+            if (p.ratio) {
+                currentRatio = p.ratio;
+                ratioPills.forEach(btn => {
+                    btn.classList.toggle("active", btn.dataset.ratio === currentRatio);
+                });
+            }
+
+            // Layout
+            if (p.layout) {
+                layoutSelect.value = p.layout;
+                currentLayout = p.layout;
+                canvasFrame.classList.toggle("layout-vertical", currentLayout === "vertical");
+            }
+
+            // Fit
+            if (p.fit) {
+                fitSelect.value = p.fit;
+                currentFit = p.fit;
+            }
+
+            // Gap
+            if (p.gap !== undefined) {
+                gapControl.value = p.gap;
+                gapValue.textContent = `${p.gap}px`;
+            }
+
+            // Background Color
+            if (p.bgColor) {
+                bgColor.value = p.bgColor;
+            }
+
+            // Format & Quality
+            if (p.format) {
+                formatSelect.value = p.format;
+                qualityControlWrapper.style.display = (p.format === "jpeg" || p.format === "webp") ? "flex" : "none";
+            }
+            if (p.quality) {
+                qualityControl.value = p.quality;
+                qualityValue.textContent = `${p.quality}%`;
+            }
+
+            // Title
+            if (typeof p.showTitle === "boolean") showTitleCheckbox.checked = p.showTitle;
+            if (p.title !== undefined) titleInput.value = p.title;
+
+            // Dates
+            if (typeof p.showDates === "boolean") showDatesCheckbox.checked = p.showDates;
+            if (p.dateLeft !== undefined) dateLeftInput.value = p.dateLeft;
+            if (p.dateRight !== undefined) dateRightInput.value = p.dateRight;
+            if (p.dateFormat) dateFormatSelect.value = p.dateFormat;
+
+            // Disclaimers
+            if (typeof p.showDisclaimers === "boolean") showDisclaimersCheckbox.checked = p.showDisclaimers;
+            if (p.discLeft !== undefined) discLeftInput.value = p.discLeft;
+            if (p.discRight !== undefined) discRightInput.value = p.discRight;
+
+            // Bottom text size
+            if (p.bottomTextSize !== undefined) {
+                updateBottomSizeUI(parseFloat(p.bottomTextSize));
+            }
+
+            // Watermark
+            if (typeof p.showWatermark === "boolean") showWatermarkCheckbox.checked = p.showWatermark;
+            if (p.watermarkText !== undefined) watermarkTextInput.value = p.watermarkText;
+            if (p.watermarkOpacity !== undefined) {
+                watermarkOpacitySlider.value = p.watermarkOpacity;
+                watermarkOpacityVal.textContent = `${p.watermarkOpacity}%`;
+            }
+
+            // Logo
+            if (p.logoColor) {
+                currentLogoColor = p.logoColor;
+                document.querySelectorAll("#logoPills .pill-btn").forEach(btn => {
+                    btn.classList.toggle("active", btn.dataset.color === currentLogoColor);
+                });
+            }
+            if (p.logoPos) logoPosSelect.value = p.logoPos;
+            if (p.logoSize !== undefined) {
+                logoSizeControl.value = p.logoSize;
+                logoSizeVal.textContent = `${p.logoSize}%`;
+            }
+
+            // Censor
+            if (p.censor) {
+                const c = p.censor;
+                if (typeof c.enabled === "boolean") showCensorCheckbox.checked = c.enabled;
+                if (c.color) censorColorSelect.value = c.color;
+                if (c.target) censorTargetSelect.value = c.target;
+                if (c.radius !== undefined) censorRadiusSlider.value = c.radius;
+                if (typeof c.separate === "boolean") censorSeparateCheckbox.checked = c.separate;
+
+                if (c.y !== undefined) censorYSlider.value = c.y;
+                if (c.x !== undefined) censorXSlider.value = c.x;
+                if (c.w !== undefined) censorWSlider.value = c.w;
+                if (c.h !== undefined) censorHSlider.value = c.h;
+
+                if (c.leftY !== undefined) censorLeftYSlider.value = c.leftY;
+                if (c.leftX !== undefined) censorLeftXSlider.value = c.leftX;
+                if (c.leftW !== undefined) censorLeftWSlider.value = c.leftW;
+                if (c.leftH !== undefined) censorLeftHSlider.value = c.leftH;
+
+                if (c.rightY !== undefined) censorRightYSlider.value = c.rightY;
+                if (c.rightX !== undefined) censorRightXSlider.value = c.rightX;
+                if (c.rightW !== undefined) censorRightWSlider.value = c.rightW;
+                if (c.rightH !== undefined) censorRightHSlider.value = c.rightH;
+            }
+
+            updateCensorSeparateDisplay();
+            updateCensorUI();
+            updateMeta();
+            updateDivider();
+            updateFrameDimensions();
+            renderBothSlots();
+            renderStageOverlays();
+        }
+
+        function loadSelectedPreset() {
+            const val = presetSelect.value;
+            if (BUILT_IN_PRESETS[val]) {
+                applyPresetData(BUILT_IN_PRESETS[val].data);
+                showToast(`โหลด "${BUILT_IN_PRESETS[val].name}" เรียบร้อย`);
+            } else {
+                const custom = getCustomPresets();
+                if (custom[val]) {
+                    applyPresetData(custom[val].data);
+                    showToast(`โหลด "${custom[val].name}" เรียบร้อย`);
+                }
+            }
+        }
+
+        presetSelect.addEventListener("change", loadSelectedPreset);
+        btnLoadPreset.addEventListener("click", loadSelectedPreset);
+
+        // Save New Preset Modal Interactions
+        btnSaveNewPreset.addEventListener("click", () => {
+            newPresetNameInput.value = "";
+            savePresetModal.style.display = "flex";
+            setTimeout(() => newPresetNameInput.focus(), 50);
+        });
+
+        const closeSaveModal = () => { savePresetModal.style.display = "none"; };
+        closeSaveModalBtn.addEventListener("click", closeSaveModal);
+        cancelSavePresetBtn.addEventListener("click", closeSaveModal);
+        savePresetModal.addEventListener("click", e => {
+            if (e.target === savePresetModal) closeSaveModal();
+        });
+
+        confirmSavePresetBtn.addEventListener("click", () => {
+            const name = newPresetNameInput.value.trim();
+            if (!name) {
+                alert("กรุณาระบุชื่อพรีเซ็ต");
+                newPresetNameInput.focus();
+                return;
+            }
+            const id = "preset_" + Date.now();
+            const presets = getCustomPresets();
+            presets[id] = {
+                name: name,
+                data: getCurrentAppStateAsPreset(),
+                createdAt: Date.now()
+            };
+            saveCustomPresets(presets);
+            refreshPresetDropdown(id);
+            closeSaveModal();
+            showToast(`บันทึกพรีเซ็ต "${name}" เรียบร้อยแล้ว!`);
+        });
+
+        // Update / Overwrite Preset
+        btnUpdatePreset.addEventListener("click", () => {
+            const val = presetSelect.value;
+            if (BUILT_IN_PRESETS[val]) {
+                newPresetNameInput.value = BUILT_IN_PRESETS[val].name.replace(/^[^\wก-๙]+/, '').trim() + " (ปรับแต่ง)";
+                savePresetModal.style.display = "flex";
+                setTimeout(() => newPresetNameInput.focus(), 50);
+                return;
+            }
+            const presets = getCustomPresets();
+            if (presets[val]) {
+                if (confirm(`คุณต้องการบันทึกการตั้งค่าปัจจุบันทับ "${presets[val].name}" ใช่หรือไม่?`)) {
+                    presets[val].data = getCurrentAppStateAsPreset();
+                    presets[val].updatedAt = Date.now();
+                    saveCustomPresets(presets);
+                    showToast(`บันทึกทับพรีเซ็ต "${presets[val].name}" สำเร็จ!`);
+                }
+            } else {
+                showToast("กรุณาเลือก Preset ที่ต้องการบันทึกทับ", "error");
+            }
+        });
+
+        // Delete Preset
+        btnDeletePreset.addEventListener("click", () => {
+            const val = presetSelect.value;
+            if (BUILT_IN_PRESETS[val]) {
+                showToast("ไม่สามารถลบพรีเซ็ตมาตรฐานของระบบได้", "error");
+                return;
+            }
+            const presets = getCustomPresets();
+            if (presets[val]) {
+                if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบพรีเซ็ต "${presets[val].name}"?`)) {
+                    const deletedName = presets[val].name;
+                    delete presets[val];
+                    saveCustomPresets(presets);
+                    refreshPresetDropdown("__default__");
+                    showToast(`ลบพรีเซ็ต "${deletedName}" เรียบร้อยแล้ว`);
+                }
+            }
+        });
+
+        // Export / Import Modal Interactions
+        const closeIOModal = () => { ioPresetModal.style.display = "none"; };
+        closeIOModalBtn.addEventListener("click", closeIOModal);
+        ioPresetModal.addEventListener("click", e => {
+            if (e.target === ioPresetModal) closeIOModal();
+        });
+
+        btnExportPresets.addEventListener("click", () => {
+            ioModalTitle.textContent = "📤 ส่งออกพรีเซ็ต (Export Presets เพื่อย้ายข้อมูล)";
+            const exportPayload = {
+                generator: "de Pry Before/After Image Combiner",
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                currentConfig: getCurrentAppStateAsPreset(),
+                customPresets: getCustomPresets()
+            };
+            ioJsonTextarea.value = JSON.stringify(exportPayload, null, 2);
+            ioPresetModal.style.display = "flex";
+            ioJsonTextarea.select();
+        });
+
+        btnImportPresets.addEventListener("click", () => {
+            ioModalTitle.textContent = "📥 นำเข้าพรีเซ็ต (Import Presets จากเครื่องอื่น)";
+            ioJsonTextarea.value = "";
+            ioJsonTextarea.placeholder = "วางรหัส JSON พรีเซ็ตที่คัดลอกมาจากเครื่องอื่นที่นี่...";
+            ioPresetModal.style.display = "flex";
+            ioJsonTextarea.focus();
+        });
+
+        btnCopyExportJson.addEventListener("click", async () => {
+            if (!ioJsonTextarea.value.trim()) return;
+            try {
+                await navigator.clipboard.writeText(ioJsonTextarea.value);
+                showToast("คัดลอก JSON ลง Clipboard เรียบร้อยแล้ว!");
+            } catch(err) {
+                ioJsonTextarea.select();
+                document.execCommand("copy");
+                showToast("คัดลอก JSON เรียบร้อยแล้ว");
+            }
+        });
+
+        btnDownloadJsonFile.addEventListener("click", () => {
+            const jsonStr = ioJsonTextarea.value.trim() || JSON.stringify({
+                customPresets: getCustomPresets(),
+                currentConfig: getCurrentAppStateAsPreset()
+            }, null, 2);
+
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `depry-presets-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("ดาวน์โหลดไฟล์ JSON เรียบร้อยแล้ว");
+        });
+
+        btnSelectJsonFile.addEventListener("click", () => {
+            importJsonFileInput.click();
+        });
+
+        importJsonFileInput.addEventListener("change", e => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = evt => {
+                ioJsonTextarea.value = evt.target.result;
+                showToast(`โหลดไฟล์ ${file.name} สำเร็จ กรุณากด "ยืนยันนำเข้าข้อมูล"`);
+            };
+            reader.readAsText(file);
+            importJsonFileInput.value = "";
+        });
+
+        btnConfirmImportJson.addEventListener("click", () => {
+            const raw = ioJsonTextarea.value.trim();
+            if (!raw) {
+                alert("กรุณาวางข้อมูล JSON หรือเลือกไฟล์ก่อนยืนยัน");
+                return;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                let importedCount = 0;
+                const presets = getCustomPresets();
+
+                // Check if it's our standard export bundle
+                if (parsed.customPresets && typeof parsed.customPresets === "object") {
+                    for (const [id, item] of Object.entries(parsed.customPresets)) {
+                        if (item && item.name && item.data) {
+                            const newId = presets[id] ? "preset_" + Date.now() + "_" + Math.floor(Math.random()*1000) : id;
+                            presets[newId] = item;
+                            importedCount++;
+                        }
+                    }
+                    saveCustomPresets(presets);
+                    refreshPresetDropdown();
+                    if (parsed.currentConfig) {
+                        applyPresetData(parsed.currentConfig);
+                    }
+                    closeIOModal();
+                    showToast(`นำเข้าสำเร็จ ${importedCount} พรีเซ็ต! พร้อมใช้งานทันที`);
+                    return;
+                }
+
+                // Check if it's a single preset object
+                if (parsed.name && parsed.data) {
+                    const id = "preset_" + Date.now();
+                    presets[id] = parsed;
+                    saveCustomPresets(presets);
+                    refreshPresetDropdown(id);
+                    applyPresetData(parsed.data);
+                    closeIOModal();
+                    showToast(`นำเข้าและโหลดพรีเซ็ต "${parsed.name}" สำเร็จ!`);
+                    return;
+                }
+
+                // Check if it's directly a raw settings config
+                if (parsed.ratio || parsed.censor || parsed.showTitle !== undefined) {
+                    const id = "preset_" + Date.now();
+                    presets[id] = {
+                        name: "พรีเซ็ตนำเข้า (" + new Date().toLocaleDateString("th-TH") + ")",
+                        data: parsed,
+                        createdAt: Date.now()
+                    };
+                    saveCustomPresets(presets);
+                    refreshPresetDropdown(id);
+                    applyPresetData(parsed);
+                    closeIOModal();
+                    showToast("นำเข้าและปรับใช้การตั้งค่าสำเร็จ!");
+                    return;
+                }
+
+                alert("รูปแบบ JSON ไม่ถูกต้อง กรุณาตรวจสอบข้อมูล");
+            } catch(err) {
+                console.error(err);
+                alert("เกิดข้อผิดพลาดในการอ่าน JSON: " + err.message);
+            }
+        });
+
+        // Initialize Preset Dropdown on startup
+        refreshPresetDropdown("__default__");
 
         // --- GENERAL CONTROLS LISTENERS ---
         layoutSelect.addEventListener("change", e => {
@@ -2037,10 +3011,23 @@
 
             // 2. EYE CENSOR BARS (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว)
             if (showCensorCheckbox.checked) {
+                const isSeparate = censorSeparateCheckbox && censorSeparateCheckbox.checked;
+
                 const yPct = parseFloat(censorYSlider.value) / 100;
                 const xPct = parseFloat(censorXSlider.value) / 100;
                 const wPct = parseFloat(censorWSlider.value) / 100;
                 const hPct = parseFloat(censorHSlider.value) / 100;
+
+                const leftXPct = isSeparate ? (parseFloat(censorLeftXSlider.value) / 100) : xPct;
+                const leftYPct = isSeparate ? (parseFloat(censorLeftYSlider.value) / 100) : yPct;
+                const leftWPct = isSeparate ? (parseFloat(censorLeftWSlider.value) / 100) : wPct;
+                const leftHPct = isSeparate ? (parseFloat(censorLeftHSlider.value) / 100) : hPct;
+
+                const rightXPct = isSeparate ? (parseFloat(censorRightXSlider.value) / 100) : xPct;
+                const rightYPct = isSeparate ? (parseFloat(censorRightYSlider.value) / 100) : yPct;
+                const rightWPct = isSeparate ? (parseFloat(censorRightWSlider.value) / 100) : wPct;
+                const rightHPct = isSeparate ? (parseFloat(censorRightHSlider.value) / 100) : hPct;
+
                 const rawRadius = parseFloat(censorRadiusSlider.value) || 14;
                 const radius = Math.round(rawRadius * (S / 2));
                 const color = censorColorSelect.value || "#000000";
@@ -2049,18 +3036,17 @@
                 const slotW = isHorizontal ? width / 2 : width;
                 const slotH = isHorizontal ? height : height / 2;
 
-                const barW = Math.round(slotW * wPct);
-                const barH = Math.round(slotH * hPct);
-
                 ctx.save();
                 ctx.fillStyle = color;
                 ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
                 ctx.shadowBlur = Math.round(5 * S);
                 ctx.shadowOffsetY = Math.round(2 * S);
 
-                function drawSingleCensorBar(slotLeftX, slotTopY) {
-                    const cx = slotLeftX + slotW * xPct;
-                    const cy = slotTopY + slotH * yPct;
+                function drawCustomBar(slotLeftX, slotTopY, xp, yp, wp, hp) {
+                    const barW = Math.round(slotW * wp);
+                    const barH = Math.round(slotH * hp);
+                    const cx = slotLeftX + slotW * xp;
+                    const cy = slotTopY + slotH * yp;
                     const bx = Math.round(cx - barW / 2);
                     const by = Math.round(cy - barH / 2);
 
@@ -2081,17 +3067,17 @@
 
                 if (isHorizontal) {
                     if (target === "both" || target === "left") {
-                        drawSingleCensorBar(0, 0);
+                        drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
                     }
                     if (target === "both" || target === "right") {
-                        drawSingleCensorBar(width / 2, 0);
+                        drawCustomBar(width / 2, 0, rightXPct, rightYPct, rightWPct, rightHPct);
                     }
                 } else {
                     if (target === "both" || target === "left") {
-                        drawSingleCensorBar(0, 0);
+                        drawCustomBar(0, 0, leftXPct, leftYPct, leftWPct, leftHPct);
                     }
                     if (target === "both" || target === "right") {
-                        drawSingleCensorBar(0, height / 2);
+                        drawCustomBar(0, height / 2, rightXPct, rightYPct, rightWPct, rightHPct);
                     }
                 }
 
@@ -2780,5 +3766,48 @@
         renderBothSlots();
         renderStageOverlays();
     </script>
+    <!-- Modal: Save New Preset -->
+    <div id="savePresetModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span>💾 บันทึกการตั้งค่าเป็น Preset ใหม่</span>
+                <button type="button" class="modal-close-btn" id="closeSaveModalBtn">✕</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label for="newPresetNameInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155;">ตั้งชื่อ Preset:</label>
+                <input type="text" id="newPresetNameInput" placeholder="เช่น เคสฟิลเลอร์คาง ปิดตา 60%, เคสสิว 1:1..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; box-sizing: border-box;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" class="btn-preset-action" id="cancelSavePresetBtn" style="background: #f1f5f9; color: #475569;">ยกเลิก</button>
+                <button type="button" class="btn-preset-action btn-save" id="confirmSavePresetBtn">บันทึก Preset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Export / Import Presets -->
+    <div id="ioPresetModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 600px;">
+            <div class="modal-header">
+                <span id="ioModalTitle">📤 ส่งออก / นำเข้าพรีเซ็ต (Export / Import Presets)</span>
+                <button type="button" class="modal-close-btn" id="closeIOModalBtn">✕</button>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 10px;">
+                คัดลอกรหัส JSON นี้ไปวางในอีกเครื่อง หรือบันทึกเป็นไฟล์เพื่อนำไปใช้ในเบราว์เซอร์อื่นได้ทันที
+            </p>
+            <textarea id="ioJsonTextarea" rows="8" style="width: 100%; padding: 8px 10px; font-family: monospace; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical; box-sizing: border-box; background: #f8fafc; margin-bottom: 12px;"></textarea>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnCopyExportJson">📋 คัดลอก JSON</button>
+                    <button type="button" class="btn-preset-action btn-io" id="btnDownloadJsonFile">💾 ดาวน์โหลดไฟล์ .json</button>
+                    <input type="file" id="importJsonFileInput" accept=".json" style="display: none;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnSelectJsonFile">📂 เลือกไฟล์ .json</button>
+                </div>
+                <div>
+                    <button type="button" class="btn-preset-action btn-save" id="btnConfirmImportJson">📥 ยืนยันนำเข้าข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
