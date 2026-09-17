@@ -266,6 +266,64 @@
             z-index: 2;
         }
 
+        /* Date Auto-Calculator Controls */
+        .date-calc-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+        .btn-calc-date {
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+        }
+        .btn-calc-date:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        .btn-calc-date:active {
+            transform: translateY(0);
+        }
+        .date-quick-pill {
+            padding: 3px 9px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .date-quick-pill:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        .date-quick-pill.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
         .toggle-label {
             display: inline-flex;
             align-items: center;
@@ -1076,6 +1134,29 @@
                 </div>
             </div>
 
+            <!-- Date Auto-Calculator Bar -->
+            <div class="date-calc-bar" id="dateCalcBar">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #334155;">
+                    <span>⚡ คำนวณวัน After:</span>
+                    <span style="font-weight: normal; color: #64748b;">(จากวัน Before +</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <input type="number" id="dateAddDaysInput" value="14" min="1" max="999" style="width: 58px; padding: 4px 6px; font-size: 13px; font-weight: 600; text-align: center; border: 1px solid var(--border); border-radius: var(--radius-sm);" title="ใส่จำนวนวันที่ต้องการนับเพิ่ม">
+                    <span style="font-size: 12px; color: #475569; font-weight: 500;">วัน)</span>
+                    <button type="button" class="btn-calc-date" id="btnCalculateAfterDate" title="กดคำนวณวัน After จากวัน Before ทันที">
+                        <span>📅 คำนวณวัน After</span>
+                    </button>
+                </div>
+                <div class="calc-quick-pills" style="display: flex; gap: 5px; flex-wrap: wrap; margin-left: 2px;">
+                    <button type="button" class="date-quick-pill" data-days="7" title="+7 วัน (1 สัปดาห์)">+7 วัน</button>
+                    <button type="button" class="date-quick-pill" data-days="14" title="+14 วัน (2 สัปดาห์)">+14 วัน</button>
+                    <button type="button" class="date-quick-pill" data-days="30" title="+30 วัน (1 เดือน)">+30 วัน (1 ด.)</button>
+                    <button type="button" class="date-quick-pill" data-days="60" title="+60 วัน (2 เดือน)">+60 วัน (2 ด.)</button>
+                    <button type="button" class="date-quick-pill" data-days="90" title="+90 วัน (3 เดือน)">+90 วัน (3 ด.)</button>
+                </div>
+                <span id="dateCalcHint" style="font-size: 11px; color: #10b981; font-weight: 600; margin-left: auto; display: none;"></span>
+            </div>
+
             <!-- Disclaimers -->
             <div class="control-row">
                 <div class="control-item" style="flex: 1; min-width: 260px;">
@@ -1578,6 +1659,10 @@
         const dateLeftPicker = document.getElementById("dateLeftPicker");
         const dateRightPicker = document.getElementById("dateRightPicker");
         const dateFormatSelect = document.getElementById("dateFormatSelect");
+        const dateAddDaysInput = document.getElementById("dateAddDaysInput");
+        const btnCalculateAfterDate = document.getElementById("btnCalculateAfterDate");
+        const dateCalcHint = document.getElementById("dateCalcHint");
+        const dateQuickPills = document.querySelectorAll(".date-quick-pill");
         const showDisclaimersCheckbox = document.getElementById("showDisclaimersCheckbox");
         const discLeftInput = document.getElementById("discLeftInput");
         const discRightInput = document.getElementById("discRightInput");
@@ -1817,7 +1902,8 @@
                     }
                 }
                 const dNum = parseInt(d, 10);
-                const yNum = parseInt(y, 10);
+                let yNum = parseInt(y, 10);
+                if (yNum > 2400) yNum -= 543;
                 if (mIndex >= 1 && mIndex <= 12 && dNum >= 1 && dNum <= 31 && yNum > 1900) {
                     return `${yNum}-${String(mIndex).padStart(2, "0")}-${String(dNum).padStart(2, "0")}`;
                 }
@@ -1881,6 +1967,86 @@
                 dateRightInput.value = formatYMD(rightYMD, dateFormatSelect.value);
             }
             renderStageOverlays();
+        });
+
+        // --- DATE AUTO-CALCULATOR (FROM BEFORE TO AFTER) ---
+        function calculateAfterDate(days) {
+            const numDays = parseInt(days, 10);
+            if (isNaN(numDays) || numDays <= 0) {
+                showToast("กรุณาระบุจำนวนวันที่ต้องการเพิ่ม (มากกว่า 0 วัน)", "error");
+                return;
+            }
+
+            if (dateAddDaysInput) dateAddDaysInput.value = numDays;
+
+            // Highlight matching quick pill if applicable
+            dateQuickPills.forEach(pill => {
+                const pDays = parseInt(pill.getAttribute("data-days"), 10);
+                if (pDays === numDays) pill.classList.add("active");
+                else pill.classList.remove("active");
+            });
+
+            const leftStr = dateLeftInput.value.trim();
+            let leftYMD = parseToYMD(leftStr);
+            if (!leftYMD) {
+                const now = new Date();
+                leftYMD = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+                dateLeftInput.value = formatYMD(leftYMD, dateFormatSelect.value);
+                dateLeftPicker.value = leftYMD;
+            }
+
+            const [y, m, d] = leftYMD.split("-").map(Number);
+            const beforeDate = new Date(y, m - 1, d);
+            beforeDate.setDate(beforeDate.getDate() + numDays);
+
+            const afterY = beforeDate.getFullYear();
+            const afterM = String(beforeDate.getMonth() + 1).padStart(2, "0");
+            const afterD = String(beforeDate.getDate()).padStart(2, "0");
+            const afterYMD = `${afterY}-${afterM}-${afterD}`;
+
+            const formattedAfter = formatYMD(afterYMD, dateFormatSelect.value);
+            dateRightInput.value = formattedAfter;
+            dateRightPicker.value = afterYMD;
+
+            renderStageOverlays();
+
+            if (dateCalcHint) {
+                dateCalcHint.textContent = `✓ คำนวณวัน After (+${numDays} วัน): ${formattedAfter}`;
+                dateCalcHint.style.display = "inline";
+                clearTimeout(dateCalcHint._timeout);
+                dateCalcHint._timeout = setTimeout(() => {
+                    if (dateCalcHint) dateCalcHint.style.display = "none";
+                }, 4000);
+            }
+
+            showToast(`คำนวณวัน After (+${numDays} วัน): ${formattedAfter} เรียบร้อย (ปรับเปลี่ยนได้ตามต้องการ)`);
+        }
+
+        if (btnCalculateAfterDate) {
+            btnCalculateAfterDate.addEventListener("click", () => {
+                calculateAfterDate(dateAddDaysInput.value);
+            });
+        }
+
+        if (dateAddDaysInput) {
+            dateAddDaysInput.addEventListener("keydown", e => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    calculateAfterDate(dateAddDaysInput.value);
+                }
+            });
+        }
+
+        dateQuickPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                const days = parseInt(pill.getAttribute("data-days"), 10);
+                calculateAfterDate(days);
+            });
+        });
+
+        // If user manually edits dateRightInput, remove pill highlight so user knows it is customized
+        dateRightInput.addEventListener("input", () => {
+            dateQuickPills.forEach(pill => pill.classList.remove("active"));
         });
 
         // --- EYE PRIVACY CENSOR LOGIC & LOCALSTORAGE PERSISTENCE ---
@@ -2368,6 +2534,7 @@
                 dateLeft: dateLeftInput.value,
                 dateRight: dateRightInput.value,
                 dateFormat: dateFormatSelect.value,
+                dateAddDays: parseInt(dateAddDaysInput.value, 10) || 14,
                 showDisclaimers: showDisclaimersCheckbox.checked,
                 discLeft: discLeftInput.value,
                 discRight: discRightInput.value,
@@ -2454,6 +2621,7 @@
             if (p.dateLeft !== undefined) dateLeftInput.value = p.dateLeft;
             if (p.dateRight !== undefined) dateRightInput.value = p.dateRight;
             if (p.dateFormat) dateFormatSelect.value = p.dateFormat;
+            if (p.dateAddDays !== undefined && dateAddDaysInput) dateAddDaysInput.value = p.dateAddDays;
 
             // Disclaimers
             if (typeof p.showDisclaimers === "boolean") showDisclaimersCheckbox.checked = p.showDisclaimers;
