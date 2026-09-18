@@ -75,8 +75,16 @@ A browser-based tool for comparing and combining before/after images. No server 
 - 💾 **บันทึกไฟล์พร้อมลงวันที่และเวลาอัตโนมัติ (Date & Time Stamped Filenames)**:
   - ระบบตั้งชื่อไฟล์ส่งออกอัตโนมัติโดยอิงจากคลินิก, ชื่อโปรแกรม, วันที่, เวลา (ชั่วโมง-นาที-วินาที), และอัตราส่วน เช่น `depry-โปรแกรม_Thermatix-20260918-074015-1x1.png`
   - ป้องกันการบันทึกทับไฟล์เดิม และสะดวกต่อการค้นหาเรียงตามเวลาในเครื่อง
-- 📋 One-click copy image to clipboard
-- ⛶ Fullscreen lightbox preview & result zoom
+- 📲 **รองรับการติดตั้งเป็นแอพ PWA (Progressive Web App on Android & iOS)**:
+  - **Android & Chromium**: กดปุ่ม **"📲 ติดตั้งแอพ"** เพื่อติดตั้งลงบนเครื่องทันที เปิดใช้งานแบบ Standalone ไร้ขอบเบราว์เซอร์
+  - **iOS (iPhone / iPad)**: กดปุ่ม **"📲 ติดตั้งแอพ"** เพื่อเปิดหน้าต่างแนะนำ Apple Sheet 3 ขั้นตอน: แตะปุ่มแชร์ ⎋ -> เลือก "เพิ่มไปยังหน้าจอโฮม" ➕ -> แตะ "เพิ่ม"
+  - **Offline Capability**: ทำงานแบบออฟไลน์ได้ 100% ผ่าน Service Worker (`sw.js`) และ Cache Storage
+  - **App Icons**: รองรับชุดไอคอนมาตรฐาน 192x192, 512x512, Maskable icons และ Apple Touch Icon 180x180
+- 🍏 **Apple Minimal Design & Fluid Animations (Apple HIG Aesthetic)**:
+  - ดีไซน์สไตล์ Apple Human Interface Guidelines: เรียบหรู สะอาดตา ใช้งานง่าย ไม่รก
+  - กระจกฝ้า Glassmorphism (`backdrop-filter: blur(24px) saturate(180%)`) ขอบเส้นแบบ Hairline Border นุ่มนวล
+  - สวิตช์และปุ่มกดแบบ Segmented Capsules พร้อมเอฟเฟกต์เด้งสปริง (`cubic-bezier(0.16, 1, 0.3, 1)`)
+  - หน้าต่าง Modal และ Action Sheet สไตล์ iOS Native
 - 🚀 Runs 100% in browser on Vercel or local static files, no database server configuration required
 
 ## Usage
