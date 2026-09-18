@@ -595,17 +595,78 @@
         }
         .workspace-meta {
             display: flex;
+            align-items: center;
             gap: 8px;
             flex-wrap: wrap;
         }
         .meta-tag {
-            background: #f1f5f9;
-            color: #334155;
-            padding: 3px 10px;
-            border-radius: 9999px;
+            background: rgba(118, 118, 128, 0.08);
+            color: var(--secondary-hover);
+            padding: 4px 11px;
+            border-radius: var(--radius-pill);
             font-size: 12px;
             font-weight: 600;
             border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Apple Style Toggle Settings Button */
+        .btn-toggle-settings {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            background: rgba(118, 118, 128, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: var(--radius-pill);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.25s var(--ease-apple);
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .btn-toggle-settings:hover {
+            background: rgba(118, 118, 128, 0.22);
+            border-color: rgba(0, 0, 0, 0.16);
+            transform: translateY(-1px);
+        }
+        .btn-toggle-settings:active {
+            transform: scale(0.96);
+        }
+        .btn-toggle-settings .toggle-arrow {
+            font-size: 9px;
+            transition: transform 0.3s var(--ease-apple);
+            display: inline-block;
+        }
+        .btn-toggle-settings.collapsed {
+            background: rgba(0, 113, 227, 0.1);
+            color: #0071e3;
+            border-color: rgba(0, 113, 227, 0.3);
+        }
+        .btn-toggle-settings.collapsed .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Settings Container with Smooth Collapse Animation */
+        .settings-container {
+            transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, transform 0.35s ease;
+            max-height: 8000px;
+            opacity: 1;
+            transform: translateY(0);
+            overflow: visible;
+        }
+        .settings-container.collapsed {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         /* The Stage Container */
@@ -1660,6 +1721,16 @@
                 padding: 10px;
                 border-radius: var(--radius-md);
             }
+
+            .settings-container {
+                order: 3;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+            .settings-container.collapsed {
+                display: none !important;
+            }
             .workspace-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -1745,7 +1816,7 @@
 
             /* Mobile Category Tabs (Scrollable Pill Bar) */
             .mobile-tabs-nav {
-                order: 3;
+                order: 1;
                 display: flex;
                 align-items: center;
                 gap: 6px;
@@ -1798,7 +1869,7 @@
 
             /* Controls Container on Mobile */
             .controls-card {
-                order: 4;
+                order: 2;
                 padding: 14px 12px;
                 margin-bottom: 12px;
                 border-radius: var(--radius-md);
@@ -1881,7 +1952,7 @@
 
             /* Preset Card on Mobile */
             .preset-manager-card {
-                order: 4;
+                order: 3;
                 padding: 14px 12px;
                 margin-bottom: 12px;
                 border-radius: var(--radius-md);
@@ -2075,6 +2146,11 @@
                 opacity: 0.35;
                 cursor: not-allowed;
             }
+            .btn-mobile-icon.active {
+                background: rgba(0, 113, 227, 0.12);
+                color: #0071e3;
+                border-color: rgba(0, 113, 227, 0.35);
+            }
 
             /* Toast on Mobile: Float neatly above the sticky thumb action bar */
             .toast {
@@ -2116,6 +2192,159 @@
         </div>
     </header>
 
+    <!-- ==============================================================
+         UNIFIED CONNECTED STAGE: TWO IMAGES JOINED SIDE-BY-SIDE IN 1 FRAME
+         ============================================================== -->
+    <div class="workspace-card">
+        <div class="workspace-header">
+            <div class="workspace-title">
+                <span id="workspaceTitleText">🖼️ พื้นที่จัดภาพ (ต่อกันซ้าย-ขวา ในกรอบเดียว)</span>
+            </div>
+            <div class="workspace-meta">
+                <span class="meta-tag" id="metaRatioTag">📐 สัดส่วน 1:1</span>
+                <span class="meta-tag" id="metaResTag">📏 รอโหลดภาพ</span>
+                <button type="button" class="btn-toggle-settings" id="btnToggleSettings" title="ซ่อนหรือแสดงแผงการตั้งค่าด้านล่าง">
+                    <span>⚙️</span>
+                    <span id="toggleSettingsText">การตั้งค่า</span>
+                    <span class="toggle-arrow" id="toggleSettingsArrow">▲</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- The Canvas Stage -->
+        <div class="stage-container" id="stageContainer">
+            <!-- Unified Single Frame -->
+            <div class="canvas-frame" id="canvasFrame">
+                <!-- Left Slot: Before Image -->
+                <div class="stage-slot" id="slotBefore" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพซ้าย">
+                    <canvas id="beforeCanvas" class="slot-canvas"></canvas>
+                    <div class="slot-dropzone" id="beforeDropzone">
+                        <div class="drop-icon">📷</div>
+                        <div class="drop-title">Before (ภาพด้านซ้าย)</div>
+                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
+                        <label class="btn-browse">
+                            Browse Image
+                            <input type="file" accept="image/*" id="beforeFileInput" style="display:none;">
+                        </label>
+                    </div>
+                    <div class="slot-quick-btns">
+                        <label class="btn-icon" title="เปลี่ยนภาพด้านซ้าย">
+                            ✏️
+                            <input type="file" accept="image/*" id="beforeChangeInput" style="display:none;">
+                        </label>
+                        <button type="button" class="btn-icon btn-icon-danger" id="beforeClearBtn" title="ลบภาพด้านซ้าย">✕</button>
+                    </div>
+                </div>
+
+                <!-- Divider / Seam between slots -->
+                <div class="stage-divider" id="stageDivider"></div>
+
+                <!-- Right Slot: After Image -->
+                <div class="stage-slot" id="slotAfter" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพขวา">
+                    <canvas id="afterCanvas" class="slot-canvas"></canvas>
+                    <div class="slot-dropzone" id="afterDropzone">
+                        <div class="drop-icon">✨</div>
+                        <div class="drop-title">After (ภาพด้านขวา)</div>
+                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
+                        <label class="btn-browse">
+                            Browse Image
+                            <input type="file" accept="image/*" id="afterFileInput" style="display:none;">
+                        </label>
+                    </div>
+                    <div class="slot-quick-btns">
+                        <label class="btn-icon" title="เปลี่ยนภาพด้านขวา">
+                            ✏️
+                            <input type="file" accept="image/*" id="afterChangeInput" style="display:none;">
+                        </label>
+                        <button type="button" class="btn-icon btn-icon-danger" id="afterClearBtn" title="ลบภาพด้านขวา">✕</button>
+                    </div>
+                </div>
+
+                <!-- Overlay Canvas: Live rendering of Title, Dates, Disclaimers, Watermark, Logo -->
+                <canvas id="stageOverlayCanvas" class="stage-overlay-canvas"></canvas>
+
+                <!-- Interactive Censor Drag/Resize Overlay -->
+                <div id="censorOverlayContainer" class="censor-overlay-container">
+                    <div id="censorBoxLeft" class="censor-interactive-box" data-side="left" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
+                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
+                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
+                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
+                        <div class="censor-handle censor-h-se" data-handle="se"></div>
+                        <div class="censor-drag-badge" id="censorBadgeLeft">↔️ ลากเพื่อเลื่อน</div>
+                    </div>
+                    <div id="censorBoxRight" class="censor-interactive-box" data-side="right" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
+                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
+                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
+                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
+                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
+                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
+                        <div class="censor-handle censor-h-se" data-handle="se"></div>
+                        <div class="censor-drag-badge" id="censorBadgeRight">↔️ ลากเพื่อเลื่อน</div>
+                    </div>
+                </div>
+
+                <!-- Diff Image (shown when diff mode is active) -->
+                <canvas id="diffStageCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Zoom Controls for Both Sides -->
+        <div class="zoom-bars-grid">
+            <!-- Left Side Zoom -->
+            <div class="zoom-side-panel">
+                <span class="zoom-side-label">ซูมภาพซ้าย:</span>
+                <button type="button" class="zoom-btn" id="beforeZoomOut">−</button>
+                <input type="range" id="beforeZoomSlider" min="20" max="500" value="100" class="zoom-slider">
+                <button type="button" class="zoom-btn" id="beforeZoomIn">+</button>
+                <span class="zoom-value" id="beforeZoomVal">100%</span>
+                <button type="button" class="btn-sm" id="beforeResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
+            </div>
+
+            <!-- Right Side Zoom -->
+            <div class="zoom-side-panel">
+                <span class="zoom-side-label">ซูมภาพขวา:</span>
+                <button type="button" class="zoom-btn" id="afterZoomOut">−</button>
+                <input type="range" id="afterZoomSlider" min="20" max="500" value="100" class="zoom-slider">
+                <button type="button" class="zoom-btn" id="afterZoomIn">+</button>
+                <span class="zoom-value" id="afterZoomVal">100%</span>
+                <button type="button" class="btn-sm" id="afterResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
+            </div>
+        </div>
+
+        <div class="sync-row">
+            <span>💡 <strong>วิธีใช้งาน:</strong> คลิกค้างแล้วลากบนรูปเพื่อเลื่อนภาพ • คลิกค้างที่แถบปิดตาเพื่อเลื่อนตำแหน่งหรือดึงขอบเพื่อย่อ-ขยาย</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons-wrap">
+            <button class="btn-success" id="downloadBtn" disabled>
+                <span>💾 ดาวน์โหลดภาพ (Download 2000px)</span>
+            </button>
+            <button class="btn-outline" id="copyClipboardBtn" disabled>
+                <span>📋 คัดลอกภาพ (Copy to Clipboard)</span>
+            </button>
+            <button class="btn-secondary" id="toggleDiffBtn" disabled>
+                <span>🔍 ดูจุดต่าง (Visual Diff)</span>
+            </button>
+            <button class="btn-outline" id="fullscreenBtn" disabled>
+                <span>⛶ ขยายเต็มจอ</span>
+            </button>
+            <button type="button" class="btn-outline" id="btnBottomToggleSettings" title="ซ่อนหรือแสดงแผงการตั้งค่า">
+                <span>⚙️ การตั้งค่า</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         SETTINGS CONTAINER (COLLAPSIBLE)
+         ============================================================== -->
+    <div class="settings-container" id="settingsContainer">
     <!-- Preset Manager Bar -->
     <div class="preset-manager-card" id="presetManagerCard">
         <div class="preset-bar-left">
@@ -2692,147 +2921,6 @@
         </div>
     </div>
 
-    <!-- ==============================================================
-         UNIFIED CONNECTED STAGE: TWO IMAGES JOINED SIDE-BY-SIDE IN 1 FRAME
-         ============================================================== -->
-    <div class="workspace-card">
-        <div class="workspace-header">
-            <div class="workspace-title">
-                <span id="workspaceTitleText">🖼️ พื้นที่จัดภาพ (ต่อกันซ้าย-ขวา ในกรอบเดียว)</span>
-            </div>
-            <div class="workspace-meta">
-                <span class="meta-tag" id="metaRatioTag">📐 สัดส่วน 1:1</span>
-                <span class="meta-tag" id="metaResTag">📏 รอโหลดภาพ</span>
-            </div>
-        </div>
-
-        <!-- The Canvas Stage -->
-        <div class="stage-container" id="stageContainer">
-            <!-- Unified Single Frame -->
-            <div class="canvas-frame" id="canvasFrame">
-                <!-- Left Slot: Before Image -->
-                <div class="stage-slot" id="slotBefore" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพซ้าย">
-                    <canvas id="beforeCanvas" class="slot-canvas"></canvas>
-                    <div class="slot-dropzone" id="beforeDropzone">
-                        <div class="drop-icon">📷</div>
-                        <div class="drop-title">Before (ภาพด้านซ้าย)</div>
-                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
-                        <label class="btn-browse">
-                            Browse Image
-                            <input type="file" accept="image/*" id="beforeFileInput" style="display:none;">
-                        </label>
-                    </div>
-                    <div class="slot-quick-btns">
-                        <label class="btn-icon" title="เปลี่ยนภาพด้านซ้าย">
-                            ✏️
-                            <input type="file" accept="image/*" id="beforeChangeInput" style="display:none;">
-                        </label>
-                        <button type="button" class="btn-icon btn-icon-danger" id="beforeClearBtn" title="ลบภาพด้านซ้าย">✕</button>
-                    </div>
-                </div>
-
-                <!-- Divider / Seam between slots -->
-                <div class="stage-divider" id="stageDivider"></div>
-
-                <!-- Right Slot: After Image -->
-                <div class="stage-slot" id="slotAfter" title="คลิกค้างแล้วลากเพื่อจัดตำแหน่งภาพขวา">
-                    <canvas id="afterCanvas" class="slot-canvas"></canvas>
-                    <div class="slot-dropzone" id="afterDropzone">
-                        <div class="drop-icon">✨</div>
-                        <div class="drop-title">After (ภาพด้านขวา)</div>
-                        <div class="drop-subtitle">วางภาพตรงนี้ (Ctrl+V) หรือลากไฟล์มาใส่</div>
-                        <label class="btn-browse">
-                            Browse Image
-                            <input type="file" accept="image/*" id="afterFileInput" style="display:none;">
-                        </label>
-                    </div>
-                    <div class="slot-quick-btns">
-                        <label class="btn-icon" title="เปลี่ยนภาพด้านขวา">
-                            ✏️
-                            <input type="file" accept="image/*" id="afterChangeInput" style="display:none;">
-                        </label>
-                        <button type="button" class="btn-icon btn-icon-danger" id="afterClearBtn" title="ลบภาพด้านขวา">✕</button>
-                    </div>
-                </div>
-
-                <!-- Overlay Canvas: Live rendering of Title, Dates, Disclaimers, Watermark, Logo -->
-                <canvas id="stageOverlayCanvas" class="stage-overlay-canvas"></canvas>
-
-                <!-- Interactive Censor Drag/Resize Overlay -->
-                <div id="censorOverlayContainer" class="censor-overlay-container">
-                    <div id="censorBoxLeft" class="censor-interactive-box" data-side="left" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
-                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
-                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
-                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
-                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
-                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
-                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
-                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
-                        <div class="censor-handle censor-h-se" data-handle="se"></div>
-                        <div class="censor-drag-badge" id="censorBadgeLeft">↔️ ลากเพื่อเลื่อน</div>
-                    </div>
-                    <div id="censorBoxRight" class="censor-interactive-box" data-side="right" title="คลิกค้างแล้วลากเพื่อปรับตำแหน่ง หรือดึงขอบเพื่อย่อ-ขยาย">
-                        <div class="censor-handle censor-h-w" data-handle="w" title="ปรับความกว้าง"></div>
-                        <div class="censor-handle censor-h-e" data-handle="e" title="ปรับความกว้าง"></div>
-                        <div class="censor-handle censor-h-n" data-handle="n" title="ปรับความสูง"></div>
-                        <div class="censor-handle censor-h-s" data-handle="s" title="ปรับความสูง"></div>
-                        <div class="censor-handle censor-h-nw" data-handle="nw"></div>
-                        <div class="censor-handle censor-h-ne" data-handle="ne"></div>
-                        <div class="censor-handle censor-h-sw" data-handle="sw"></div>
-                        <div class="censor-handle censor-h-se" data-handle="se"></div>
-                        <div class="censor-drag-badge" id="censorBadgeRight">↔️ ลากเพื่อเลื่อน</div>
-                    </div>
-                </div>
-
-                <!-- Diff Image (shown when diff mode is active) -->
-                <canvas id="diffStageCanvas"></canvas>
-            </div>
-        </div>
-
-        <!-- Zoom Controls for Both Sides -->
-        <div class="zoom-bars-grid">
-            <!-- Left Side Zoom -->
-            <div class="zoom-side-panel">
-                <span class="zoom-side-label">ซูมภาพซ้าย:</span>
-                <button type="button" class="zoom-btn" id="beforeZoomOut">−</button>
-                <input type="range" id="beforeZoomSlider" min="20" max="500" value="100" class="zoom-slider">
-                <button type="button" class="zoom-btn" id="beforeZoomIn">+</button>
-                <span class="zoom-value" id="beforeZoomVal">100%</span>
-                <button type="button" class="btn-sm" id="beforeResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
-            </div>
-
-            <!-- Right Side Zoom -->
-            <div class="zoom-side-panel">
-                <span class="zoom-side-label">ซูมภาพขวา:</span>
-                <button type="button" class="zoom-btn" id="afterZoomOut">−</button>
-                <input type="range" id="afterZoomSlider" min="20" max="500" value="100" class="zoom-slider">
-                <button type="button" class="zoom-btn" id="afterZoomIn">+</button>
-                <span class="zoom-value" id="afterZoomVal">100%</span>
-                <button type="button" class="btn-sm" id="afterResetBtn" title="รีเซ็ตตำแหน่งและขนาด">⟲ Reset</button>
-            </div>
-        </div>
-
-        <div class="sync-row">
-            <span>💡 <strong>วิธีใช้งาน:</strong> คลิกค้างแล้วลากบนรูปเพื่อเลื่อนภาพ • คลิกค้างที่แถบปิดตาเพื่อเลื่อนตำแหน่งหรือดึงขอบเพื่อย่อ-ขยาย</span>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons-wrap">
-            <button class="btn-success" id="downloadBtn" disabled>
-                <span>💾 ดาวน์โหลดภาพ (Download 2000px)</span>
-            </button>
-            <button class="btn-outline" id="copyClipboardBtn" disabled>
-                <span>📋 คัดลอกภาพ (Copy to Clipboard)</span>
-            </button>
-            <button class="btn-secondary" id="toggleDiffBtn" disabled>
-                <span>🔍 ดูจุดต่าง (Visual Diff)</span>
-            </button>
-            <button class="btn-outline" id="fullscreenBtn" disabled>
-                <span>⛶ ขยายเต็มจอ</span>
-            </button>
-        </div>
-    </div>
-
     <!-- Shortcuts Footer -->
     <div class="keyboard-shortcuts">
         <strong>คีย์ลัด:</strong>
@@ -2840,6 +2928,7 @@
         <span><span class="shortcut">Ctrl+Enter / ⌘+Enter</span> ดาวน์โหลดภาพทันที</span>
         <span><span class="shortcut">Delete</span> ลบภาพ</span>
         <span><span class="shortcut">Click & Drag</span> ลากจัดตำแหน่งภาพ</span>
+    </div>
     </div>
 
     <!-- Modal: Save New Preset -->
@@ -5385,6 +5474,15 @@
             if (pwaInstallLabel) pwaInstallLabel.textContent = installText;
             if (mobilePwaInstallLabel) mobilePwaInstallLabel.textContent = installText;
 
+            const toggleSettingsText = document.getElementById("toggleSettingsText");
+            const settingsContainer = document.getElementById("settingsContainer");
+            if (toggleSettingsText && settingsContainer) {
+                const isCollapsed = settingsContainer.classList.contains("collapsed");
+                toggleSettingsText.textContent = isCollapsed
+                    ? (currentLang === "en" ? "Show Settings" : "แสดงการตั้งค่า")
+                    : (currentLang === "en" ? "Hide Settings" : "ซ่อนการตั้งค่า");
+            }
+
             showToast(currentLang === "en" ? "Switched to English 🇺🇸" : "เปลี่ยนเป็นภาษาไทย 🇹🇭");
         }
 
@@ -6910,6 +7008,82 @@
         }
 
         // ==============================================================
+        // --- SETTINGS PANEL COLLAPSE / EXPAND TOGGLE SYSTEM ---
+        // ==============================================================
+        function initSettingsToggle() {
+            const btnToggleSettings = document.getElementById("btnToggleSettings");
+            const btnBottomToggleSettings = document.getElementById("btnBottomToggleSettings");
+            const mobileSettingsBtn = document.getElementById("mobileSettingsBtn");
+            const toggleSettingsText = document.getElementById("toggleSettingsText");
+            const settingsContainer = document.getElementById("settingsContainer");
+
+            if (!settingsContainer) return;
+
+            function updateToggleUI(isCollapsed) {
+                if (btnToggleSettings) {
+                    btnToggleSettings.classList.toggle("collapsed", isCollapsed);
+                    const label = isCollapsed 
+                        ? (currentLang === "en" ? "Show Settings" : "แสดงการตั้งค่า") 
+                        : (currentLang === "en" ? "Hide Settings" : "ซ่อนการตั้งค่า");
+                    if (toggleSettingsText) toggleSettingsText.textContent = label;
+                }
+                if (btnBottomToggleSettings) {
+                    btnBottomToggleSettings.classList.toggle("active", !isCollapsed);
+                }
+                if (mobileSettingsBtn) {
+                    mobileSettingsBtn.classList.toggle("active", !isCollapsed);
+                }
+            }
+
+            function setSettingsCollapsed(collapse) {
+                if (collapse) {
+                    settingsContainer.classList.add("collapsed");
+                } else {
+                    settingsContainer.classList.remove("collapsed");
+                }
+                localStorage.setItem("beforeafter_settings_collapsed", collapse ? "1" : "0");
+                updateToggleUI(collapse);
+            }
+
+            if (btnToggleSettings) {
+                btnToggleSettings.addEventListener("click", () => {
+                    const isNowCollapsed = !settingsContainer.classList.contains("collapsed");
+                    setSettingsCollapsed(isNowCollapsed);
+                    if (!isNowCollapsed) {
+                        settingsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                });
+            }
+
+            if (btnBottomToggleSettings) {
+                btnBottomToggleSettings.addEventListener("click", () => {
+                    if (settingsContainer.classList.contains("collapsed")) {
+                        setSettingsCollapsed(false);
+                    }
+                    settingsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            }
+
+            if (mobileSettingsBtn) {
+                mobileSettingsBtn.addEventListener("click", () => {
+                    const isNowCollapsed = !settingsContainer.classList.contains("collapsed");
+                    setSettingsCollapsed(isNowCollapsed);
+                    if (!isNowCollapsed) {
+                        settingsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                });
+            }
+
+            // Restore user preference
+            const savedCollapsed = localStorage.getItem("beforeafter_settings_collapsed") === "1";
+            if (savedCollapsed) {
+                setSettingsCollapsed(true);
+            } else {
+                updateToggleUI(false);
+            }
+        }
+
+        // ==============================================================
         // --- PROGRESSIVE WEB APP (PWA) & APPLE INSTALLATION ENGINE ---
         // ==============================================================
         let deferredInstallPrompt = null;
@@ -7059,6 +7233,7 @@
         renderStageOverlays();
         initMobileUI();
         initPWA();
+        initSettingsToggle();
     </script>
 
     <!-- Mobile Floating Sticky Action Bar (Anchored for comfortable thumb reach) -->
@@ -7074,6 +7249,9 @@
         </button>
         <button type="button" class="btn-mobile-icon" id="mobileFullscreenBtn" title="ดูเต็มจอ" disabled>
             ⛶
+        </button>
+        <button type="button" class="btn-mobile-icon" id="mobileSettingsBtn" title="ซ่อนหรือแสดงการตั้งค่า">
+            ⚙️
         </button>
     </div>
 
