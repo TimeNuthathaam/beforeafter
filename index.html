@@ -2009,39 +2009,56 @@
                 <button type="button" class="date-quick-pill" id="btnTplToday" title="ใส่วันที่ปัจจุบัน">📅 วันที่วันนี้</button>
             </div>
 
-            <!-- Disclaimers Quick Templates -->
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 4px;">
-                <span style="font-size: 11.5px; font-weight: 600; color: #64748b;">⚖️ ข้อความกำกับ (Disclaimers):</span>
-                <button type="button" class="date-quick-pill" id="btnDiscTh" title="ใช้ข้อความกำกับภาษาไทย มาตรฐานความงาม">🇹🇭 ภาษาไทย</button>
-                <button type="button" class="date-quick-pill" id="btnDiscEn" title="ใช้ข้อความกำกับภาษาอังกฤษ">🇺🇸 English</button>
-                <button type="button" class="date-quick-pill" id="btnDiscDental" title="ใช้ข้อความกำกับคลินิกทันตกรรม">🦷 ทันตกรรม</button>
-                <button type="button" class="date-quick-pill" id="btnClearDisc" title="ล้างข้อความกำกับ">✕ ล้างข้อความ</button>
-            </div>
-
-            <!-- Disclaimers Input Row -->
-            <div class="control-row" style="margin-top: 2px;">
-                <div class="control-item" style="flex: 1; min-width: 260px;">
+            <!-- Disclaimers Quick Templates & Master Toggle -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
                     <input type="checkbox" id="showDisclaimersCheckbox" checked>
-                    <label for="discLeftInput">ข้อความกำกับซ้าย:</label>
-                    <input type="text" id="discLeftInput" value="*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล" style="flex: 1; min-width: 160px;">
+                    <label for="showDisclaimersCheckbox" style="font-size: 12.5px; font-weight: 700; color: #1e293b; cursor: pointer;">⚖️ ข้อความกำกับด้านล่าง (Disclaimers):</label>
                 </div>
-                <div class="control-item" style="flex: 1; min-width: 260px;">
-                    <label for="discRightInput">ข้อความกำกับขวา:</label>
-                    <input type="text" id="discRightInput" value="*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง" style="flex: 1; min-width: 160px;">
+                <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+                    <span style="font-size: 11px; color: #64748b;">เทมเพลตด่วน:</span>
+                    <button type="button" class="date-quick-pill" id="btnDiscTh" title="ใช้ข้อความกำกับภาษาไทย มาตรฐานความงาม">🇹🇭 ภาษาไทย</button>
+                    <button type="button" class="date-quick-pill" id="btnDiscEn" title="ใช้ข้อความกำกับภาษาอังกฤษ">🇺🇸 English</button>
+                    <button type="button" class="date-quick-pill" id="btnDiscDental" title="ใช้ข้อความกำกับคลินิกทันตกรรม">🦷 ทันตกรรม</button>
+                    <button type="button" class="date-quick-pill" id="btnClearDisc" title="ล้างข้อความกำกับ">✕ ล้างข้อความ</button>
                 </div>
             </div>
 
-            <!-- Bottom Text Sizing Controls (Dates & Disclaimers) -->
-            <div class="control-row" style="background: #f8fafc; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border); margin-top: 4px;">
-                <div class="control-item" style="flex: 1; min-width: 260px;">
-                    <label for="bottomTextSizeSlider">📏 ขนาดตัวหนังสือด้านล่าง (Default กะทัดรัด ไม่บังรูป):</label>
+            <!-- Disclaimers Input Row (Individual Left & Right Checkboxes + Editable Text) -->
+            <div class="control-row" style="margin-top: 4px; gap: 10px;" id="disclaimerInputsContainer">
+                <div class="control-item" style="flex: 1; min-width: 260px; background: #ffffff; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                    <input type="checkbox" id="showDiscLeftCheckbox" checked title="เปิด/ปิดการแสดงผลข้อความฝั่งซ้าย">
+                    <label for="discLeftInput" style="font-size: 11.5px; font-weight: 600; color: #475569; white-space: nowrap;">ข้อความซ้าย:</label>
+                    <input type="text" id="discLeftInput" value="*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล" style="flex: 1; min-width: 140px;" placeholder="ข้อความกำกับฝั่งซ้าย">
+                </div>
+                <div class="control-item" style="flex: 1; min-width: 260px; background: #ffffff; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                    <input type="checkbox" id="showDiscRightCheckbox" checked title="เปิด/ปิดการแสดงผลข้อความฝั่งขวา">
+                    <label for="discRightInput" style="font-size: 11.5px; font-weight: 600; color: #475569; white-space: nowrap;">ข้อความขวา:</label>
+                    <input type="text" id="discRightInput" value="*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง" style="flex: 1; min-width: 140px;" placeholder="ข้อความกำกับฝั่งขวา">
+                </div>
+            </div>
+
+            <!-- Disclaimers Position & Text Sizing Controls -->
+            <div class="control-row" style="background: #f8fafc; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border); margin-top: 6px; gap: 12px;">
+                <!-- Vertical Position Adjustment (Y Offset) -->
+                <div class="control-item" style="flex: 1; min-width: 240px;">
+                    <label for="discYOffsetSlider" style="font-size: 11.5px;">↕️ ตำแหน่งแนวตั้ง (ระยะห่างขอบล่าง):</label>
+                    <input type="range" min="-10" max="60" value="0" step="1" id="discYOffsetSlider">
+                    <span id="discYOffsetVal" class="val-badge" style="color: var(--primary); font-weight: 700; min-width: 52px; text-align: center;">0px</span>
+                    <button type="button" class="btn-sm" id="btnDiscNudgeUp" title="ยกตำแหน่งขึ้น 2px">⬆️</button>
+                    <button type="button" class="btn-sm" id="btnDiscNudgeDown" title="เลื่อนตำแหน่งลง 2px">⬇️</button>
+                    <button type="button" class="btn-preset" id="btnDiscResetPos" style="font-size: 10.5px; padding: 2px 6px;" title="คืนค่าตำแหน่งมาตรฐานเดิม">🔄 รีเซ็ต</button>
+                </div>
+                <!-- Text Size Adjustment -->
+                <div class="control-item" style="flex: 1; min-width: 240px;">
+                    <label for="bottomTextSizeSlider" style="font-size: 11.5px;">📏 ขนาดตัวหนังสือล่าง:</label>
                     <input type="range" min="4.5" max="14" value="7.0" step="0.5" id="bottomTextSizeSlider">
                     <span id="bottomTextSizeVal" class="val-badge" style="color: var(--primary); font-weight: 700;">7 (กะทัดรัด)</span>
-                </div>
-                <div class="control-item" style="gap: 6px;">
-                    <button type="button" class="btn-preset active" id="btnSizeCompact" style="font-size: 11px;">กะทัดรัด (แนะนำ)</button>
-                    <button type="button" class="btn-preset" id="btnSizeMedium" style="font-size: 11px; background: white; color: var(--text); border-color: var(--border);">ปานกลาง</button>
-                    <button type="button" class="btn-preset" id="btnSizeLarge" style="font-size: 11px; background: white; color: var(--text); border-color: var(--border);">ใหญ่</button>
+                    <div style="display: flex; gap: 4px;">
+                        <button type="button" class="btn-preset active" id="btnSizeCompact" style="font-size: 10.5px; padding: 2px 7px;">กะทัดรัด</button>
+                        <button type="button" class="btn-preset" id="btnSizeMedium" style="font-size: 10.5px; padding: 2px 7px; background: white; color: var(--text); border-color: var(--border);">ปานกลาง</button>
+                        <button type="button" class="btn-preset" id="btnSizeLarge" style="font-size: 10.5px; padding: 2px 7px; background: white; color: var(--text); border-color: var(--border);">ใหญ่</button>
+                    </div>
                 </div>
             </div>
 
@@ -2663,7 +2680,138 @@
                 color1Label: "ไอคอนสีชมพู (Pink Logo)",
                 color1Bg: "#e879f9",
                 whiteLabel: "ไอคอนสีขาว (White Logo)",
-                logos: DEPRY_LOGOS
+                logos: DEPRY_LOGOS,
+                builtInPresets: {
+                    __default__: {
+                        name: "✨ de Pry Standard (เคสรีวิวปกติ)",
+                        data: {
+                            clinic_id: "depry",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ โปรแกรม Thermatix และ Sculptra",
+                            showDates: true,
+                            dateLeft: "25 Jul 2026",
+                            dateRight: "4 Sep 2026",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: true,
+                            watermarkText: "de Pry clinic",
+                            watermarkOpacity: 35,
+                            logoColor: "badge",
+                            logoPos: "top-right",
+                            logoSize: 12,
+                            censor: {
+                                enabled: true,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    },
+                    __privacy_60__: {
+                        name: "🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)",
+                        data: {
+                            clinic_id: "depry",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ โปรแกรมปรับรูปหน้า UltraLifting",
+                            showDates: true,
+                            dateLeft: "Day 1",
+                            dateRight: "Day 14",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: true,
+                            watermarkText: "de Pry clinic",
+                            watermarkOpacity: 35,
+                            logoColor: "badge",
+                            logoPos: "top-right",
+                            logoSize: 12,
+                            censor: {
+                                enabled: true,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 65, h: 8.5,
+                                leftY: 36.5, leftX: 49.5, leftW: 65, leftH: 8.5,
+                                rightY: 36.5, rightX: 49.5, rightW: 65, rightH: 8.5
+                            }
+                        }
+                    },
+                    __clean__: {
+                        name: "🌿 คลีน มินิมอล (ไม่มีลายน้ำ/ปิดตา)",
+                        data: {
+                            clinic_id: "depry",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ เคสฟื้นฟูผิวพรรณ Skin Booster",
+                            showDates: true,
+                            dateLeft: "BEFORE",
+                            dateRight: "AFTER",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: false,
+                            watermarkText: "",
+                            watermarkOpacity: 25,
+                            logoColor: "white",
+                            logoPos: "top-right",
+                            logoSize: 11,
+                            censor: {
+                                enabled: false,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    }
+                }
             },
             dentalhaus: {
                 id: "dentalhaus",
@@ -2677,7 +2825,181 @@
                 color1Label: "โลโก้เขียวพรีเมียม (Teal Logo)",
                 color1Bg: "#0d9488",
                 whiteLabel: "ไอคอนสีขาว (White Logo)",
-                logos: DENTALHAUS_LOGOS
+                logos: DENTALHAUS_LOGOS,
+                builtInPresets: {
+                    __dental_std__: {
+                        name: "✨ The Dental Haus Standard (เคสรอยยิ้ม)",
+                        data: {
+                            clinic_id: "dentalhaus",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ เคสออกแบบรอยยิ้ม Smile Design & Veneer",
+                            showDates: true,
+                            dateLeft: "BEFORE",
+                            dateRight: "AFTER",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: true,
+                            watermarkText: "The Dental Haus",
+                            watermarkOpacity: 35,
+                            logoColor: "badge",
+                            logoPos: "top-right",
+                            logoSize: 12,
+                            censor: {
+                                enabled: false,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    },
+                    __dental_veneer__: {
+                        name: "😁 Smile Design & Veneers (วีเนียร์พรีเมียม)",
+                        data: {
+                            clinic_id: "dentalhaus",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ Porcelain Veneers ปรับเฉดสีและรูปฟัน",
+                            showDates: true,
+                            dateLeft: "ก่อนทำ",
+                            dateRight: "หลังทำ",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: true,
+                            watermarkText: "The Dental Haus",
+                            watermarkOpacity: 35,
+                            logoColor: "color1",
+                            logoPos: "top-right",
+                            logoSize: 12,
+                            censor: {
+                                enabled: false,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    },
+                    __dental_aligner__: {
+                        name: "🦷 Clear Aligner (จัดฟันใส)",
+                        data: {
+                            clinic_id: "dentalhaus",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ จัดฟันใส Clear Aligner ปรับโครงสร้างฟัน",
+                            showDates: true,
+                            dateLeft: "Day 1",
+                            dateRight: "Month 6",
+                            dateFormat: "en-short",
+                            dateAddDays: 180,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: true,
+                            watermarkText: "The Dental Haus",
+                            watermarkOpacity: 35,
+                            logoColor: "badge",
+                            logoPos: "top-right",
+                            logoSize: 12,
+                            censor: {
+                                enabled: false,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    },
+                    __dental_clean__: {
+                        name: "🌿 ทันตกรรม คลีน มินิมอล",
+                        data: {
+                            clinic_id: "dentalhaus",
+                            ratio: "1:1",
+                            layout: "horizontal",
+                            fit: "cover",
+                            gap: 0,
+                            bgColor: "#000000",
+                            format: "png",
+                            quality: 92,
+                            showTitle: true,
+                            title: "✨ ฟอกสีฟัน Teeth Whitening ขาวกระจ่างใส",
+                            showDates: true,
+                            dateLeft: "BEFORE",
+                            dateRight: "AFTER",
+                            dateFormat: "en-short",
+                            dateAddDays: 14,
+                            showDisclaimers: true,
+                            showDiscLeft: true,
+                            showDiscRight: true,
+                            discLeft: "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล",
+                            discRight: "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง",
+                            discYOffset: 0,
+                            bottomTextSize: 7.0,
+                            showWatermark: false,
+                            watermarkText: "",
+                            watermarkOpacity: 25,
+                            logoColor: "white",
+                            logoPos: "top-right",
+                            logoSize: 11,
+                            censor: {
+                                enabled: false,
+                                color: "black",
+                                target: "both",
+                                radius: 14,
+                                separate: false,
+                                y: 36.5, x: 49.5, w: 60, h: 7,
+                                leftY: 36.5, leftX: 49.5, leftW: 60, leftH: 7,
+                                rightY: 36.5, rightX: 49.5, rightW: 60, rightH: 7
+                            }
+                        }
+                    }
+                }
             }
         };
 
@@ -2740,8 +3062,15 @@
         const dateCalcHint = document.getElementById("dateCalcHint");
         const dateQuickPills = document.querySelectorAll(".date-quick-pill");
         const showDisclaimersCheckbox = document.getElementById("showDisclaimersCheckbox");
+        const showDiscLeftCheckbox = document.getElementById("showDiscLeftCheckbox");
+        const showDiscRightCheckbox = document.getElementById("showDiscRightCheckbox");
         const discLeftInput = document.getElementById("discLeftInput");
         const discRightInput = document.getElementById("discRightInput");
+        const discYOffsetSlider = document.getElementById("discYOffsetSlider");
+        const discYOffsetVal = document.getElementById("discYOffsetVal");
+        const btnDiscNudgeUp = document.getElementById("btnDiscNudgeUp");
+        const btnDiscNudgeDown = document.getElementById("btnDiscNudgeDown");
+        const btnDiscResetPos = document.getElementById("btnDiscResetPos");
         const bottomTextSizeSlider = document.getElementById("bottomTextSizeSlider");
         const bottomTextSizeVal = document.getElementById("bottomTextSizeVal");
         const btnSizeCompact = document.getElementById("btnSizeCompact");
@@ -2938,14 +3267,55 @@
         const overlayInputs = [
             showTitleCheckbox, titleInput,
             showDatesCheckbox, dateLeftInput, dateRightInput,
-            showDisclaimersCheckbox, discLeftInput, discRightInput,
+            showDisclaimersCheckbox, showDiscLeftCheckbox, showDiscRightCheckbox,
+            discLeftInput, discRightInput,
             showWatermarkCheckbox, watermarkTextInput
         ];
 
         overlayInputs.forEach(el => {
+            if (!el) return;
             el.addEventListener("input", () => renderStageOverlays());
             el.addEventListener("change", () => renderStageOverlays());
         });
+
+        if (discYOffsetSlider) {
+            discYOffsetSlider.addEventListener("input", e => {
+                const val = parseInt(e.target.value, 10) || 0;
+                if (discYOffsetVal) {
+                    discYOffsetVal.textContent = val === 0 ? "0px" : `${val > 0 ? '+' : ''}${val}px`;
+                }
+                renderStageOverlays();
+            });
+        }
+
+        if (btnDiscNudgeUp) {
+            btnDiscNudgeUp.addEventListener("click", () => {
+                let val = parseInt(discYOffsetSlider.value, 10) || 0;
+                val = Math.min(60, val + 2);
+                discYOffsetSlider.value = val;
+                if (discYOffsetVal) discYOffsetVal.textContent = `${val > 0 ? '+' : ''}${val}px`;
+                renderStageOverlays();
+            });
+        }
+
+        if (btnDiscNudgeDown) {
+            btnDiscNudgeDown.addEventListener("click", () => {
+                let val = parseInt(discYOffsetSlider.value, 10) || 0;
+                val = Math.max(-10, val - 2);
+                discYOffsetSlider.value = val;
+                if (discYOffsetVal) discYOffsetVal.textContent = val === 0 ? "0px" : `${val > 0 ? '+' : ''}${val}px`;
+                renderStageOverlays();
+            });
+        }
+
+        if (btnDiscResetPos) {
+            btnDiscResetPos.addEventListener("click", () => {
+                discYOffsetSlider.value = 0;
+                if (discYOffsetVal) discYOffsetVal.textContent = "0px";
+                renderStageOverlays();
+                showToast("รีเซ็ตตำแหน่งข้อความกำกับเรียบร้อย");
+            });
+        }
 
         watermarkOpacitySlider.addEventListener("input", e => {
             watermarkOpacityVal.textContent = `${e.target.value}%`;
@@ -3460,8 +3830,12 @@
             dateLeftInput.value = "25 Jul 2026";
             dateRightInput.value = "4 Sep 2026";
             showDisclaimersCheckbox.checked = true;
+            if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = true;
+            if (showDiscRightCheckbox) showDiscRightCheckbox.checked = true;
             discLeftInput.value = "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล";
             discRightInput.value = "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง";
+            if (discYOffsetSlider) discYOffsetSlider.value = 0;
+            if (discYOffsetVal) discYOffsetVal.textContent = "0px";
             updateBottomSizeUI(7.0);
             showWatermarkCheckbox.checked = true;
             watermarkTextInput.value = "de Pry clinic";
@@ -3485,10 +3859,18 @@
             dateRightInput.value = "";
             discLeftInput.value = "";
             discRightInput.value = "";
+            if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = false;
+            if (showDiscRightCheckbox) showDiscRightCheckbox.checked = false;
+            showDisclaimersCheckbox.checked = false;
             watermarkTextInput.value = "";
             renderStageOverlays();
             showToast("ล้างข้อความเรียบร้อย");
         });
+
+        function formatDateTimeTimestamp(d = new Date()) {
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+        }
 
         // ==============================================================
         // --- REAL SQLITE PRESET MANAGER (sql.js WASM + IndexedDB) ---
@@ -3934,8 +4316,11 @@
                 dateFormat: dateFormatSelect.value,
                 dateAddDays: parseInt(dateAddDaysInput.value, 10) || 14,
                 showDisclaimers: showDisclaimersCheckbox.checked,
+                showDiscLeft: showDiscLeftCheckbox ? showDiscLeftCheckbox.checked : true,
+                showDiscRight: showDiscRightCheckbox ? showDiscRightCheckbox.checked : true,
                 discLeft: discLeftInput.value,
                 discRight: discRightInput.value,
+                discYOffset: parseFloat(discYOffsetSlider ? discYOffsetSlider.value : 0) || 0,
                 bottomTextSize: parseFloat(bottomTextSizeSlider.value) || 7.0,
                 showWatermark: showWatermarkCheckbox.checked,
                 watermarkText: watermarkTextInput.value,
@@ -4026,8 +4411,27 @@
 
             // Disclaimers
             if (typeof p.showDisclaimers === "boolean") showDisclaimersCheckbox.checked = p.showDisclaimers;
+            if (typeof p.showDiscLeft === "boolean") {
+                if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = p.showDiscLeft;
+            } else if (showDiscLeftCheckbox) {
+                showDiscLeftCheckbox.checked = (p.discLeft !== undefined ? !!p.discLeft.trim() : true);
+            }
+            if (typeof p.showDiscRight === "boolean") {
+                if (showDiscRightCheckbox) showDiscRightCheckbox.checked = p.showDiscRight;
+            } else if (showDiscRightCheckbox) {
+                showDiscRightCheckbox.checked = (p.discRight !== undefined ? !!p.discRight.trim() : true);
+            }
             if (p.discLeft !== undefined) discLeftInput.value = p.discLeft;
             if (p.discRight !== undefined) discRightInput.value = p.discRight;
+            if (p.discYOffset !== undefined && discYOffsetSlider) {
+                discYOffsetSlider.value = p.discYOffset;
+                if (discYOffsetVal) {
+                    discYOffsetVal.textContent = p.discYOffset === 0 ? "0px" : `${p.discYOffset > 0 ? '+' : ''}${p.discYOffset}px`;
+                }
+            } else if (discYOffsetSlider) {
+                discYOffsetSlider.value = 0;
+                if (discYOffsetVal) discYOffsetVal.textContent = "0px";
+            }
 
             // Bottom text size
             if (p.bottomTextSize !== undefined) {
@@ -4252,7 +4656,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `presets-${activeClinicId}-${Date.now()}.json`;
+            a.download = `presets-${activeClinicId}-${formatDateTimeTimestamp()}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast("ดาวน์โหลดไฟล์ JSON เรียบร้อยแล้ว");
@@ -4416,7 +4820,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `presets-${Date.now()}.sqlite`;
+                a.download = `presets-${formatDateTimeTimestamp()}.sqlite`;
                 a.click();
                 URL.revokeObjectURL(url);
                 showToast("ดาวน์โหลดไฟล์ฐานข้อมูล presets.sqlite เรียบร้อยแล้ว!");
@@ -4460,7 +4864,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `presets-dump-${Date.now()}.sql`;
+                a.download = `presets-dump-${formatDateTimeTimestamp()}.sql`;
                 a.click();
                 URL.revokeObjectURL(url);
                 showToast("ดาวน์โหลดสคริปต์ SQL Dump เรียบร้อยแล้ว!");
@@ -4749,6 +5153,8 @@
         if (btnDiscTh) {
             btnDiscTh.addEventListener("click", () => {
                 showDisclaimersCheckbox.checked = true;
+                if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = true;
+                if (showDiscRightCheckbox) showDiscRightCheckbox.checked = true;
                 discLeftInput.value = "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล";
                 discRightInput.value = "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง";
                 renderStageOverlays();
@@ -4758,6 +5164,8 @@
         if (btnDiscEn) {
             btnDiscEn.addEventListener("click", () => {
                 showDisclaimersCheckbox.checked = true;
+                if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = true;
+                if (showDiscRightCheckbox) showDiscRightCheckbox.checked = true;
                 discLeftInput.value = "*Individual results may vary from person to person.";
                 discRightInput.value = "*Published with patient's prior informed consent.";
                 renderStageOverlays();
@@ -4767,6 +5175,8 @@
         if (btnDiscDental) {
             btnDiscDental.addEventListener("click", () => {
                 showDisclaimersCheckbox.checked = true;
+                if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = true;
+                if (showDiscRightCheckbox) showDiscRightCheckbox.checked = true;
                 discLeftInput.value = "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล";
                 discRightInput.value = "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง";
                 renderStageOverlays();
@@ -4777,6 +5187,9 @@
             btnClearDisc.addEventListener("click", () => {
                 discLeftInput.value = "";
                 discRightInput.value = "";
+                if (showDiscLeftCheckbox) showDiscLeftCheckbox.checked = false;
+                if (showDiscRightCheckbox) showDiscRightCheckbox.checked = false;
+                showDisclaimersCheckbox.checked = false;
                 renderStageOverlays();
                 showToast("ล้างข้อความกำกับเรียบร้อย");
             });
@@ -5238,7 +5651,13 @@
                 ctx.fillText(text, cx, bottomY);
             }
 
-            const hasDisclaimers = showDisclaimersCheckbox.checked && (discLeftInput.value.trim() || discRightInput.value.trim());
+            const showLeftDisc = (showDiscLeftCheckbox ? showDiscLeftCheckbox.checked : true);
+            const showRightDisc = (showDiscRightCheckbox ? showDiscRightCheckbox.checked : true);
+            const discLeft = (showDisclaimersCheckbox.checked && showLeftDisc) ? discLeftInput.value.trim() : "";
+            const discRight = (showDisclaimersCheckbox.checked && showRightDisc) ? discRightInput.value.trim() : "";
+            const hasDisclaimers = !!(discLeft || discRight);
+
+            const discYOffset = parseFloat(discYOffsetSlider ? discYOffsetSlider.value : 0) || 0;
 
             // 4. DATES (วันที่ของแต่ละฝั่ง)
             if (showDatesCheckbox.checked) {
@@ -5255,11 +5674,11 @@
                 ctx.shadowOffsetY = Math.round(1.5 * S);
 
                 const dateY = hasDisclaimers
-                    ? height - Math.round((bottomScale * 2.3) * S)
+                    ? height - Math.round(((bottomScale * 2.3) + discYOffset) * S)
                     : height - Math.round((bottomScale * 0.9) * S);
 
                 if (dLeft) {
-                    const yPos = isHorizontal ? dateY : (hasDisclaimers ? height / 2 - Math.round((bottomScale * 2.3) * S) : height / 2 - Math.round((bottomScale * 0.9) * S));
+                    const yPos = isHorizontal ? dateY : (hasDisclaimers ? height / 2 - Math.round(((bottomScale * 2.3) + discYOffset) * S) : height / 2 - Math.round((bottomScale * 0.9) * S));
                     drawDynamicBottomText(dLeft, leftCX, yPos, dateFontSize, "400");
                 }
                 if (dRight) {
@@ -5269,9 +5688,7 @@
             }
 
             // 5. DISCLAIMERS (ข้อความกำกับด้านล่างสุด)
-            if (showDisclaimersCheckbox.checked) {
-                const discLeft = discLeftInput.value.trim();
-                const discRight = discRightInput.value.trim();
+            if (hasDisclaimers) {
                 const discFontSize = Math.round(bottomScale * S);
 
                 ctx.save();
@@ -5282,10 +5699,10 @@
                 ctx.shadowBlur = Math.round(4 * S);
                 ctx.shadowOffsetY = Math.round(1.5 * S);
 
-                const discY = height - Math.round((bottomScale * 0.85) * S);
+                const discY = height - Math.round(((bottomScale * 0.85) + discYOffset) * S);
 
                 if (discLeft) {
-                    const yPos = isHorizontal ? discY : (height / 2 - Math.round((bottomScale * 0.85) * S));
+                    const yPos = isHorizontal ? discY : (height / 2 - Math.round(((bottomScale * 0.85) + discYOffset) * S));
                     drawDynamicBottomText(discLeft, leftCX, yPos, discFontSize, "bold");
                 }
                 if (discRight) {
@@ -6006,6 +6423,24 @@
             }
         });
 
+        // Helper to format date & time for non-colliding, easy-to-use file exports
+        function getExportFilename(format) {
+            const timestamp = formatDateTimeTimestamp();
+            const clinicPrefix = activeClinicId === "dentalhaus" ? "dentalhaus" : "depry";
+            const ratioName = currentRatio === "auto" ? "auto" : currentRatio.replace(":", "x");
+
+            let titleSlug = "";
+            if (titleInput && titleInput.value.trim()) {
+                const clean = titleInput.value.trim()
+                    .replace(/[^\w\u0E00-\u0E7F\-]+/g, '_')
+                    .replace(/^_+|_+$/g, '')
+                    .substring(0, 30);
+                if (clean) titleSlug = `-${clean}`;
+            }
+
+            return `${clinicPrefix}${titleSlug}-${timestamp}-${ratioName}.${format}`;
+        }
+
         // --- DOWNLOAD ACTION ---
         downloadBtn.addEventListener("click", () => {
             const canvas = generateFullResolutionCanvas();
@@ -6016,12 +6451,12 @@
             const mimeType = `image/${format}`;
             const dataUrl = canvas.toDataURL(mimeType, quality);
 
-            const ratioName = currentRatio === "auto" ? "auto" : currentRatio.replace(":", "x");
+            const fileName = getExportFilename(format);
             const link = document.createElement("a");
-            link.download = `depry-beforeafter-${ratioName}.${format}`;
+            link.download = fileName;
             link.href = dataUrl;
             link.click();
-            showToast("ดาวน์โหลดภาพเคส 2000px เรียบร้อยแล้ว!");
+            showToast(`ดาวน์โหลด ${fileName} (2000px) เรียบร้อยแล้ว!`);
         });
 
         // --- COPY TO CLIPBOARD ---

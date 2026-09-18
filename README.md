@@ -67,7 +67,14 @@ A browser-based tool for comparing and combining before/after images. No server 
 - 📱 **Mobile UI & Responsive Design**:
   - แถบนำทางหมวดหมู่บนมือถือ (Category Scroll Tabs) และพื้นที่ภาพด้านบนสุด
   - ปุ่ม Action Sticky ด้านล่างสุด สะดวกสำหรับการใช้งานด้วยนิ้วโป้งบนสมาร์ทโฟน
-- 💾 Download high-resolution combined or diff images (มาตรฐาน 2000px Ultra HD คมชัดระดับป้ายโฆษณา)
+- ⚖️ **ข้อความกำกับทางกฎหมายด้านล่าง (Disclaimers System)**:
+  - **เปิด/ปิดแสดงผลได้อิสระ**: มี Checkbox แยกฝั่งซ้าย (*ผลลัพธ์ที่ได้อาจแตกต่างกัน...) และฝั่งขวา (*ได้รับการอนุญาตแล้ว...) หรือปิดทั้งหมดได้ตามต้องการ
+  - **แก้ไขข้อความได้อิสระ**: พิมพ์แก้คำหรือเปลี่ยนภาษาได้ทันที (รองรับทั้งภาษาไทย, English, และทันตกรรม)
+  - **ปรับตำแหน่งแนวตั้งได้ (Vertical Y Offset)**: ปรับความสูงจากขอบล่างด้วย Slider และปุ่มลัด ⬆️ ⬇️ พร้อมปุ่มรีเซ็ตตำแหน่งมาตรฐานเดิม
+  - **บันทึกลง SQLite**: การตั้งค่าการเปิด/ปิด, ข้อความ, และตำแหน่งจะถูกบันทึกลงใน Preset SQLite โดยอัตโนมัติ
+- 💾 **บันทึกไฟล์พร้อมลงวันที่และเวลาอัตโนมัติ (Date & Time Stamped Filenames)**:
+  - ระบบตั้งชื่อไฟล์ส่งออกอัตโนมัติโดยอิงจากคลินิก, ชื่อโปรแกรม, วันที่, เวลา (ชั่วโมง-นาที-วินาที), และอัตราส่วน เช่น `depry-โปรแกรม_Thermatix-20260918-074015-1x1.png`
+  - ป้องกันการบันทึกทับไฟล์เดิม และสะดวกต่อการค้นหาเรียงตามเวลาในเครื่อง
 - 📋 One-click copy image to clipboard
 - ⛶ Fullscreen lightbox preview & result zoom
 - 🚀 Runs 100% in browser on Vercel or local static files, no database server configuration required
