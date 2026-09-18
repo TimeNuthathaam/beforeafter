@@ -1081,17 +1081,18 @@
         .btn-preset-action.btn-io { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); }
         .btn-preset-action.btn-io:hover { background: rgba(255,255,255,0.28); }
 
+        .preset-actions-grid {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         /* Censor Independent Left/Right Panel */
         .censor-sides-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             width: 100%;
-        }
-        @media (max-width: 768px) {
-            .censor-sides-grid {
-                grid-template-columns: 1fr;
-            }
         }
         .censor-side-box {
             background: #ffffff;
@@ -1168,23 +1169,470 @@
             to { opacity: 0; transform: translateY(12px); }
         }
 
-        /* Mobile responsiveness */
+        /* =========================================================
+           MOBILE-OPTIMIZED DESIGN SYSTEM (max-width: 768px)
+           Luxury, Clean, Stage-First Clinic Aesthetic
+           ========================================================= */
+        @media (min-width: 769px) {
+            .mobile-tabs-nav,
+            .mobile-sticky-bar {
+                display: none !important;
+            }
+            .settings-section {
+                display: block !important;
+            }
+            .preset-manager-card {
+                display: flex !important;
+            }
+        }
+
         @media (max-width: 768px) {
-            .zoom-bars-grid {
-                grid-template-columns: 1fr;
+            body {
+                padding: 10px 10px 92px; /* Bottom space for sticky thumb action bar */
+                display: flex;
+                flex-direction: column;
+                background: #f8fafc;
             }
-            .stage-container {
+
+            /* Reorder Page on Mobile: Stage/Canvas is at the TOP! */
+            .app-header {
+                order: 1;
+                margin-bottom: 8px;
+            }
+            .app-header h1 {
+                font-size: 19px;
+                gap: 6px;
+            }
+
+            .workspace-card {
+                order: 2; /* STAGE PHOTO FIRST! */
+                margin-bottom: 12px;
                 padding: 10px;
-                min-height: 320px;
+                border-radius: var(--radius-md);
             }
-            .control-row {
+            .workspace-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .workspace-title {
+                font-size: 13px;
+            }
+            .workspace-meta {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+
+            /* Stage Frame & Slots on Mobile */
+            .stage-container {
+                padding: 6px;
+                min-height: 250px;
+            }
+            .slot-dropzone {
+                padding: 10px 6px;
+            }
+            .drop-icon {
+                font-size: 24px;
+                margin-bottom: 2px;
+            }
+            .drop-title {
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .drop-subtitle {
+                display: none;
+            }
+            .btn-browse {
+                padding: 5px 14px;
+                font-size: 12px;
+                margin-top: 6px;
+                border-radius: var(--radius-sm);
+            }
+
+            /* Zoom Controls on Mobile */
+            .zoom-bars-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                margin-top: 8px;
+            }
+            .zoom-side-panel {
+                padding: 8px 10px;
+                gap: 6px;
+                flex-wrap: nowrap;
+            }
+            .zoom-side-label {
+                font-size: 11px;
+                min-width: 60px;
+            }
+            .zoom-slider {
+                flex: 1;
+                height: 30px;
+            }
+            .zoom-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 17px;
+                border-radius: 6px;
+            }
+            .zoom-value {
+                font-size: 11px;
+                width: 38px;
+            }
+
+            /* Sync Row Hint */
+            .sync-row {
+                font-size: 11px;
+                padding: 6px 10px;
+                margin: 6px 0;
+            }
+
+            /* Desktop action buttons inside workspace card: hide on mobile because of sticky bar */
+            .workspace-card .action-buttons-wrap {
+                display: none;
+            }
+
+            /* Mobile Category Tabs (Scrollable Pill Bar) */
+            .mobile-tabs-nav {
+                order: 3;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding: 4px 2px 8px;
+                margin-bottom: 6px;
+                position: sticky;
+                top: 6px;
+                z-index: 100;
+                background: rgba(248, 250, 252, 0.94);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-radius: 12px;
+            }
+            .mobile-tabs-nav::-webkit-scrollbar {
+                display: none;
+            }
+            .mobile-tab-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 13px;
+                background: #ffffff;
+                border: 1px solid var(--border);
+                border-radius: 9999px;
+                font-size: 12.5px;
+                font-weight: 600;
+                color: #475569;
+                white-space: nowrap;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+                flex-shrink: 0;
+                touch-action: manipulation;
+            }
+            .mobile-tab-btn:active {
+                transform: scale(0.96);
+            }
+            .mobile-tab-btn.active {
+                background: #0f172a;
+                color: #ffffff;
+                border-color: #0f172a;
+                box-shadow: 0 2px 8px rgba(15,23,42,0.2);
+            }
+            .mobile-tab-btn .tab-icon {
+                font-size: 14px;
+            }
+
+            /* Controls Container on Mobile */
+            .controls-card {
+                order: 4;
+                padding: 14px 12px;
+                margin-bottom: 12px;
+                border-radius: var(--radius-md);
+            }
+
+            /* Mobile Tab Content Switching: show ONLY active section */
+            .settings-section,
+            .preset-manager-card {
+                display: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            .settings-section.mobile-tab-active,
+            .preset-manager-card.mobile-tab-active {
+                display: block;
+                animation: mobileSectionFade 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .controls-card.show-all-sections .settings-section {
+                display: block !important;
+                margin-bottom: 16px;
+                padding-bottom: 14px;
+                border-bottom: 1px solid var(--border);
+            }
+            .controls-card.show-all-sections .settings-section:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            .controls-card.show-all-sections + .preset-manager-card {
+                display: flex !important;
+            }
+
+            @keyframes mobileSectionFade {
+                from { opacity: 0; transform: translateY(6px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            /* Aspect Ratio Pills Grid on Mobile */
+            #ratioPills {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                width: 100%;
+            }
+            #ratioPills .pill-btn {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 4px;
+                text-align: center;
+                min-height: 56px;
+                border-radius: var(--radius-md);
+            }
+            #ratioPills .pill-btn span:first-child {
+                font-size: 14px;
+                font-weight: 700;
+            }
+            #ratioPills .pill-btn .desc {
+                font-size: 10px;
+                margin-top: 2px;
+                opacity: 0.85;
+            }
+
+            /* Logo Pills Grid on Mobile */
+            #logoPills {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                width: 100%;
+            }
+            #logoPills .pill-btn {
+                justify-content: center;
+                padding: 10px 8px;
+                font-size: 12px;
+                min-height: 46px;
+                text-align: center;
+                border-radius: var(--radius-md);
+            }
+
+            /* Preset Card on Mobile */
+            .preset-manager-card {
+                order: 4;
+                padding: 14px 12px;
+                margin-bottom: 12px;
+                border-radius: var(--radius-md);
+            }
+            .preset-bar-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                width: 100%;
+            }
+            .preset-dropdown {
+                width: 100%;
+                max-width: 100%;
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            .preset-actions-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                width: 100%;
+            }
+            .preset-actions-grid .btn-preset-action {
+                padding: 8px 4px;
+                font-size: 11px;
+                text-align: center;
+                justify-content: center;
+                white-space: nowrap;
+            }
+            .preset-bar-right {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                width: 100%;
+                margin-top: 6px;
+            }
+            .preset-bar-right .btn-preset-action {
+                justify-content: center;
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+
+            /* Control Rows & Items on Mobile */
+            .control-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                margin-bottom: 12px;
             }
             .control-item {
+                width: 100% !important;
+                min-width: 0 !important;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .control-item > label {
+                font-size: 12px;
+                font-weight: 600;
+                color: #334155;
+            }
+            .control-item input[type="text"],
+            .control-item input[type="number"],
+            .control-item select {
                 width: 100%;
-                justify-content: space-between;
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            .control-item input[type="range"] {
+                width: 100%;
+                height: 32px;
+            }
+            .date-picker-combo {
+                width: 100%;
+            }
+            .date-picker-combo input[type="text"] {
+                flex: 1;
+            }
+
+            /* Date Calculator Bar on Mobile */
+            .date-calc-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 10px 12px;
+            }
+            .date-calc-bar .calc-quick-pills {
+                display: flex;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 2px;
+                margin-left: 0;
+            }
+            .date-quick-pill {
+                flex-shrink: 0;
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+            .btn-calc-date {
+                flex: 1;
+                justify-content: center;
+                padding: 6px 12px;
+            }
+
+            /* Censor Sides Grid on Mobile */
+            .censor-sides-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Censor Mode Pills on Mobile */
+            #censorModePills {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+                width: 100%;
+            }
+            #censorModePills .pill-btn {
+                justify-content: center;
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            /* Keyboard shortcuts footer: hide on mobile */
+            .keyboard-shortcuts {
+                display: none;
+            }
+
+            /* Mobile Sticky Action Bar */
+            .mobile-sticky-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-top: 1px solid rgba(226, 232, 240, 0.9);
+                padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                z-index: 1000;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .btn-mobile-download {
+                flex: 1;
+                height: 46px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: #ffffff;
+                border: none;
+                border-radius: var(--radius-md);
+                font-size: 14px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+                cursor: pointer;
+                transition: transform 0.1s ease, opacity 0.15s ease;
+                touch-action: manipulation;
+            }
+            .btn-mobile-download:active {
+                transform: scale(0.98);
+            }
+            .btn-mobile-download:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                box-shadow: none;
+            }
+            .btn-mobile-icon {
+                width: 46px;
+                height: 46px;
+                background: #ffffff;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                color: var(--text);
+                cursor: pointer;
+                box-shadow: var(--shadow-sm);
+                transition: background 0.15s ease;
+                touch-action: manipulation;
+            }
+            .btn-mobile-icon:active {
+                background: #f1f5f9;
+            }
+            .btn-mobile-icon:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+            }
+
+            /* Toast on Mobile: Float neatly above the sticky thumb action bar */
+            .toast {
+                bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+                right: 16px;
+                left: 16px;
+                justify-content: center;
+                text-align: center;
             }
         }
     </style>
@@ -1195,7 +1643,7 @@
     </header>
 
     <!-- Preset Manager Bar -->
-    <div class="preset-manager-card">
+    <div class="preset-manager-card" id="presetManagerCard">
         <div class="preset-bar-left">
             <span class="preset-title">⭐ ระบบพรีเซ็ต (Presets):</span>
             <select id="presetSelect" class="preset-dropdown">
@@ -1203,10 +1651,12 @@
                 <option value="__privacy_60__">🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)</option>
                 <option value="__clean__">🌿 คลีน มินิมอล (ไม่มีลายน้ำ/ปิดตา)</option>
             </select>
-            <button type="button" class="btn-preset-action btn-load" id="btnLoadPreset" title="โหลดการตั้งค่าจากพรีเซ็ตที่เลือก">📂 โหลด</button>
-            <button type="button" class="btn-preset-action btn-save" id="btnSaveNewPreset" title="บันทึกการตั้งค่าปัจจุบันทั้งหมดเป็น Preset ใหม่">💾 บันทึกเป็น Preset ใหม่</button>
-            <button type="button" class="btn-preset-action btn-update" id="btnUpdatePreset" title="บันทึกทับ Preset ที่เลือกอยู่">✏️ บันทึกทับ</button>
-            <button type="button" class="btn-preset-action btn-delete" id="btnDeletePreset" title="ลบ Preset ที่เลือก">🗑️ ลบ</button>
+            <div class="preset-actions-grid">
+                <button type="button" class="btn-preset-action btn-load" id="btnLoadPreset" title="โหลดการตั้งค่าจากพรีเซ็ตที่เลือก">📂 โหลด</button>
+                <button type="button" class="btn-preset-action btn-save" id="btnSaveNewPreset" title="บันทึกการตั้งค่าปัจจุบันทั้งหมดเป็น Preset ใหม่">💾 บันทึกเป็น Preset ใหม่</button>
+                <button type="button" class="btn-preset-action btn-update" id="btnUpdatePreset" title="บันทึกทับ Preset ที่เลือกอยู่">✏️ บันทึกทับ</button>
+                <button type="button" class="btn-preset-action btn-delete" id="btnDeletePreset" title="ลบ Preset ที่เลือก">🗑️ ลบ</button>
+            </div>
         </div>
         <div class="preset-bar-right">
             <button type="button" class="btn-preset-action btn-io" id="btnExportPresets" title="ส่งออกข้อมูลพรีเซ็ตเป็นไฟล์ JSON หรือคัดลอก เพื่อย้ายไปใช้เครื่องอื่น">📤 ย้ายข้อมูล (Export)</button>
@@ -1214,10 +1664,42 @@
         </div>
     </div>
 
+    <!-- Mobile Category Tabs (Scrollable Segmented Navigation) -->
+    <nav class="mobile-tabs-nav" id="mobileTabsNav" aria-label="หมวดหมู่การตั้งค่าบนมือถือ">
+        <button type="button" class="mobile-tab-btn active" data-target="sectionRatio">
+            <span class="tab-icon">📐</span>
+            <span>สัดส่วน</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="sectionCaseInfo">
+            <span class="tab-icon">📝</span>
+            <span>ข้อความ</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="sectionCensor">
+            <span class="tab-icon">🕶️</span>
+            <span>แถบปิดตา</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="sectionLogo">
+            <span class="tab-icon">🏷️</span>
+            <span>โลโก้</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="sectionLayout">
+            <span class="tab-icon">⚙️</span>
+            <span>จัดวาง</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="presetManagerCard">
+            <span class="tab-icon">⭐</span>
+            <span>พรีเซ็ต</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" data-target="all">
+            <span class="tab-icon">👁️</span>
+            <span>ทั้งหมด</span>
+        </button>
+    </nav>
+
     <!-- Controls Panel -->
     <div class="controls-card">
         <!-- Section 1: Aspect Ratio Selection -->
-        <div class="settings-section">
+        <div class="settings-section mobile-tab-active" id="sectionRatio">
             <div class="section-label">
                 <span class="section-title-left">📐 ขนาดอัตราส่วนภาพ (Aspect Ratio):</span>
             </div>
@@ -1250,7 +1732,7 @@
         </div>
 
         <!-- Section 2: Case Information & Text Overlays (Headline, Dates, Disclaimers, Watermark) -->
-        <div class="settings-section">
+        <div class="settings-section" id="sectionCaseInfo">
             <div class="section-label">
                 <span class="section-title-left">📝 ข้อมูลเคสและข้อความบนภาพ (Case Details & Dates):</span>
                 <div>
@@ -1369,7 +1851,7 @@
         </div>
 
         <!-- Section 3: Eye Privacy Censor Bar (แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว) -->
-        <div class="settings-section">
+        <div class="settings-section" id="sectionCensor">
             <div class="section-label">
                 <span class="section-title-left">🕶️ แถบปิดตาคนไข้ (Eye Privacy Censor Bar):</span>
                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -1564,7 +2046,7 @@
         </div>
 
         <!-- Section 4: de Pry Clinic Logo -->
-        <div class="settings-section">
+        <div class="settings-section" id="sectionLogo">
             <div class="section-label">
                 <span class="section-title-left">🏷️ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
             </div>
@@ -1605,8 +2087,8 @@
             </div>
         </div>
 
-        <!-- Section 4: Layout & Export Settings -->
-        <div class="settings-section">
+        <!-- Section 5: Layout & Export Settings -->
+        <div class="settings-section" id="sectionLayout">
             <div class="control-row">
                 <div class="control-item">
                     <label for="layoutSelect">การจัดวางภาพ:</label>
@@ -3285,6 +3767,10 @@
             const isLossy = e.target.value === "jpeg" || e.target.value === "webp";
             qualityControlWrapper.style.opacity = isLossy ? "1" : "0.4";
             downloadBtn.textContent = `💾 ดาวน์โหลดภาพ (${e.target.value.toUpperCase()} 2000px)`;
+            const mobileDownloadBtn = document.getElementById("mobileDownloadBtn");
+            if (mobileDownloadBtn) {
+                mobileDownloadBtn.innerHTML = `<span>💾 ดาวน์โหลด (${e.target.value.toUpperCase()} 2000px)</span>`;
+            }
         });
 
         qualityControl.addEventListener("input", e => {
@@ -4327,11 +4813,20 @@
         });
 
         function checkReadyState() {
-            const ready = beforeImage && afterImage;
+            const ready = !!(beforeImage && afterImage);
             downloadBtn.disabled = !ready;
             copyClipboardBtn.disabled = !ready;
             toggleDiffBtn.disabled = !ready;
             fullscreenBtn.disabled = !ready;
+
+            const mobileDownloadBtn = document.getElementById("mobileDownloadBtn");
+            const mobileCopyBtn = document.getElementById("mobileCopyBtn");
+            const mobileDiffBtn = document.getElementById("mobileDiffBtn");
+            const mobileFullscreenBtn = document.getElementById("mobileFullscreenBtn");
+            if (mobileDownloadBtn) mobileDownloadBtn.disabled = !ready;
+            if (mobileCopyBtn) mobileCopyBtn.disabled = !ready;
+            if (mobileDiffBtn) mobileDiffBtn.disabled = !ready;
+            if (mobileFullscreenBtn) mobileFullscreenBtn.disabled = !ready;
         }
 
         // --- FULL RESOLUTION CANVAS GENERATION (CANONICAL DE PRY 2000px EXPORT) ---
@@ -4554,12 +5049,94 @@
             });
         }
 
+        // Mobile UI Controller: Category Tabs Navigation & Sticky Action Bar Proxy
+        function initMobileUI() {
+            const mobileTabsNav = document.getElementById("mobileTabsNav");
+            const controlsCard = document.querySelector(".controls-card");
+            const presetManagerCard = document.getElementById("presetManagerCard");
+            const mobileDownloadBtn = document.getElementById("mobileDownloadBtn");
+            const mobileCopyBtn = document.getElementById("mobileCopyBtn");
+            const mobileDiffBtn = document.getElementById("mobileDiffBtn");
+            const mobileFullscreenBtn = document.getElementById("mobileFullscreenBtn");
+
+            // Proxy clicks from mobile sticky action bar to desktop buttons
+            if (mobileDownloadBtn) {
+                mobileDownloadBtn.addEventListener("click", () => {
+                    if (!downloadBtn.disabled) downloadBtn.click();
+                });
+            }
+            if (mobileCopyBtn) {
+                mobileCopyBtn.addEventListener("click", () => {
+                    if (!copyClipboardBtn.disabled) copyClipboardBtn.click();
+                });
+            }
+            if (mobileDiffBtn) {
+                mobileDiffBtn.addEventListener("click", () => {
+                    if (!toggleDiffBtn.disabled) toggleDiffBtn.click();
+                });
+            }
+            if (mobileFullscreenBtn) {
+                mobileFullscreenBtn.addEventListener("click", () => {
+                    if (!fullscreenBtn.disabled) fullscreenBtn.click();
+                });
+            }
+
+            // Mobile Category Tabs Switching
+            if (mobileTabsNav) {
+                const tabBtns = mobileTabsNav.querySelectorAll(".mobile-tab-btn");
+                tabBtns.forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const targetId = btn.dataset.target;
+                        tabBtns.forEach(b => b.classList.remove("active"));
+                        btn.classList.add("active");
+
+                        if (targetId === "all") {
+                            if (controlsCard) controlsCard.classList.add("show-all-sections");
+                            document.querySelectorAll(".settings-section").forEach(s => s.classList.add("mobile-tab-active"));
+                            if (presetManagerCard) presetManagerCard.classList.add("mobile-tab-active");
+                        } else {
+                            if (controlsCard) controlsCard.classList.remove("show-all-sections");
+                            document.querySelectorAll(".settings-section").forEach(s => s.classList.remove("mobile-tab-active"));
+                            if (presetManagerCard) presetManagerCard.classList.remove("mobile-tab-active");
+
+                            if (targetId === "presetManagerCard") {
+                                if (presetManagerCard) presetManagerCard.classList.add("mobile-tab-active");
+                            } else {
+                                const targetSection = document.getElementById(targetId);
+                                if (targetSection) targetSection.classList.add("mobile-tab-active");
+                            }
+                        }
+
+                        // Scroll selected tab smoothly into view
+                        btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                    });
+                });
+            }
+        }
+
         // Initialize
         updateMeta();
         updateDivider();
         updateFrameDimensions();
         renderBothSlots();
         renderStageOverlays();
+        initMobileUI();
     </script>
+
+    <!-- Mobile Floating Sticky Action Bar (Anchored for comfortable thumb reach) -->
+    <div class="mobile-sticky-bar" id="mobileStickyBar">
+        <button type="button" class="btn-mobile-download" id="mobileDownloadBtn" disabled>
+            <span>💾 ดาวน์โหลดภาพ (2000px)</span>
+        </button>
+        <button type="button" class="btn-mobile-icon" id="mobileCopyBtn" title="คัดลอกภาพไปยัง Clipboard" disabled>
+            📋
+        </button>
+        <button type="button" class="btn-mobile-icon" id="mobileDiffBtn" title="ดูจุดต่างภาพ (Diff)" disabled>
+            🔍
+        </button>
+        <button type="button" class="btn-mobile-icon" id="mobileFullscreenBtn" title="ดูเต็มจอ" disabled>
+            ⛶
+        </button>
+    </div>
 </body>
 </html>
