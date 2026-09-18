@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Real SQLite Engine via WebAssembly (sql.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -47,23 +49,94 @@
 
         /* App Header */
         .app-header {
-            text-align: center;
-            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .app-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
         .app-header h1 {
             font-family: 'Kanit', sans-serif;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--text);
+            margin: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
         .app-header .subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin: 0;
+        }
+        .app-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .clinic-switcher-group, .lang-switcher-group {
+            display: inline-flex;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            padding: 3px;
+            box-shadow: var(--shadow-sm);
+        }
+        .clinic-btn, .lang-btn {
+            padding: 5px 12px;
+            border-radius: 9999px;
+            border: none;
+            background: transparent;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            touch-action: manipulation;
+        }
+        .clinic-btn:hover, .lang-btn:hover {
+            color: #0f172a;
+        }
+        .clinic-btn.active {
+            color: #ffffff;
+        }
+        .clinic-btn[data-clinic="depry"].active {
+            background: linear-gradient(135deg, #be185d 0%, #db2777 100%);
+            box-shadow: 0 2px 8px rgba(219,39,119,0.35);
+        }
+        .clinic-btn[data-clinic="dentalhaus"].active {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            box-shadow: 0 2px 8px rgba(13,148,136,0.35);
+        }
+        .lang-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+        .sqlite-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+            vertical-align: middle;
         }
 
         /* Top Controls Card */
@@ -1080,11 +1153,106 @@
         .btn-preset-action.btn-delete { background: #ef4444; color: white; }
         .btn-preset-action.btn-io { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); }
         .btn-preset-action.btn-io:hover { background: rgba(255,255,255,0.28); }
+        .btn-preset-action.btn-sqlite-mgmt {
+            background: linear-gradient(135deg, rgba(16,185,129,0.3) 0%, rgba(5,150,105,0.4) 100%);
+            color: #ffffff;
+            border: 1px solid rgba(16,185,129,0.5);
+            font-weight: 600;
+        }
+        .btn-preset-action.btn-sqlite-mgmt:hover {
+            background: linear-gradient(135deg, rgba(16,185,129,0.45) 0%, rgba(5,150,105,0.6) 100%);
+        }
 
         .preset-actions-grid {
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        /* Custom Logo Card */
+        .custom-logo-card {
+            background: #f8fafc;
+            border: 1px dashed var(--border-hover);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .custom-logo-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #334155;
+            font-weight: 500;
+        }
+        .custom-logo-thumb-preview {
+            max-height: 32px;
+            max-width: 90px;
+            object-fit: contain;
+            background: rgba(0,0,0,0.04);
+            border-radius: 4px;
+            padding: 2px 4px;
+            border: 1px solid var(--border);
+        }
+        .btn-custom-logo-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+        }
+        .btn-custom-logo-label:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* SQLite Manager Modal Styles */
+        .sqlite-table-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin: 12px 0;
+            background: #ffffff;
+        }
+        .sqlite-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+        .sqlite-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .sqlite-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-family: monospace;
+        }
+        .sqlite-table tr:hover {
+            background: #f8fafc;
         }
 
         /* Censor Independent Left/Right Panel */
@@ -1639,13 +1807,35 @@
 </head>
 <body>
     <header class="app-header">
-        <h1>Before/After Image Combiner</h1>
+        <div class="app-header-left">
+            <h1 id="appHeaderTitle">Before/After Image Combiner</h1>
+            <div class="subtitle" id="appSubtitle">โปรแกรมรวมภาพเคสก่อน-หลัง มาตรฐานคลินิก</div>
+        </div>
+        <div class="app-header-right">
+            <!-- Clinic Switcher -->
+            <div class="clinic-switcher-group" title="เลือกคลินิกสำหรับโลโก้และพรีเซ็ต">
+                <button type="button" class="clinic-btn active" data-clinic="depry" id="clinicDepryBtn">
+                    <span>🌸 de Pry Clinic</span>
+                </button>
+                <button type="button" class="clinic-btn" data-clinic="dentalhaus" id="clinicDentalHausBtn">
+                    <span>🦷 The Dental Haus</span>
+                </button>
+            </div>
+            <!-- Language Switcher -->
+            <div class="lang-switcher-group" title="สลับภาษา (Switch Language)">
+                <button type="button" class="lang-btn active" data-lang="th" id="langThBtn">🇹🇭 ไทย</button>
+                <button type="button" class="lang-btn" data-lang="en" id="langEnBtn">🇺🇸 EN</button>
+            </div>
+        </div>
     </header>
 
     <!-- Preset Manager Bar -->
     <div class="preset-manager-card" id="presetManagerCard">
         <div class="preset-bar-left">
-            <span class="preset-title">⭐ ระบบพรีเซ็ต (Presets):</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                <span class="preset-title" id="presetTitleLabel">⭐ ระบบพรีเซ็ต (Presets):</span>
+                <span class="sqlite-status-badge" id="sqliteStatusBadge" title="สถานะฐานข้อมูล SQLite จริง (คลิกเพื่อจัดการ)" style="cursor: pointer;">🗄️ SQLite: presets.db</span>
+            </div>
             <select id="presetSelect" class="preset-dropdown">
                 <option value="__default__">✨ de Pry Standard (เคสรีวิวปกติ)</option>
                 <option value="__privacy_60__">🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)</option>
@@ -1659,6 +1849,7 @@
             </div>
         </div>
         <div class="preset-bar-right">
+            <button type="button" class="btn-preset-action btn-sqlite-mgmt" id="btnOpenSqliteModal" title="เปิดหน้าต่างจัดการฐานข้อมูล SQLite (ดูตาราง, โหลดไฟล์ .db, สำรองข้อมูล)">🗄️ ฐานข้อมูล SQLite</button>
             <button type="button" class="btn-preset-action btn-io" id="btnExportPresets" title="ส่งออกข้อมูลพรีเซ็ตเป็นไฟล์ JSON หรือคัดลอก เพื่อย้ายไปใช้เครื่องอื่น">📤 ย้ายข้อมูล (Export)</button>
             <button type="button" class="btn-preset-action btn-io" id="btnImportPresets" title="นำเข้าข้อมูลพรีเซ็ตจากเครื่องอื่น">📥 นำเข้า (Import)</button>
         </div>
@@ -1808,8 +1999,27 @@
                 <span id="dateCalcHint" style="font-size: 11px; color: #10b981; font-weight: 600; margin-left: auto; display: none;"></span>
             </div>
 
-            <!-- Disclaimers -->
-            <div class="control-row">
+            <!-- Quick Date / Label Template Pills -->
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+                <span style="font-size: 11.5px; font-weight: 600; color: #64748b;">⚡ เทมเพลตข้อความระบุช่วงเวลา:</span>
+                <button type="button" class="date-quick-pill" id="btnTplBeforeAfter" title="ใส่ BEFORE / AFTER">🏷️ BEFORE / AFTER</button>
+                <button type="button" class="date-quick-pill" id="btnTplThBeforeAfter" title="ใส่ ก่อนทำ / หลังทำ">🏷️ ก่อนทำ / หลังทำ</button>
+                <button type="button" class="date-quick-pill" id="btnTplDay1Day14" title="ใส่ Day 1 / Day 14">🏷️ Day 1 / Day 14</button>
+                <button type="button" class="date-quick-pill" id="btnTplMonth1" title="ใส่ ก่อนทำ / หลังทำ 1 เดือน">🏷️ ก่อนทำ / หลังทำ 1 เดือน</button>
+                <button type="button" class="date-quick-pill" id="btnTplToday" title="ใส่วันที่ปัจจุบัน">📅 วันที่วันนี้</button>
+            </div>
+
+            <!-- Disclaimers Quick Templates -->
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 4px;">
+                <span style="font-size: 11.5px; font-weight: 600; color: #64748b;">⚖️ ข้อความกำกับ (Disclaimers):</span>
+                <button type="button" class="date-quick-pill" id="btnDiscTh" title="ใช้ข้อความกำกับภาษาไทย มาตรฐานความงาม">🇹🇭 ภาษาไทย</button>
+                <button type="button" class="date-quick-pill" id="btnDiscEn" title="ใช้ข้อความกำกับภาษาอังกฤษ">🇺🇸 English</button>
+                <button type="button" class="date-quick-pill" id="btnDiscDental" title="ใช้ข้อความกำกับคลินิกทันตกรรม">🦷 ทันตกรรม</button>
+                <button type="button" class="date-quick-pill" id="btnClearDisc" title="ล้างข้อความกำกับ">✕ ล้างข้อความ</button>
+            </div>
+
+            <!-- Disclaimers Input Row -->
+            <div class="control-row" style="margin-top: 2px;">
                 <div class="control-item" style="flex: 1; min-width: 260px;">
                     <input type="checkbox" id="showDisclaimersCheckbox" checked>
                     <label for="discLeftInput">ข้อความกำกับซ้าย:</label>
@@ -2045,27 +2255,60 @@
             </div>
         </div>
 
-        <!-- Section 4: de Pry Clinic Logo -->
+        <!-- Section 4: Clinic Logo Branding & Custom Logo -->
         <div class="settings-section" id="sectionLogo">
-            <div class="section-label">
-                <span class="section-title-left">🏷️ ตราสัญลักษณ์คลินิก (de Pry Clinic Logo):</span>
+            <div class="section-label" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span class="section-title-left" id="sectionLogoTitle">🏷️ ตราสัญลักษณ์คลินิก (Clinic Logo):</span>
+                <span class="sqlite-status-badge" id="activeClinicBadge" style="font-size: 11px; padding: 3px 10px;">🌸 de Pry Clinic</span>
             </div>
             <div class="pill-group" id="logoPills">
-                <button type="button" class="pill-btn active" data-color="badge">
-                    <span class="color-dot" style="background:#ffffff; border:1px solid #e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
-                    <span>ป้ายคลินิก (Badge ขาว - เหมือนในภาพ)</span>
+                <button type="button" class="pill-btn active" data-color="badge" id="pillLogoBadge">
+                    <span class="color-dot" id="dotLogoBadge" style="background:#ffffff; border:1px solid #e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
+                    <span id="textLogoBadge">ป้ายคลินิก (White Badge)</span>
                 </button>
-                <button type="button" class="pill-btn" data-color="pink">
-                    <span class="color-dot" style="background:#e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
-                    <span>ไอคอนสีชมพู (Pink Logo)</span>
+                <button type="button" class="pill-btn" data-color="color1" id="pillLogoColor1">
+                    <span class="color-dot" id="dotLogoColor1" style="background:#e879f9; box-shadow:0 0 6px rgba(232,121,249,0.8);"></span>
+                    <span id="textLogoColor1">ไอคอนสีชมพู (Pink Logo)</span>
                 </button>
-                <button type="button" class="pill-btn" data-color="white">
-                    <span class="color-dot" style="background:#ffffff; border:1px solid #94a3b8;"></span>
-                    <span>ไอคอนสีขาว (White Logo)</span>
+                <button type="button" class="pill-btn" data-color="white" id="pillLogoWhite">
+                    <span class="color-dot" id="dotLogoWhite" style="background:#ffffff; border:1px solid #94a3b8;"></span>
+                    <span id="textLogoWhite">ไอคอนสีขาว (White Logo)</span>
                 </button>
-                <button type="button" class="pill-btn" data-color="none">
+                <button type="button" class="pill-btn" data-color="custom" id="pillLogoCustom" style="display: none;">
+                    <span class="color-dot" style="background:#0284c7; box-shadow:0 0 6px rgba(2,132,199,0.8);"></span>
+                    <span>โลโก้กำหนดเอง (Custom)</span>
+                </button>
+                <button type="button" class="pill-btn" data-color="none" id="pillLogoNone">
                     <span>✕ ไม่ใส่โลโก้ (None)</span>
                 </button>
+            </div>
+
+            <!-- Custom Logo Upload Card -->
+            <div class="custom-logo-card" id="customLogoCard" style="margin-top: 12px; padding: 12px 14px; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius-sm);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">📤</span>
+                        <div>
+                            <div style="font-size: 12.5px; font-weight: 700; color: #1e293b;" id="customLogoCardTitle">อัปโหลดโลโก้จริง (Custom Logo บันทึกลง SQLite)</div>
+                            <div style="font-size: 11px; color: #64748b;" id="customLogoCardSub">รองรับไฟล์ PNG โปร่งใส, SVG หรือ WebP (เมื่อได้ไฟล์จริงจากคลินิก The Dental Haus สามารถอัปโหลดตรงนี้ได้เลย)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <div id="customLogoPreviewWrap" style="display: none; align-items: center; gap: 8px; background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);">
+                        <img id="customLogoPreviewImg" src="" alt="Custom Logo" style="height: 28px; width: auto; max-width: 120px; object-fit: contain;">
+                        <span style="font-size: 11px; font-weight: 600; color: #059669;">✓ โลโก้พร้อมใช้งาน</span>
+                    </div>
+                    <input type="file" id="customLogoFileInput" accept=".png, .svg, .jpg, .jpeg, .webp, image/*" style="display: none;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnTriggerUploadLogo" style="font-size: 11.5px; padding: 5px 12px;">
+                        📂 เลือกไฟล์โลโก้
+                    </button>
+                    <button type="button" class="btn-preset-action btn-danger" id="btnDeleteCustomLogo" style="display: none; font-size: 11.5px; padding: 5px 10px; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">
+                        🗑️ ลบโลโก้ที่อัปโหลด
+                    </button>
+                    <span id="customLogoMsg" style="font-size: 11px; color: #64748b;">(บันทึกลงฐานข้อมูล SQLite presets.db ทันที)</span>
+                </div>
             </div>
 
             <div class="control-row" style="margin-top: 12px; margin-bottom: 0;">
@@ -2335,6 +2578,62 @@
         </div>
     </div>
 
+    <!-- Modal: SQLite Database Manager -->
+    <div id="sqliteManagerModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 680px;">
+            <div class="modal-header">
+                <span id="sqliteModalTitle">🗄️ ตัวจัดการฐานข้อมูล SQLite (presets.db)</span>
+                <button type="button" class="modal-close-btn" id="closeSqliteModalBtn">✕</button>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                <span style="font-size: 24px;">🗃️</span>
+                <div style="flex: 1;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #0f172a;" id="sqliteStatusText">ฐานข้อมูล: presets.db (SQLite 3 WASM Engine)</div>
+                    <div style="font-size: 11.5px; color: #64748b;" id="sqliteStatsDetail">ตาราง presets: กำลังเชื่อมต่อ... • ตาราง clinic_settings: พร้อมใช้งาน</div>
+                </div>
+                <span class="sqlite-status-badge" id="sqliteModalLiveBadge" style="background: rgba(16, 185, 129, 0.18); color: #059669; border: 1px solid rgba(16, 185, 129, 0.4);">🟢 Connected &amp; Synced</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 12.5px; font-weight: 600; color: #334155;" id="sqliteRecordsTitle">รายการข้อมูลในตาราง `presets` (SQL Records):</span>
+                <span style="font-size: 11px; color: #64748b;">(Query: SELECT * FROM presets)</span>
+            </div>
+            <div class="sqlite-table-container">
+                <table class="sqlite-table" id="sqliteRecordsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ Preset</th>
+                            <th>คลินิก</th>
+                            <th>แก้ไขล่าสุด</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sqliteRecordsBody">
+                        <tr><td colspan="4" style="text-align:center; padding: 14px; color: #94a3b8;">กำลังอ่านข้อมูลจาก SQLite...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-preset-action btn-save" id="btnDownloadSqliteDb" title="ดาวน์โหลดไฟล์ฐานข้อมูล SQLite 3 (.sqlite / .db) จริง">
+                        💾 ดาวน์โหลด presets.sqlite
+                    </button>
+                    <input type="file" id="importSqliteFileInput" accept=".sqlite, .db, .sqlite3" style="display: none;">
+                    <button type="button" class="btn-preset-action btn-io" id="btnSelectSqliteFile" title="นำเข้าไฟล์ฐานข้อมูล SQLite จากเครื่อง">
+                        📥 นำเข้าไฟล์ .sqlite
+                    </button>
+                    <button type="button" class="btn-preset-action btn-io" id="btnExportSqlDump" title="สร้างสคริปต์ SQL (DDL + INSERT)">
+                        📜 Export .sql
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn-preset-action" id="btnCloseSqliteModalBottom" style="background: #f1f5f9; color: #475569;">ปิดหน้าต่าง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Embed canonical de Pry Clinic logos (Badge, Pink, White)
         const DEPRY_LOGOS = {
@@ -2343,14 +2642,69 @@
             white: "data:image/png;base64,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"
         };
 
+        // Canonical The Dental Haus logos (Badge, Teal, White)
+        const DENTALHAUS_LOGOS = {
+            badge: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MjAgMTM1IiB3aWR0aD0iNDIwIiBoZWlnaHQ9IjEzNSI+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJiU2hhZG93IiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjIiIHN0ZERldmlhdGlvbj0iNCIgZmxvb2QtY29sb3I9InJnYmEoMTUsMjMsNDIsMC4xOCkiIC8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjQxMCIgaGVpZ2h0PSIxMjUiIHJ4PSIyMiIgcnk9IjIyIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjNWEwNTkiIHN0cm9rZS13aWR0aD0iMi41IiBmaWx0ZXI9InVybCgjYlNoYWRvdykiLz4KICA8cmVjdCB4PSI5IiB5PSI5IiB3aWR0aD0iNDAyIiBoZWlnaHQ9IjExNyIgcng9IjE4IiByeT0iMTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyZThmMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjYsIDI2KSI+CiAgICA8cGF0aCBkPSJNIDM4IDEyIEMgMzAgMiwgMTQgMiwgOCAxNiBDIDQgMjYsIDYgNDIsIDEyIDU2IEMgMTYgNjYsIDIwIDc2LCAyMiA4NCBDIDIzIDg3LCAyNiA4NywgMjcgODMgQyAzMCA3MSwgMzMgNjAsIDM4IDUyIEMgNDMgNjAsIDQ2IDcxLCA0OSA4MyBDIDUwIDg3LCA1MyA4NywgNTQgODQgQyA1NiA3NiwgNjAgNjYsIDY0IDU2IEMgNzAgNDIsIDcyIDI2LCA2OCAxNiBDIDYyIDIsIDQ2IDIsIDM4IDEyIFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M1YTA1OSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIzOCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjYzVhMDU5Ii8+CiAgICA8cGF0aCBkPSJNIDM4IDIwIEwgMzggNDAgTSAyOCAzMCBMIDQ4IDMwIiBzdHJva2U9IiNjNWEwNTkiIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+CiAgPHRleHQgeD0iMTE2IiB5PSI1NCIgZm9udC1mYW1pbHk9IidDaW56ZWwnLCAnUGxheWZhaXIgRGlzcGxheScsICdUaW1lcyBOZXcgUm9tYW4nLCBHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBmMTcyYSIgbGV0dGVyLXNwYWNpbmc9IjIuOCI+VEhFIERFTlRBTCBIQVVTPC90ZXh0PgogIDxsaW5lIHgxPSIxMTYiIHkxPSI2NCIgeDI9IjM5MCIgeTI9IjY0IiBzdHJva2U9IiNjNWEwNTkiIHN0cm9rZS13aWR0aD0iMS40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8dGV4dCB4PSIxMTYiIHk9Ijg0IiBmb250LWZhbWlseT0iJ01vbnRzZXJyYXQnLCAtYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkuNSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzY0NzQ4YiIgbGV0dGVyLXNwYWNpbmc9IjMuNSI+Q0xJTklDICZhbXA7IFNNSUxFIERFU0lHTjwvdGV4dD4KPC9zdmc+",
+            teal: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODAgOTAiIHdpZHRoPSIzODAiIGhlaWdodD0iOTAiPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDgsIDQpIj4KICAgIDxwYXRoIGQ9Ik0gMzggMTIgQyAzMCAyLCAxNCAyLCA4IDE2IEMgNCAyNiwgNiA0MiwgMTIgNTYgQyAxNiA2NiwgMjAgNzYsIDIyIDg0IEMgMjMgODcsIDI2IDg3LCAyNyA4MyBDIDMwIDcxLCAzMyA2MCwgMzggNTIgQyA0MyA2MCwgNDYgNzEsIDQ5IDgzIEMgNTAgODcsIDUzIDg3LCA1NCA4NCBDIDU2IDc2LCA2MCA2NiwgNjQgNTYgQyA3MCA0MiwgNzIgMjYsIDY4IDE2IEMgNjIgMiwgNDYgMiwgMzggMTIgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGQ5NDg4IiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIzOCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjYzVhMDU5Ii8+CiAgICA8cGF0aCBkPSJNIDM4IDIwIEwgMzggNDAgTSAyOCAzMCBMIDQ4IDMwIiBzdHJva2U9IiNjNWEwNTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPC9nPgogIDx0ZXh0IHg9Ijk2IiB5PSI0NiIgZm9udC1mYW1pbHk9IidDaW56ZWwnLCAnUGxheWZhaXIgRGlzcGxheScsIEdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjIxIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMGQ5NDg4IiBsZXR0ZXItc3BhY2luZz0iMi41Ij5USEUgREVOVEFMIEhBVVM8L3RleHQ+CiAgPGxpbmUgeDE9Ijk2IiB5MT0iNTUiIHgyPSIzNjAiIHkyPSI1NSIgc3Ryb2tlPSIjYzVhMDU5IiBzdHJva2Utd2lkdGg9IjEuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHRleHQgeD0iOTYiIHk9IjczIiBmb250LWZhbWlseT0iJ01vbnRzZXJyYXQnLCAtYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMwZjc2NmUiIGxldHRlci1zcGFjaW5nPSIzLjIiPkVTVEhFVElDIERFTlRJU1RSWTwvdGV4dD4KPC9zdmc+",
+            white: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODAgOTAiIHdpZHRoPSIzODAiIGhlaWdodD0iOTAiPgogIDxmaWx0ZXIgaWQ9IndEcm9wIiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSIxIiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSJyZ2JhKDAsMCwwLDAuNikiIC8+CiAgPC9maWx0ZXI+CiAgPGcgZmlsdGVyPSJ1cmwoI3dEcm9wKSI+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LCA0KSI+CiAgICAgIDxwYXRoIGQ9Ik0gMzggMTIgQyAzMCAyLCAxNCAyLCA4IDE2IEMgNCAyNiwgNiA0MiwgMTIgNTYgQyAxNiA2NiwgMjAgNzYsIDIyIDg0IEMgMjMgODcsIDI2IDg3LCAyNyA4MyBDIDMwIDcxLCAzMyA2MCwgMzggNTIgQyA0MyA2MCwgNDYgNzEsIDQ5IDgzIEMgNTAgODcsIDUzIDg3LCA1NCA4NCBDIDU2IDc2LCA2MCA2NiwgNjQgNTYgQyA3MCA0MiwgNzIgMjYsIDY4IDE2IEMgNjIgMiwgNDYgMiwgMzggMTIgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM4IiBjeT0iMzAiIHI9IjQiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHBhdGggZD0iTSAzOCAyMCBMIDM4IDQwIE0gMjggMzAgTCA0OCAzMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPC9nPgogICAgPHRleHQgeD0iOTYiIHk9IjQ2IiBmb250LWZhbWlseT0iJ0NpbnplbCcsICdQbGF5ZmFpciBEaXNwbGF5JywgR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMjEiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiIGxldHRlci1zcGFjaW5nPSIyLjUiPlRIRSBERU5UQUwgSEFVUzwvdGV4dD4KICAgIDxsaW5lIHgxPSI5NiIgeTE9IjU1IiB4Mj0iMzYwIiB5Mj0iNTUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHRleHQgeD0iOTYiIHk9IjczIiBmb250LWZhbWlseT0iJ01vbnRzZXJyYXQnLCAtYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjkiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmOGZhZmMiIGxldHRlci1zcGFjaW5nPSIzLjIiPkVTVEhFVElDIERFTlRJU1RSWTwvdGV4dD4KICA8L2c+Cjwvc3ZnPg=="
+        };
+
+        // Multi-Clinic Configuration
+        const CLINICS = {
+            depry: {
+                id: "depry",
+                name: "de Pry Clinic",
+                badgeHtml: "🌸 de Pry Clinic",
+                defaultWatermark: "de Pry clinic",
+                defaultTitle: "✨ โปรแกรม Thermatix และ Sculptra",
+                color1Key: "pink",
+                badgeLabel: "ป้ายคลินิก (White Badge)",
+                badgeBorder: "#e879f9",
+                color1Label: "ไอคอนสีชมพู (Pink Logo)",
+                color1Bg: "#e879f9",
+                whiteLabel: "ไอคอนสีขาว (White Logo)",
+                logos: DEPRY_LOGOS
+            },
+            dentalhaus: {
+                id: "dentalhaus",
+                name: "The Dental Haus",
+                badgeHtml: "🦷 The Dental Haus",
+                defaultWatermark: "The Dental Haus",
+                defaultTitle: "✨ เคสออกแบบรอยยิ้ม Smile Design & Veneer",
+                color1Key: "teal",
+                badgeLabel: "ป้ายทองพรีเมียม (Gold Badge)",
+                badgeBorder: "#c5a059",
+                color1Label: "โลโก้เขียวพรีเมียม (Teal Logo)",
+                color1Bg: "#0d9488",
+                whiteLabel: "ไอคอนสีขาว (White Logo)",
+                logos: DENTALHAUS_LOGOS
+            }
+        };
+
+        // Active State
+        let activeClinicId = localStorage.getItem("beforeafter_active_clinic") || "depry";
+        let currentLang = localStorage.getItem("beforeafter_lang") || "th";
+        const customLogoData = {
+            depry: localStorage.getItem("beforeafter_custom_logo_depry") || null,
+            dentalhaus: localStorage.getItem("beforeafter_custom_logo_dentalhaus") || null
+        };
+
         const logoObjects = {
             badge: new Image(),
+            color1: new Image(),
             pink: new Image(),
-            white: new Image()
+            teal: new Image(),
+            white: new Image(),
+            custom: new Image()
         };
-        logoObjects.badge.src = DEPRY_LOGOS.badge;
         logoObjects.pink.src = DEPRY_LOGOS.pink;
-        logoObjects.white.src = DEPRY_LOGOS.white;
+        logoObjects.teal.src = DENTALHAUS_LOGOS.teal;
+        logoObjects.badge.src = CLINICS[activeClinicId].logos.badge;
+        logoObjects.color1.src = CLINICS[activeClinicId].logos[CLINICS[activeClinicId].color1Key];
+        logoObjects.white.src = CLINICS[activeClinicId].logos.white;
+        if (customLogoData[activeClinicId]) {
+            logoObjects.custom.src = customLogoData[activeClinicId];
+        }
 
         // State
         let beforeImage = null;
@@ -3137,173 +3491,401 @@
         });
 
         // ==============================================================
-        // --- PRESET MANAGER SUBSYSTEM (Save, Load, Export, Import) ---
+        // --- REAL SQLITE PRESET MANAGER (sql.js WASM + IndexedDB) ---
         // ==============================================================
         const PRESETS_STORAGE_KEY = "beforeafter_custom_presets_v1";
 
-        const BUILT_IN_PRESETS = {
-            "__default__": {
-                name: "✨ de Pry Standard (เคสรีวิวปกติ)",
-                data: {
-                    ratio: "1:1",
-                    layout: "horizontal",
-                    fit: "contain",
-                    gap: 0,
-                    bgColor: "#000000",
-                    showTitle: true,
-                    title: "✨ โปรแกรม Thermatix และ Sculptra",
-                    showDates: true,
-                    dateLeft: "25 Jul 2026",
-                    dateRight: "4 Sep 2026",
-                    dateFormat: "en-short",
-                    showDisclaimers: true,
-                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
-                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
-                    bottomTextSize: 7.0,
-                    showWatermark: true,
-                    watermarkText: "de Pry clinic",
-                    watermarkOpacity: 35,
-                    logoColor: "badge",
-                    logoPos: "top-right",
-                    logoSize: 12,
-                    censor: {
-                        enabled: false,
-                        color: "#000000",
-                        target: "both",
-                        radius: 14,
-                        separate: false,
-                        y: 36.5,
-                        x: 49.5,
-                        w: 60,
-                        h: 7,
-                        leftY: 36.5,
-                        leftX: 49.5,
-                        leftW: 60,
-                        leftH: 7,
-                        rightY: 36.5,
-                        rightX: 49.5,
-                        rightW: 60,
-                        rightH: 7
+        class SQLitePresetManager {
+            constructor() {
+                this.db = null;
+                this.SQL = null;
+                this.isReady = false;
+                this.idbName = "beforeafter_sqlite_storage";
+                this.idbStore = "dbs";
+                this.idbKey = "presets.db";
+            }
+
+            async init() {
+                try {
+                    if (typeof window.initSqlJs === "function") {
+                        this.SQL = await window.initSqlJs({
+                            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+                        });
                     }
-                }
-            },
-            "__privacy_60__": {
-                name: "🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)",
-                data: {
-                    ratio: "1:1",
-                    layout: "horizontal",
-                    fit: "contain",
-                    gap: 0,
-                    bgColor: "#000000",
-                    showTitle: true,
-                    title: "✨ โปรแกรมปรับรูปหน้า de Pry Clinic",
-                    showDates: true,
-                    dateLeft: "25 Jul 2026",
-                    dateRight: "4 Sep 2026",
-                    dateFormat: "en-short",
-                    showDisclaimers: true,
-                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
-                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
-                    bottomTextSize: 7.0,
-                    showWatermark: true,
-                    watermarkText: "de Pry clinic",
-                    watermarkOpacity: 35,
-                    logoColor: "badge",
-                    logoPos: "top-right",
-                    logoSize: 12,
-                    censor: {
-                        enabled: true,
-                        color: "#000000",
-                        target: "both",
-                        radius: 14,
-                        separate: false,
-                        y: 36.5,
-                        x: 49.5,
-                        w: 60,
-                        h: 7,
-                        leftY: 36.5,
-                        leftX: 49.5,
-                        leftW: 60,
-                        leftH: 7,
-                        rightY: 36.5,
-                        rightX: 49.5,
-                        rightW: 60,
-                        rightH: 7
+
+                    if (!this.SQL) {
+                        this.updateUIStatus(false);
+                        return;
                     }
-                }
-            },
-            "__clean__": {
-                name: "🌿 คลีน มินิมอล (ไม่มีลายน้ำ/ปิดตา)",
-                data: {
-                    ratio: "1:1",
-                    layout: "horizontal",
-                    fit: "contain",
-                    gap: 0,
-                    bgColor: "#000000",
-                    showTitle: false,
-                    title: "",
-                    showDates: true,
-                    dateLeft: "BEFORE",
-                    dateRight: "AFTER",
-                    dateFormat: "en-short",
-                    showDisclaimers: true,
-                    discLeft: "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล",
-                    discRight: "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง",
-                    bottomTextSize: 7.0,
-                    showWatermark: false,
-                    watermarkText: "de Pry clinic",
-                    watermarkOpacity: 35,
-                    logoColor: "badge",
-                    logoPos: "top-right",
-                    logoSize: 12,
-                    censor: {
-                        enabled: false,
-                        color: "#000000",
-                        target: "both",
-                        radius: 14,
-                        separate: false,
-                        y: 36.5,
-                        x: 49.5,
-                        w: 60,
-                        h: 7,
-                        leftY: 36.5,
-                        leftX: 49.5,
-                        leftW: 60,
-                        leftH: 7,
-                        rightY: 36.5,
-                        rightX: 49.5,
-                        rightW: 60,
-                        rightH: 7
+
+                    const savedBinary = await this.readFromIDB();
+                    if (savedBinary && savedBinary.byteLength > 0) {
+                        try {
+                            this.db = new this.SQL.Database(new Uint8Array(savedBinary));
+                        } catch (e) {
+                            this.db = new this.SQL.Database();
+                        }
+                    } else {
+                        this.db = new this.SQL.Database();
                     }
+
+                    this.db.run(`
+                        CREATE TABLE IF NOT EXISTS presets (
+                            id TEXT PRIMARY KEY,
+                            name TEXT NOT NULL,
+                            clinic_id TEXT NOT NULL,
+                            data TEXT NOT NULL,
+                            created_at INTEGER NOT NULL,
+                            updated_at INTEGER NOT NULL
+                        );
+                        CREATE TABLE IF NOT EXISTS clinic_settings (
+                            clinic_id TEXT PRIMARY KEY,
+                            custom_logo_b64 TEXT,
+                            default_watermark TEXT,
+                            default_title TEXT,
+                            lang TEXT,
+                            updated_at INTEGER NOT NULL
+                        );
+                    `);
+
+                    this.migrateFromLocalStorage();
+                    this.loadClinicSettings();
+                    await this.persistToIDB();
+
+                    this.isReady = true;
+                    this.updateUIStatus(true);
+                } catch (err) {
+                    console.error("SQLite init error:", err);
+                    this.updateUIStatus(false);
                 }
             }
-        };
 
-        function getCustomPresets() {
+            updateUIStatus(isOnline) {
+                const statusBadge = document.getElementById("sqliteStatusBadge");
+                const modalLiveBadge = document.getElementById("sqliteModalLiveBadge");
+                const statusText = document.getElementById("sqliteStatusText");
+
+                if (statusBadge) {
+                    statusBadge.textContent = isOnline ? "🗄️ SQLite: presets.db" : "🗄️ Storage: Local Storage";
+                }
+                if (modalLiveBadge) {
+                    modalLiveBadge.textContent = isOnline ? "🟢 Connected & Synced" : "🟡 Local Storage Mirror";
+                    modalLiveBadge.style.color = isOnline ? "#059669" : "#b45309";
+                }
+                if (statusText) {
+                    statusText.textContent = isOnline
+                        ? "ฐานข้อมูล: presets.db (SQLite 3 WebAssembly • ใช้งานได้จริงทั้งออฟไลน์และออนไลน์)"
+                        : "ฐานข้อมูล: Local Storage (Fallback Mode)";
+                }
+                this.updateRecordsCount();
+            }
+
+            updateRecordsCount() {
+                const statsDetail = document.getElementById("sqliteStatsDetail");
+                if (!statsDetail) return;
+
+                if (this.isReady && this.db) {
+                    try {
+                        const rPresets = this.db.exec("SELECT COUNT(*) FROM presets");
+                        const countPresets = (rPresets[0] && rPresets[0].values[0][0]) || 0;
+                        const rClinics = this.db.exec("SELECT COUNT(*) FROM clinic_settings");
+                        const countClinics = (rClinics[0] && rClinics[0].values[0][0]) || 0;
+                        const bytes = this.db.export();
+                        const kbSize = (bytes.length / 1024).toFixed(1);
+                        statsDetail.textContent = `ตาราง presets: ${countPresets} แถว • ตาราง clinic_settings: ${countClinics} แถว • ขนาด: ${kbSize} KB`;
+                    } catch (e) {
+                        statsDetail.textContent = "เชื่อมต่อฐานข้อมูล SQLite เรียบร้อย";
+                    }
+                } else {
+                    const custom = getLocalPresets();
+                    statsDetail.textContent = `พรีเซ็ตในระบบ: ${Object.keys(custom).length} รายการ (Local Storage Mode)`;
+                }
+            }
+
+            openIDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(this.idbName, 1);
+                    req.onupgradeneeded = e => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.idbStore)) {
+                            db.createObjectStore(this.idbStore);
+                        }
+                    };
+                    req.onsuccess = e => resolve(e.target.result);
+                    req.onerror = e => reject(e.target.error);
+                });
+            }
+
+            async readFromIDB() {
+                try {
+                    const idb = await this.openIDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = idb.transaction(this.idbStore, "readonly");
+                        const store = tx.objectStore(this.idbStore);
+                        const req = store.get(this.idbKey);
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            async persistToIDB() {
+                if (!this.db) return;
+                try {
+                    const binary = this.db.export();
+                    const idb = await this.openIDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = idb.transaction(this.idbStore, "readwrite");
+                        const store = tx.objectStore(this.idbStore);
+                        const req = store.put(binary, this.idbKey);
+                        req.onsuccess = () => resolve(true);
+                        req.onerror = () => reject(req.error);
+                    });
+                } catch(e) {
+                    console.error("IDB persist error:", e);
+                }
+            }
+
+            migrateFromLocalStorage() {
+                try {
+                    const raw = localStorage.getItem(PRESETS_STORAGE_KEY);
+                    if (!raw) return;
+                    const presetsObj = JSON.parse(raw);
+                    if (!presetsObj || typeof presetsObj !== "object") return;
+
+                    const stmt = this.db.prepare(`
+                        INSERT OR IGNORE INTO presets (id, name, clinic_id, data, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    `);
+                    for (const [id, item] of Object.entries(presetsObj)) {
+                        if (item && item.name && item.data) {
+                            stmt.run([
+                                id,
+                                item.name,
+                                item.clinic_id || "depry",
+                                JSON.stringify(item.data),
+                                item.createdAt || Date.now(),
+                                item.updatedAt || Date.now()
+                            ]);
+                        }
+                    }
+                    stmt.free();
+                } catch (e) {
+                    console.warn("Migration notice:", e);
+                }
+            }
+
+            loadClinicSettings() {
+                if (!this.db) return;
+                try {
+                    const res = this.db.exec("SELECT clinic_id, custom_logo_b64 FROM clinic_settings");
+                    if (res.length > 0 && res[0].values) {
+                        res[0].values.forEach(row => {
+                            const [clinicId, logoB64] = row;
+                            if (clinicId && logoB64) {
+                                customLogoData[clinicId] = logoB64;
+                            }
+                        });
+                    }
+                } catch(e) {}
+            }
+
+            saveClinicSetting(clinicId, logoB64) {
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare(`
+                            INSERT OR REPLACE INTO clinic_settings (clinic_id, custom_logo_b64, default_watermark, default_title, lang, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `);
+                        stmt.run([clinicId, logoB64 || null, null, null, null, Date.now()]);
+                        stmt.free();
+                        this.persistToIDB();
+                        this.updateRecordsCount();
+                    } catch(e) {
+                        console.error("SQLite clinic setting error:", e);
+                    }
+                }
+                if (logoB64) {
+                    localStorage.setItem(`beforeafter_custom_logo_${clinicId}`, logoB64);
+                } else {
+                    localStorage.removeItem(`beforeafter_custom_logo_${clinicId}`);
+                }
+            }
+
+            getPresets(clinicId = "all") {
+                if (this.isReady && this.db) {
+                    try {
+                        let query = "SELECT id, name, clinic_id, data, created_at, updated_at FROM presets";
+                        let params = [];
+                        if (clinicId !== "all") {
+                            query += " WHERE clinic_id = ? OR clinic_id = 'all'";
+                            params = [clinicId];
+                        }
+                        query += " ORDER BY updated_at DESC";
+
+                        const stmt = this.db.prepare(query);
+                        if (params.length > 0) stmt.bind(params);
+
+                        const results = {};
+                        while (stmt.step()) {
+                            const row = stmt.getAsObject();
+                            try {
+                                results[row.id] = {
+                                    name: row.name,
+                                    clinic_id: row.clinic_id,
+                                    data: JSON.parse(row.data),
+                                    createdAt: row.created_at,
+                                    updatedAt: row.updated_at
+                                };
+                            } catch(e) {}
+                        }
+                        stmt.free();
+                        return results;
+                    } catch (e) {
+                        console.error("SQLite SELECT error:", e);
+                    }
+                }
+                return getLocalPresets();
+            }
+
+            getAllPresets() {
+                return this.getPresets("all");
+            }
+
+            savePreset(id, name, clinicId, data) {
+                const now = Date.now();
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare(`
+                            INSERT OR REPLACE INTO presets (id, name, clinic_id, data, created_at, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `);
+                        stmt.run([id, name, clinicId, JSON.stringify(data), now, now]);
+                        stmt.free();
+                        this.persistToIDB();
+                        this.updateRecordsCount();
+                    } catch (e) {
+                        console.error("SQLite INSERT error:", e);
+                    }
+                }
+                const local = getLocalPresets();
+                local[id] = { name, clinic_id: clinicId, data, createdAt: now, updatedAt: now };
+                saveLocalPresets(local);
+            }
+
+            deletePreset(id) {
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare("DELETE FROM presets WHERE id = ?");
+                        stmt.run([id]);
+                        stmt.free();
+                        this.persistToIDB();
+                        this.updateRecordsCount();
+                    } catch (e) {
+                        console.error("SQLite DELETE error:", e);
+                    }
+                }
+                const local = getLocalPresets();
+                delete local[id];
+                saveLocalPresets(local);
+            }
+
+            exportSqliteBinary() {
+                if (this.isReady && this.db) {
+                    return this.db.export();
+                }
+                return null;
+            }
+
+            async importSqliteBinary(arrayBuffer) {
+                if (!this.SQL) throw new Error("SQLite engine not initialized");
+                const newDb = new this.SQL.Database(new Uint8Array(arrayBuffer));
+                const res = newDb.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='presets'");
+                if (!res || res.length === 0) {
+                    throw new Error("ไฟล์ที่เลือกไม่ใช่ฐานข้อมูล presets.sqlite ที่ถูกต้อง");
+                }
+                this.db = newDb;
+                this.isReady = true;
+                this.loadClinicSettings();
+                await this.persistToIDB();
+                this.updateUIStatus(true);
+                const all = this.getAllPresets();
+                saveLocalPresets(all);
+                return Object.keys(all).length;
+            }
+
+            exportSqlDump() {
+                if (!this.isReady || !this.db) return "-- SQLite not available\n";
+                let sql = `-- Presets SQLite 3 Database Dump\n-- Exported: ${new Date().toISOString()}\n\n`;
+                sql += `CREATE TABLE IF NOT EXISTS presets (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    clinic_id TEXT NOT NULL,\n    data TEXT NOT NULL,\n    created_at INTEGER NOT NULL,\n    updated_at INTEGER NOT NULL\n);\n\n`;
+                sql += `CREATE TABLE IF NOT EXISTS clinic_settings (\n    clinic_id TEXT PRIMARY KEY,\n    custom_logo_b64 TEXT,\n    default_watermark TEXT,\n    default_title TEXT,\n    lang TEXT,\n    updated_at INTEGER NOT NULL\n);\n\n`;
+
+                const res = this.db.exec("SELECT id, name, clinic_id, data, created_at, updated_at FROM presets");
+                if (res.length > 0 && res[0].values) {
+                    res[0].values.forEach(row => {
+                        const [id, name, clinic_id, data, cAt, uAt] = row;
+                        const esc = str => String(str).replace(/'/g, "''");
+                        sql += `INSERT OR REPLACE INTO presets (id, name, clinic_id, data, created_at, updated_at) VALUES ('${esc(id)}', '${esc(name)}', '${esc(clinic_id)}', '${esc(data)}', ${cAt}, ${uAt});\n`;
+                    });
+                }
+                return sql;
+            }
+        }
+
+        const sqliteManager = new SQLitePresetManager();
+
+        function getLocalPresets() {
             try {
                 const raw = localStorage.getItem(PRESETS_STORAGE_KEY);
                 if (raw) return JSON.parse(raw);
-            } catch(e) {
-                console.error("Error reading presets from localStorage:", e);
-            }
+            } catch(e) {}
             return {};
         }
 
-        function saveCustomPresets(presetsObj) {
+        function saveLocalPresets(presetsObj) {
             try {
                 localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presetsObj));
-            } catch(e) {
-                console.error("Error saving presets to localStorage:", e);
+            } catch(e) {}
+        }
+
+        function getCustomPresets(clinicId) {
+            const target = clinicId || activeClinicId || "all";
+            if (sqliteManager && sqliteManager.isReady) {
+                return sqliteManager.getPresets(target);
+            }
+            const all = getLocalPresets();
+            if (target === "all") return all;
+            const filtered = {};
+            for (const [id, item] of Object.entries(all)) {
+                if (!item.clinic_id || item.clinic_id === target || item.clinic_id === "all") {
+                    filtered[id] = item;
+                }
+            }
+            return filtered;
+        }
+
+        function saveCustomPresets(presetsObj) {
+            saveLocalPresets(presetsObj);
+            if (sqliteManager && sqliteManager.isReady) {
+                for (const [id, item] of Object.entries(presetsObj)) {
+                    if (item && item.name && item.data) {
+                        sqliteManager.savePreset(id, item.name, item.clinic_id || activeClinicId, item.data);
+                    }
+                }
             }
         }
 
         function refreshPresetDropdown(selectedId) {
             presetSelect.innerHTML = "";
 
-            // 1. Built-in optgroup
+            const clinic = CLINICS[activeClinicId] || CLINICS.depry;
+
+            // 1. Built-in optgroup for active clinic
             const grpBuiltIn = document.createElement("optgroup");
-            grpBuiltIn.label = "─── พรีเซ็ตมาตรฐานคลินิก ───";
-            for (const [key, item] of Object.entries(BUILT_IN_PRESETS)) {
+            grpBuiltIn.label = `─── พรีเซ็ตมาตรฐาน (${clinic.name}) ───`;
+            for (const [key, item] of Object.entries(clinic.builtInPresets || {})) {
                 const opt = document.createElement("option");
                 opt.value = key;
                 opt.textContent = item.name;
@@ -3311,12 +3893,12 @@
             }
             presetSelect.appendChild(grpBuiltIn);
 
-            // 2. Custom optgroup
-            const customPresets = getCustomPresets();
+            // 2. Custom optgroup from SQLite
+            const customPresets = getCustomPresets(activeClinicId);
             const keys = Object.keys(customPresets);
             if (keys.length > 0) {
                 const grpCustom = document.createElement("optgroup");
-                grpCustom.label = "─── พรีเซ็ตที่คุณบันทึกไว้ ───";
+                grpCustom.label = "─── พรีเซ็ตที่คุณบันทึกไว้ (SQLite) ───";
                 for (const [key, item] of Object.entries(customPresets)) {
                     const opt = document.createElement("option");
                     opt.value = key;
@@ -3326,13 +3908,17 @@
                 presetSelect.appendChild(grpCustom);
             }
 
-            if (selectedId && (BUILT_IN_PRESETS[selectedId] || customPresets[selectedId])) {
+            if (selectedId && ((clinic.builtInPresets && clinic.builtInPresets[selectedId]) || customPresets[selectedId])) {
                 presetSelect.value = selectedId;
+            } else if (clinic.builtInPresets) {
+                const firstKey = Object.keys(clinic.builtInPresets)[0];
+                if (firstKey) presetSelect.value = firstKey;
             }
         }
 
         function getCurrentAppStateAsPreset() {
             return {
+                clinic_id: activeClinicId,
                 ratio: currentRatio,
                 layout: layoutSelect.value,
                 fit: fitSelect.value,
@@ -3382,6 +3968,11 @@
         function applyPresetData(p) {
             if (!p) return;
 
+            // Clinic switch if preset has specific clinic
+            if (p.clinic_id && p.clinic_id !== activeClinicId && CLINICS[p.clinic_id]) {
+                switchClinic(p.clinic_id, false);
+            }
+
             // Ratio
             if (p.ratio) {
                 currentRatio = p.ratio;
@@ -3410,9 +4001,7 @@
             }
 
             // Background Color
-            if (p.bgColor) {
-                bgColor.value = p.bgColor;
-            }
+            if (p.bgColor) bgColor.value = p.bgColor;
 
             // Format & Quality
             if (p.format) {
@@ -3503,11 +4092,13 @@
 
         function loadSelectedPreset() {
             const val = presetSelect.value;
-            if (BUILT_IN_PRESETS[val]) {
-                applyPresetData(BUILT_IN_PRESETS[val].data);
-                showToast(`โหลด "${BUILT_IN_PRESETS[val].name}" เรียบร้อย`);
+            const clinic = CLINICS[activeClinicId] || CLINICS.depry;
+
+            if (clinic.builtInPresets && clinic.builtInPresets[val]) {
+                applyPresetData(clinic.builtInPresets[val].data);
+                showToast(`โหลด "${clinic.builtInPresets[val].name}" เรียบร้อย`);
             } else {
-                const custom = getCustomPresets();
+                const custom = getCustomPresets(activeClinicId);
                 if (custom[val]) {
                     applyPresetData(custom[val].data);
                     showToast(`โหลด "${custom[val].name}" เรียบร้อย`);
@@ -3540,34 +4131,43 @@
                 return;
             }
             const id = "preset_" + Date.now();
-            const presets = getCustomPresets();
-            presets[id] = {
-                name: name,
-                data: getCurrentAppStateAsPreset(),
-                createdAt: Date.now()
-            };
-            saveCustomPresets(presets);
+            const data = getCurrentAppStateAsPreset();
+            if (sqliteManager) {
+                sqliteManager.savePreset(id, name, activeClinicId, data);
+            } else {
+                const presets = getLocalPresets();
+                presets[id] = { name, clinic_id: activeClinicId, data, createdAt: Date.now() };
+                saveLocalPresets(presets);
+            }
             refreshPresetDropdown(id);
             closeSaveModal();
-            showToast(`บันทึกพรีเซ็ต "${name}" เรียบร้อยแล้ว!`);
+            showToast(`บันทึกพรีเซ็ต "${name}" ลง SQLite เรียบร้อยแล้ว!`);
         });
 
         // Update / Overwrite Preset
         btnUpdatePreset.addEventListener("click", () => {
             const val = presetSelect.value;
-            if (BUILT_IN_PRESETS[val]) {
-                newPresetNameInput.value = BUILT_IN_PRESETS[val].name.replace(/^[^\wก-๙]+/, '').trim() + " (ปรับแต่ง)";
+            const clinic = CLINICS[activeClinicId] || CLINICS.depry;
+
+            if (clinic.builtInPresets && clinic.builtInPresets[val]) {
+                newPresetNameInput.value = clinic.builtInPresets[val].name.replace(/^[^\wก-๙]+/, '').trim() + " (ปรับแต่ง)";
                 savePresetModal.style.display = "flex";
                 setTimeout(() => newPresetNameInput.focus(), 50);
                 return;
             }
-            const presets = getCustomPresets();
-            if (presets[val]) {
-                if (confirm(`คุณต้องการบันทึกการตั้งค่าปัจจุบันทับ "${presets[val].name}" ใช่หรือไม่?`)) {
-                    presets[val].data = getCurrentAppStateAsPreset();
-                    presets[val].updatedAt = Date.now();
-                    saveCustomPresets(presets);
-                    showToast(`บันทึกทับพรีเซ็ต "${presets[val].name}" สำเร็จ!`);
+
+            const customPresets = getCustomPresets(activeClinicId);
+            if (customPresets[val]) {
+                if (confirm(`คุณต้องการบันทึกการตั้งค่าปัจจุบันทับ "${customPresets[val].name}" ใน SQLite ใช่หรือไม่?`)) {
+                    const data = getCurrentAppStateAsPreset();
+                    if (sqliteManager) {
+                        sqliteManager.savePreset(val, customPresets[val].name, activeClinicId, data);
+                    } else {
+                        customPresets[val].data = data;
+                        customPresets[val].updatedAt = Date.now();
+                        saveLocalPresets(customPresets);
+                    }
+                    showToast(`บันทึกทับพรีเซ็ต "${customPresets[val].name}" สำเร็จ!`);
                 }
             } else {
                 showToast("กรุณาเลือก Preset ที่ต้องการบันทึกทับ", "error");
@@ -3577,23 +4177,30 @@
         // Delete Preset
         btnDeletePreset.addEventListener("click", () => {
             const val = presetSelect.value;
-            if (BUILT_IN_PRESETS[val]) {
+            const clinic = CLINICS[activeClinicId] || CLINICS.depry;
+
+            if (clinic.builtInPresets && clinic.builtInPresets[val]) {
                 showToast("ไม่สามารถลบพรีเซ็ตมาตรฐานของระบบได้", "error");
                 return;
             }
-            const presets = getCustomPresets();
-            if (presets[val]) {
-                if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบพรีเซ็ต "${presets[val].name}"?`)) {
-                    const deletedName = presets[val].name;
-                    delete presets[val];
-                    saveCustomPresets(presets);
-                    refreshPresetDropdown("__default__");
+
+            const customPresets = getCustomPresets(activeClinicId);
+            if (customPresets[val]) {
+                if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบพรีเซ็ต "${customPresets[val].name}"?`)) {
+                    const deletedName = customPresets[val].name;
+                    if (sqliteManager) {
+                        sqliteManager.deletePreset(val);
+                    } else {
+                        delete customPresets[val];
+                        saveLocalPresets(customPresets);
+                    }
+                    refreshPresetDropdown();
                     showToast(`ลบพรีเซ็ต "${deletedName}" เรียบร้อยแล้ว`);
                 }
             }
         });
 
-        // Export / Import Modal Interactions
+        // Export / Import JSON Modal Interactions
         const closeIOModal = () => { ioPresetModal.style.display = "none"; };
         closeIOModalBtn.addEventListener("click", closeIOModal);
         ioPresetModal.addEventListener("click", e => {
@@ -3603,11 +4210,12 @@
         btnExportPresets.addEventListener("click", () => {
             ioModalTitle.textContent = "📤 ส่งออกพรีเซ็ต (Export Presets เพื่อย้ายข้อมูล)";
             const exportPayload = {
-                generator: "de Pry Before/After Image Combiner",
-                version: 1,
+                generator: "Before/After Image Combiner",
+                version: 2,
                 exportedAt: new Date().toISOString(),
+                currentClinic: activeClinicId,
                 currentConfig: getCurrentAppStateAsPreset(),
-                customPresets: getCustomPresets()
+                customPresets: sqliteManager ? sqliteManager.getAllPresets() : getLocalPresets()
             };
             ioJsonTextarea.value = JSON.stringify(exportPayload, null, 2);
             ioPresetModal.style.display = "flex";
@@ -3636,7 +4244,7 @@
 
         btnDownloadJsonFile.addEventListener("click", () => {
             const jsonStr = ioJsonTextarea.value.trim() || JSON.stringify({
-                customPresets: getCustomPresets(),
+                customPresets: sqliteManager ? sqliteManager.getAllPresets() : getLocalPresets(),
                 currentConfig: getCurrentAppStateAsPreset()
             }, null, 2);
 
@@ -3644,7 +4252,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `depry-presets-${Date.now()}.json`;
+            a.download = `presets-${activeClinicId}-${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast("ดาวน์โหลดไฟล์ JSON เรียบร้อยแล้ว");
@@ -3675,18 +4283,17 @@
             try {
                 const parsed = JSON.parse(raw);
                 let importedCount = 0;
-                const presets = getCustomPresets();
 
-                // Check if it's our standard export bundle
                 if (parsed.customPresets && typeof parsed.customPresets === "object") {
                     for (const [id, item] of Object.entries(parsed.customPresets)) {
                         if (item && item.name && item.data) {
-                            const newId = presets[id] ? "preset_" + Date.now() + "_" + Math.floor(Math.random()*1000) : id;
-                            presets[newId] = item;
+                            const newId = "preset_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+                            if (sqliteManager) {
+                                sqliteManager.savePreset(newId, item.name, item.clinic_id || activeClinicId, item.data);
+                            }
                             importedCount++;
                         }
                     }
-                    saveCustomPresets(presets);
                     refreshPresetDropdown();
                     if (parsed.currentConfig) {
                         applyPresetData(parsed.currentConfig);
@@ -3696,11 +4303,11 @@
                     return;
                 }
 
-                // Check if it's a single preset object
                 if (parsed.name && parsed.data) {
                     const id = "preset_" + Date.now();
-                    presets[id] = parsed;
-                    saveCustomPresets(presets);
+                    if (sqliteManager) {
+                        sqliteManager.savePreset(id, parsed.name, parsed.clinic_id || activeClinicId, parsed.data);
+                    }
                     refreshPresetDropdown(id);
                     applyPresetData(parsed.data);
                     closeIOModal();
@@ -3708,15 +4315,12 @@
                     return;
                 }
 
-                // Check if it's directly a raw settings config
                 if (parsed.ratio || parsed.censor || parsed.showTitle !== undefined) {
                     const id = "preset_" + Date.now();
-                    presets[id] = {
-                        name: "พรีเซ็ตนำเข้า (" + new Date().toLocaleDateString("th-TH") + ")",
-                        data: parsed,
-                        createdAt: Date.now()
-                    };
-                    saveCustomPresets(presets);
+                    const name = "พรีเซ็ตนำเข้า (" + new Date().toLocaleDateString("th-TH") + ")";
+                    if (sqliteManager) {
+                        sqliteManager.savePreset(id, name, activeClinicId, parsed);
+                    }
                     refreshPresetDropdown(id);
                     applyPresetData(parsed);
                     closeIOModal();
@@ -3731,8 +4335,458 @@
             }
         });
 
-        // Initialize Preset Dropdown on startup
-        refreshPresetDropdown("__default__");
+        // ==============================================================
+        // --- SQLITE DATABASE MANAGER MODAL & ACTIONS ---
+        // ==============================================================
+        const btnOpenSqliteModal = document.getElementById("btnOpenSqliteModal");
+        const sqliteManagerModal = document.getElementById("sqliteManagerModal");
+        const closeSqliteModalBtn = document.getElementById("closeSqliteModalBtn");
+        const btnCloseSqliteModalBottom = document.getElementById("btnCloseSqliteModalBottom");
+        const btnDownloadSqliteDb = document.getElementById("btnDownloadSqliteDb");
+        const btnSelectSqliteFile = document.getElementById("btnSelectSqliteFile");
+        const importSqliteFileInput = document.getElementById("importSqliteFileInput");
+        const btnExportSqlDump = document.getElementById("btnExportSqlDump");
+
+        function renderSqliteRecordsTable() {
+            const tbody = document.getElementById("sqliteRecordsBody");
+            if (!tbody) return;
+
+            const allPresets = sqliteManager ? sqliteManager.getAllPresets() : getLocalPresets();
+            const entries = Object.entries(allPresets);
+
+            if (entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 18px; color: #94a3b8;">ยังไม่มีพรีเซ็ตที่บันทึกใน SQLite (กด "💾 บันทึกใหม่" เพื่อเพิ่ม)</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            entries.forEach(([id, item]) => {
+                const tr = document.createElement("tr");
+                const clinicTag = item.clinic_id === "dentalhaus" ? "🦷 Dental Haus" : "🌸 de Pry";
+                const dateStr = item.updatedAt ? new Date(item.updatedAt).toLocaleDateString("th-TH") : "-";
+
+                tr.innerHTML = `
+                    <td style="font-family: monospace; font-size: 11px; color: #64748b;">${id}</td>
+                    <td style="font-weight: 600; color: #1e293b;">${item.name}</td>
+                    <td><span class="sqlite-status-badge" style="font-size: 10px;">${clinicTag}</span></td>
+                    <td style="font-size: 11px; color: #64748b;">${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        if (btnOpenSqliteModal) {
+            btnOpenSqliteModal.addEventListener("click", () => {
+                renderSqliteRecordsTable();
+                if (sqliteManager) sqliteManager.updateUIStatus(sqliteManager.isReady);
+                sqliteManagerModal.style.display = "flex";
+            });
+        }
+
+        const sqliteStatusBadge = document.getElementById("sqliteStatusBadge");
+        if (sqliteStatusBadge && btnOpenSqliteModal) {
+            sqliteStatusBadge.addEventListener("click", () => {
+                btnOpenSqliteModal.click();
+            });
+        }
+
+        const closeSqliteModal = () => {
+            if (sqliteManagerModal) sqliteManagerModal.style.display = "none";
+        };
+        if (closeSqliteModalBtn) closeSqliteModalBtn.addEventListener("click", closeSqliteModal);
+        if (btnCloseSqliteModalBottom) btnCloseSqliteModalBottom.addEventListener("click", closeSqliteModal);
+        if (sqliteManagerModal) {
+            sqliteManagerModal.addEventListener("click", e => {
+                if (e.target === sqliteManagerModal) closeSqliteModal();
+            });
+        }
+
+        if (btnDownloadSqliteDb) {
+            btnDownloadSqliteDb.addEventListener("click", () => {
+                if (!sqliteManager || !sqliteManager.isReady) {
+                    showToast("ระบบ SQLite กำลังเริ่มต้น กรุณารอสักครู่", "error");
+                    return;
+                }
+                const binary = sqliteManager.exportSqliteBinary();
+                if (!binary) {
+                    showToast("ไม่สามารถส่งออกฐานข้อมูลได้", "error");
+                    return;
+                }
+                const blob = new Blob([binary], { type: "application/x-sqlite3" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `presets-${Date.now()}.sqlite`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("ดาวน์โหลดไฟล์ฐานข้อมูล presets.sqlite เรียบร้อยแล้ว!");
+            });
+        }
+
+        if (btnSelectSqliteFile && importSqliteFileInput) {
+            btnSelectSqliteFile.addEventListener("click", () => {
+                importSqliteFileInput.click();
+            });
+
+            importSqliteFileInput.addEventListener("change", async e => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                try {
+                    const reader = new FileReader();
+                    reader.onload = async evt => {
+                        try {
+                            const buffer = evt.target.result;
+                            const count = await sqliteManager.importSqliteBinary(buffer);
+                            renderSqliteRecordsTable();
+                            refreshPresetDropdown();
+                            showToast(`นำเข้าฐานข้อมูล ${file.name} สำเร็จ! พบ ${count} พรีเซ็ต`);
+                        } catch (err) {
+                            alert("เกิดข้อผิดพลาดในการนำเข้าไฟล์ SQLite: " + err.message);
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } catch(err) {
+                    alert("ไม่สามารถอ่านไฟล์ได้: " + err.message);
+                }
+                importSqliteFileInput.value = "";
+            });
+        }
+
+        if (btnExportSqlDump) {
+            btnExportSqlDump.addEventListener("click", () => {
+                if (!sqliteManager) return;
+                const sqlDump = sqliteManager.exportSqlDump();
+                const blob = new Blob([sqlDump], { type: "text/plain;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `presets-dump-${Date.now()}.sql`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("ดาวน์โหลดสคริปต์ SQL Dump เรียบร้อยแล้ว!");
+            });
+        }
+
+        // ==============================================================
+        // --- CLINIC SWITCHING & BRANDING SYSTEM ---
+        // ==============================================================
+        function updateClinicLogoSources(clinicId) {
+            const clinic = CLINICS[clinicId];
+            if (!clinic) return;
+
+            logoObjects.badge.src = clinic.logos.badge;
+            logoObjects.color1.src = clinic.logos[clinic.color1Key];
+            logoObjects.white.src = clinic.logos.white;
+
+            const pillLogoCustom = document.getElementById("pillLogoCustom");
+            const customLogoPreviewWrap = document.getElementById("customLogoPreviewWrap");
+            const customLogoPreviewImg = document.getElementById("customLogoPreviewImg");
+            const btnDeleteCustomLogo = document.getElementById("btnDeleteCustomLogo");
+
+            if (customLogoData[clinicId]) {
+                logoObjects.custom.src = customLogoData[clinicId];
+                if (pillLogoCustom) pillLogoCustom.style.display = "inline-flex";
+                if (customLogoPreviewWrap) customLogoPreviewWrap.style.display = "flex";
+                if (customLogoPreviewImg) customLogoPreviewImg.src = customLogoData[clinicId];
+                if (btnDeleteCustomLogo) btnDeleteCustomLogo.style.display = "inline-block";
+            } else {
+                if (pillLogoCustom) pillLogoCustom.style.display = "none";
+                if (customLogoPreviewWrap) customLogoPreviewWrap.style.display = "none";
+                if (btnDeleteCustomLogo) btnDeleteCustomLogo.style.display = "none";
+                if (currentLogoColor === "custom") {
+                    currentLogoColor = "badge";
+                    document.querySelectorAll("#logoPills .pill-btn").forEach(btn => {
+                        btn.classList.toggle("active", btn.dataset.color === currentLogoColor);
+                    });
+                }
+            }
+        }
+
+        function switchClinic(clinicId, shouldToast = true) {
+            if (!CLINICS[clinicId]) return;
+            activeClinicId = clinicId;
+            localStorage.setItem("beforeafter_active_clinic", activeClinicId);
+
+            document.querySelectorAll(".clinic-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.clinic === activeClinicId);
+            });
+
+            const clinic = CLINICS[activeClinicId];
+
+            const activeClinicBadge = document.getElementById("activeClinicBadge");
+            if (activeClinicBadge) {
+                activeClinicBadge.textContent = clinic.badgeHtml.replace(/<[^>]+>/g, '');
+                activeClinicBadge.style.background = activeClinicId === "dentalhaus" ? "rgba(13, 148, 136, 0.12)" : "rgba(232, 121, 249, 0.14)";
+                activeClinicBadge.style.color = activeClinicId === "dentalhaus" ? "#0d9488" : "#d946ef";
+            }
+
+            const secLogoTitle = document.getElementById("sectionLogoTitle");
+            if (secLogoTitle) {
+                secLogoTitle.textContent = `🏷️ ตราสัญลักษณ์คลินิก (${clinic.name} Logo):`;
+            }
+
+            const textBadge = document.getElementById("textLogoBadge");
+            const dotBadge = document.getElementById("dotLogoBadge");
+            if (textBadge) textBadge.textContent = clinic.badgeLabel;
+            if (dotBadge) {
+                dotBadge.style.borderColor = clinic.badgeBorder;
+                dotBadge.style.boxShadow = `0 0 6px ${clinic.badgeBorder}`;
+            }
+
+            const textCol1 = document.getElementById("textLogoColor1");
+            const dotCol1 = document.getElementById("dotLogoColor1");
+            if (textCol1) textCol1.textContent = clinic.color1Label;
+            if (dotCol1) {
+                dotCol1.style.background = clinic.color1Bg;
+                dotCol1.style.boxShadow = `0 0 6px ${clinic.color1Bg}`;
+            }
+
+            updateClinicLogoSources(activeClinicId);
+
+            const otherClinicId = activeClinicId === "depry" ? "dentalhaus" : "depry";
+            if (watermarkTextInput.value === CLINICS[otherClinicId].defaultWatermark || !watermarkTextInput.value.trim()) {
+                watermarkTextInput.value = clinic.defaultWatermark;
+            }
+
+            if (!titleInput.value.trim() || titleInput.value === CLINICS[otherClinicId].defaultTitle) {
+                titleInput.value = clinic.defaultTitle;
+            }
+
+            refreshPresetDropdown();
+            loadSelectedPreset();
+
+            renderBothSlots();
+            renderStageOverlays();
+
+            if (shouldToast) {
+                showToast(`สลับเป็นคลินิก ${clinic.name} เรียบร้อยแล้ว`);
+            }
+        }
+
+        document.querySelectorAll(".clinic-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                switchClinic(btn.dataset.clinic);
+            });
+        });
+
+        // ==============================================================
+        // --- CUSTOM LOGO UPLOAD & DELETE HANDLERS ---
+        // ==============================================================
+        const btnTriggerUploadLogo = document.getElementById("btnTriggerUploadLogo");
+        const customLogoFileInput = document.getElementById("customLogoFileInput");
+        const btnDeleteCustomLogo = document.getElementById("btnDeleteCustomLogo");
+        const pillLogoCustom = document.getElementById("pillLogoCustom");
+
+        if (btnTriggerUploadLogo && customLogoFileInput) {
+            btnTriggerUploadLogo.addEventListener("click", () => {
+                customLogoFileInput.click();
+            });
+
+            customLogoFileInput.addEventListener("change", e => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = evt => {
+                    const dataUrl = evt.target.result;
+                    customLogoData[activeClinicId] = dataUrl;
+                    if (sqliteManager) {
+                        sqliteManager.saveClinicSetting(activeClinicId, dataUrl);
+                    }
+                    updateClinicLogoSources(activeClinicId);
+                    currentLogoColor = "custom";
+                    document.querySelectorAll("#logoPills .pill-btn").forEach(btn => {
+                        btn.classList.toggle("active", btn.dataset.color === "custom");
+                    });
+                    logoSizeControl.value = 12;
+                    logoSizeVal.textContent = "12%";
+                    renderStageOverlays();
+                    showToast(`อัปโหลดโลโก้ ${file.name} สำเร็จและบันทึกลง SQLite แล้ว!`);
+                };
+                reader.readAsDataURL(file);
+                customLogoFileInput.value = "";
+            });
+        }
+
+        if (btnDeleteCustomLogo) {
+            btnDeleteCustomLogo.addEventListener("click", () => {
+                if (confirm("คุณต้องการลบโลโก้ที่อัปโหลดไว้สำหรับคลินิกนี้ใช่หรือไม่?")) {
+                    customLogoData[activeClinicId] = null;
+                    if (sqliteManager) {
+                        sqliteManager.saveClinicSetting(activeClinicId, null);
+                    }
+                    updateClinicLogoSources(activeClinicId);
+                    currentLogoColor = "badge";
+                    document.querySelectorAll("#logoPills .pill-btn").forEach(btn => {
+                        btn.classList.toggle("active", btn.dataset.color === "badge");
+                    });
+                    renderStageOverlays();
+                    showToast("ลบโลโก้เรียบร้อยแล้ว");
+                }
+            });
+        }
+
+        if (pillLogoCustom) {
+            pillLogoCustom.addEventListener("click", () => {
+                document.querySelectorAll("#logoPills .pill-btn").forEach(p => p.classList.remove("active"));
+                pillLogoCustom.classList.add("active");
+                currentLogoColor = "custom";
+                logoSizeControl.value = 12;
+                logoSizeVal.textContent = "12%";
+                renderStageOverlays();
+            });
+        }
+
+        // ==============================================================
+        // --- MULTILINGUAL TRANSLATION SYSTEM ---
+        // ==============================================================
+        const TRANSLATIONS = {
+            th: {
+                appName: "ระบบจัดรูปเปรียบเทียบเคสรีวิว ก่อนทำ - หลังทำ",
+                appSubtitle: "ความละเอียดสูงพิเศษ 2000px คมชัดระดับป้ายโฆษณา • รองรับ SQLite & สลับคลินิก",
+                btnSavePreset: "💾 บันทึกใหม่",
+                btnUpdatePreset: "🔄 บันทึกทับ",
+                btnDeletePreset: "🗑️ ลบ",
+                btnSqliteMgmt: "🗄️ ฐานข้อมูล SQLite"
+            },
+            en: {
+                appName: "Before / After Case Review Image Combiner",
+                appSubtitle: "Ultra High-Res 2000px Billboard Quality • SQLite Presets & Multi-Clinic",
+                btnSavePreset: "💾 Save New",
+                btnUpdatePreset: "🔄 Overwrite",
+                btnDeletePreset: "🗑️ Delete",
+                btnSqliteMgmt: "🗄️ SQLite Database"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang === "en" ? "en" : "th";
+            localStorage.setItem("beforeafter_lang", currentLang);
+
+            document.querySelectorAll(".lang-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.lang === currentLang);
+            });
+
+            const t = TRANSLATIONS[currentLang];
+            if (!t) return;
+
+            const appTitleEl = document.getElementById("appTitle");
+            const appSubEl = document.getElementById("appSubtitle");
+            if (appTitleEl) appTitleEl.textContent = t.appName;
+            if (appSubEl) appSubEl.textContent = t.appSubtitle;
+
+            if (btnSaveNewPreset) btnSaveNewPreset.textContent = t.btnSavePreset;
+            if (btnUpdatePreset) btnUpdatePreset.textContent = t.btnUpdatePreset;
+            if (btnDeletePreset) btnDeletePreset.textContent = t.btnDeletePreset;
+            if (btnOpenSqliteModal) btnOpenSqliteModal.textContent = t.btnSqliteMgmt;
+
+            showToast(currentLang === "en" ? "Switched to English 🇺🇸" : "เปลี่ยนเป็นภาษาไทย 🇹🇭");
+        }
+
+        document.querySelectorAll(".lang-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                setLanguage(btn.dataset.lang);
+            });
+        });
+
+        // ==============================================================
+        // --- SECTION 2 QUICK DATE & DISCLAIMER PRESETS ---
+        // ==============================================================
+        const btnTplBeforeAfter = document.getElementById("btnTplBeforeAfter");
+        const btnTplThBeforeAfter = document.getElementById("btnTplThBeforeAfter");
+        const btnTplDay1Day14 = document.getElementById("btnTplDay1Day14");
+        const btnTplMonth1 = document.getElementById("btnTplMonth1");
+        const btnTplToday = document.getElementById("btnTplToday");
+
+        if (btnTplBeforeAfter) {
+            btnTplBeforeAfter.addEventListener("click", () => {
+                dateLeftInput.value = "BEFORE";
+                dateRightInput.value = "AFTER";
+                renderStageOverlays();
+                showToast("ใส่ข้อความ BEFORE / AFTER เรียบร้อย");
+            });
+        }
+        if (btnTplThBeforeAfter) {
+            btnTplThBeforeAfter.addEventListener("click", () => {
+                dateLeftInput.value = "ก่อนทำ";
+                dateRightInput.value = "หลังทำ";
+                renderStageOverlays();
+                showToast("ใส่ข้อความ ก่อนทำ / หลังทำ เรียบร้อย");
+            });
+        }
+        if (btnTplDay1Day14) {
+            btnTplDay1Day14.addEventListener("click", () => {
+                dateLeftInput.value = "Day 1";
+                dateRightInput.value = "Day 14";
+                renderStageOverlays();
+                showToast("ใส่ข้อความ Day 1 / Day 14 เรียบร้อย");
+            });
+        }
+        if (btnTplMonth1) {
+            btnTplMonth1.addEventListener("click", () => {
+                dateLeftInput.value = "ก่อนทำ";
+                dateRightInput.value = "หลังทำ 1 เดือน";
+                renderStageOverlays();
+                showToast("ใส่ข้อความ ก่อนทำ / หลังทำ 1 เดือน เรียบร้อย");
+            });
+        }
+        if (btnTplToday) {
+            btnTplToday.addEventListener("click", () => {
+                const now = new Date();
+                dateLeftInput.value = formatDateBySetting(now, dateFormatSelect.value);
+                const afterDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+                dateRightInput.value = formatDateBySetting(afterDate, dateFormatSelect.value);
+                renderStageOverlays();
+                showToast("ใส่วันที่ปัจจุบัน + 14 วัน เรียบร้อย");
+            });
+        }
+
+        const btnDiscTh = document.getElementById("btnDiscTh");
+        const btnDiscEn = document.getElementById("btnDiscEn");
+        const btnDiscDental = document.getElementById("btnDiscDental");
+        const btnClearDisc = document.getElementById("btnClearDisc");
+
+        if (btnDiscTh) {
+            btnDiscTh.addEventListener("click", () => {
+                showDisclaimersCheckbox.checked = true;
+                discLeftInput.value = "*ผลลัพธ์ที่ได้อาจแตกต่างกันออกไปในแต่ละบุคคล";
+                discRightInput.value = "*ได้รับการอนุญาตแล้วจากผู้ใช้บริการจริง";
+                renderStageOverlays();
+                showToast("ใส่ข้อความกำกับภาษาไทยเรียบร้อย");
+            });
+        }
+        if (btnDiscEn) {
+            btnDiscEn.addEventListener("click", () => {
+                showDisclaimersCheckbox.checked = true;
+                discLeftInput.value = "*Individual results may vary from person to person.";
+                discRightInput.value = "*Published with patient's prior informed consent.";
+                renderStageOverlays();
+                showToast("Set English disclaimers");
+            });
+        }
+        if (btnDiscDental) {
+            btnDiscDental.addEventListener("click", () => {
+                showDisclaimersCheckbox.checked = true;
+                discLeftInput.value = "*ผลการรักษาขึ้นกับสภาพฟันและโครงสร้างของแต่ละบุคคล";
+                discRightInput.value = "*ได้รับการอนุญาตและยินยอมจากคนไข้จริง";
+                renderStageOverlays();
+                showToast("ใส่ข้อความกำกับคลินิกทันตกรรมเรียบร้อย");
+            });
+        }
+        if (btnClearDisc) {
+            btnClearDisc.addEventListener("click", () => {
+                discLeftInput.value = "";
+                discRightInput.value = "";
+                renderStageOverlays();
+                showToast("ล้างข้อความกำกับเรียบร้อย");
+            });
+        }
+
+        // Initialize SQLite & Preset Dropdown
+        sqliteManager.init().then(() => {
+            updateClinicLogoSources(activeClinicId);
+            refreshPresetDropdown();
+        });
 
         // --- GENERAL CONTROLS LISTENERS ---
         layoutSelect.addEventListener("change", e => {
@@ -4123,10 +5177,15 @@
                 ctx.restore();
             }
 
-            // 3. LOGO (Top-right de Pry Logo / Badge)
-            if (currentLogoColor !== "none" && logoObjects[currentLogoColor]) {
-                const logoImg = logoObjects[currentLogoColor];
-                if (logoImg.complete && logoImg.naturalWidth) {
+            // 3. LOGO (Top-right Clinic Logo / Badge / Custom)
+            if (currentLogoColor !== "none") {
+                let logoImg = null;
+                if (currentLogoColor === "badge") logoImg = logoObjects.badge;
+                else if (currentLogoColor === "color1" || currentLogoColor === "pink" || currentLogoColor === "teal") logoImg = logoObjects.color1;
+                else if (currentLogoColor === "white") logoImg = logoObjects.white;
+                else if (currentLogoColor === "custom") logoImg = logoObjects.custom;
+
+                if (logoImg && logoImg.complete && logoImg.naturalWidth) {
                     const isBadge = currentLogoColor === "badge";
                     const defaultPct = isBadge ? 12.5 : 9;
                     const pct = (parseInt(logoSizeControl.value, 10) || defaultPct) / 100;

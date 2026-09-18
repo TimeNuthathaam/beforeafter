@@ -47,17 +47,30 @@ A browser-based tool for comparing and combining before/after images. No server 
   - ค่าเริ่มต้นตามสเปกคลินิก: สีดำ `#000000`, ทั้ง 2 ฝั่ง, Y: `36.5%`, X: `49.5%`, ความกว้าง: `60%`, ความสูง: `7%`, ขอบโค้งมน: `14px`
   - ปุ่มลัดขยับตำแหน่ง ⬆️ ⬇️ ⬅️ ➡️ ➕ ➖ และปุ่มรีเซ็ตค่าเริ่มต้น de Pry
   - เลือกปิดตาได้ทั้ง 2 ฝั่ง หรือเฉพาะฝั่งซ้าย/ขวา และเลือกสีแถบได้ (ดำ, ขาว, กรมท่า, เทา)
-- ⭐ **ระบบจดจำพรีเซ็ตและย้ายข้อมูล (Preset Manager System)**:
-  - บันทึกการตั้งค่าทั้งหมด (สัดส่วน, การจัดวาง, ข้อความ, วันที่, disclaimers, ขนาดตัวหนังสือ, โลโก้, แถบปิดตาทั้งสองฝั่ง) เป็น Preset ใหม่พร้อมตั้งชื่อได้อิสระ
-  - บันทึกทับ (Update) และลบ (Delete) Preset เดิมที่เคยสร้างไว้
-  - มี Built-in Presets ให้พร้อมใช้: **✨ de Pry Standard**, **🕶️ de Pry Privacy (ปิดตากว้าง 60% ดำสนิท)**, **🌿 คลีน มินิมอล**
-  - **ส่งออก/ย้ายข้อมูล (Export Presets)**: คัดลอก JSON หรือดาวน์โหลดเป็นไฟล์ `.json` เพื่อส่งต่อหรือนำไปใช้บนคอมพิวเตอร์/เบราว์เซอร์เครื่องอื่นได้ทันที
-  - **นำเข้าข้อมูล (Import Presets)**: วางรหัส JSON หรืออัปโหลดไฟล์ `.json` เพื่อโหลดการตั้งค่าและพรีเซ็ตเข้ามาใช้งานได้อัตโนมัติ
-- 💾 Download high-resolution combined or diff images (มาตรฐาน 2000px คมชัดระดับโปรดักชัน)
+- 🗄️ **ฐานข้อมูล SQLite จริง (Real SQLite 3 Database via WebAssembly `sql.js`)**:
+  - บันทึกและดึงข้อมูลพรีเซ็ตผ่านเอนจิน SQLite 3 WebAssembly จริง (`presets.db`)
+  - จัดเก็บข้อมูลไบนารีลง IndexedDB ปลอดภัย ไม่สูญหาย ใช้งานได้ 100% ทั้งแบบออนไลน์และออฟไลน์
+  - หน้าต่างจัดการฐานข้อมูล (**SQLite Database Manager Modal**): ดูตารางข้อมูล SQL records สด, ดาวน์โหลดไฟล์ฐานข้อมูลไบนารี `.sqlite`, นำเข้าไฟล์ `.sqlite`, และ Export เป็นสคริปต์ `.sql`
+  - Vercel Serverless API (`/api/presets`) รองรับการเชื่อมต่อและจัดเก็บข้อมูลแบบ Serverless
+- 🏥 **ระบบรองรับหลายคลินิก (Multi-Clinic Branding System)**:
+  - **🌸 de Pry Clinic**: คลินิกความงามพร้อมโลโก้เวกเตอร์ (Badge, Pink, White) และพรีเซ็ตเฉพาะทาง
+  - **🦷 The Dental Haus**: คลินิกทันตกรรมเพื่อความงามพร้อมโลโก้เวกเตอร์ (Luxury Gold Badge, Dental Teal, White) และพรีเซ็ตเฉพาะทางทันตกรรม (Smile Design / วีเนียร์, จัดฟันใส Clear Aligner)
+  - **📤 ระบบอัปโหลดโลโก้จริง (Custom Logo Upload)**: อัปโหลดไฟล์โลโก้ทางการ (PNG โปร่งใส, SVG, WebP) และบันทึกลง SQLite `clinic_settings` ใช้งานได้ทันที
+- 🌐 **ระบบสลับภาษา (Bilingual Thai 🇹🇭 / English 🇺🇸)**:
+  - สลับภาษาการแสดงผลของเมนูและส่วนควบคุมได้ทันที
+  - เทมเพลตข้อความด่วน (BEFORE/AFTER, ก่อนทำ/หลังทำ, Day 1/Day 14, 1 เดือน) และข้อความกำกับกฎหมายทั้งภาษาไทย ภาษาอังกฤษ และทันตกรรม
+- 🕶️ **แถบปิดตาคนไข้เพื่อความเป็นส่วนตัว (Interactive Censor Bar)**:
+  - **คลิกลากปรับตำแหน่งและขนาดด้วยเมาส์บนหน้าภาพได้โดยตรง (Interactive Mouse Drag & Resize Handles)**
+  - **รองรับแยกปรับซ้าย-ขวาอิสระ (Independent Left & Right Controls)** สำหรับเคสที่ระดับสายตาเอียงหรือไม่เท่ากัน
+- 💧 **ลายน้ำอยู่เลเยอร์บนสุด (Topmost Watermark Layer)**:
+  - ลายน้ำทแยงมุม 45 องศา จะถูกวาดทับอยู่ชั้นบนสุดของทุกองค์ประกอบเพื่อป้องกันการคัดลอกภาพ
+- 📱 **Mobile UI & Responsive Design**:
+  - แถบนำทางหมวดหมู่บนมือถือ (Category Scroll Tabs) และพื้นที่ภาพด้านบนสุด
+  - ปุ่ม Action Sticky ด้านล่างสุด สะดวกสำหรับการใช้งานด้วยนิ้วโป้งบนสมาร์ทโฟน
+- 💾 Download high-resolution combined or diff images (มาตรฐาน 2000px Ultra HD คมชัดระดับป้ายโฆษณา)
 - 📋 One-click copy image to clipboard
 - ⛶ Fullscreen lightbox preview & result zoom
-- 📱 Mobile-friendly with touch drag support
-- 🚀 Runs 100% in browser, no server or installation required
+- 🚀 Runs 100% in browser on Vercel or local static files, no database server configuration required
 
 ## Usage
 
