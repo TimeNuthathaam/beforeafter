@@ -1376,6 +1376,107 @@
             color: var(--primary);
         }
 
+        /* SQLite Auto-Save Indicator */
+        .auto-save-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: var(--radius-pill);
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+            font-size: 11.5px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            transition: all 0.3s ease;
+        }
+        .auto-save-indicator.saving {
+            background: rgba(0, 113, 227, 0.12);
+            color: #0071e3;
+            border-color: rgba(0, 113, 227, 0.25);
+        }
+
+        /* SQLite Modal Segmented Tabs */
+        .sqlite-modal-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .sqlite-tab-btn {
+            padding: 6px 14px;
+            border-radius: var(--radius-pill);
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s var(--ease-apple);
+        }
+        .sqlite-tab-btn:hover {
+            color: var(--text);
+            background: #e2e8f0;
+        }
+        .sqlite-tab-btn.active {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+        .sqlite-tab-content {
+            display: none;
+        }
+        .sqlite-tab-content.active {
+            display: block;
+            animation: mobileSectionFade 0.2s ease;
+        }
+
+        /* SQLite Guide Cards */
+        .sqlite-guide-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+        .sqlite-guide-box h4 {
+            margin: 0 0 6px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sqlite-guide-box p {
+            margin: 0 0 6px;
+            font-size: 12.5px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        .sqlite-guide-box ul {
+            margin: 4px 0 0 16px;
+            padding: 0;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .sqlite-guide-box li {
+            margin-bottom: 4px;
+        }
+        .sqlite-guide-box code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #0f172a;
+        }
+
         /* SQLite Manager Modal Styles */
         .sqlite-table-container {
             max-height: 250px;
@@ -2189,6 +2290,11 @@
                 <button type="button" class="lang-btn active" data-lang="th" id="langThBtn">🇹🇭 ไทย</button>
                 <button type="button" class="lang-btn" data-lang="en" id="langEnBtn">🇺🇸 EN</button>
             </div>
+            <!-- Quick SQLite Database Button -->
+            <button type="button" class="apple-pwa-btn" id="btnHeaderSqlite" title="เปิดหน้าต่างจัดการฐานข้อมูล SQLite และคู่มือการใช้งาน">
+                <span class="apple-pwa-icon">🗄️</span>
+                <span class="apple-pwa-label" id="headerSqliteLabel">SQLite</span>
+            </button>
         </div>
     </header>
 
@@ -2349,7 +2455,10 @@
     <div class="preset-manager-card" id="presetManagerCard">
         <div class="preset-bar-left">
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
-                <span class="preset-title" id="presetTitleLabel">⭐ ระบบพรีเซ็ต (Presets):</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="preset-title" id="presetTitleLabel">⭐ ระบบพรีเซ็ต (Presets):</span>
+                    <span class="auto-save-indicator" id="sqliteAutoSaveBadge" title="ระบบ SQLite บันทึกข้อมูลล่าสุดในเครื่องอัตโนมัติ">⚡ Auto-Saved</span>
+                </div>
                 <span class="sqlite-status-badge" id="sqliteStatusBadge" title="สถานะฐานข้อมูล SQLite จริง (คลิกเพื่อจัดการ)" style="cursor: pointer;">🗄️ SQLite: presets.db</span>
             </div>
             <select id="presetSelect" class="preset-dropdown">
@@ -2362,6 +2471,7 @@
                 <button type="button" class="btn-preset-action btn-save" id="btnSaveNewPreset" title="บันทึกการตั้งค่าปัจจุบันทั้งหมดเป็น Preset ใหม่">💾 บันทึกเป็น Preset ใหม่</button>
                 <button type="button" class="btn-preset-action btn-update" id="btnUpdatePreset" title="บันทึกทับ Preset ที่เลือกอยู่">✏️ บันทึกทับ</button>
                 <button type="button" class="btn-preset-action btn-delete" id="btnDeletePreset" title="ลบ Preset ที่เลือก">🗑️ ลบ</button>
+                <button type="button" class="btn-preset-action btn-save" id="btnSaveClinicDefault" title="บันทึกค่าที่กรอกอยู่เป็นค่าเริ่มต้นของคลินิกนี้ (Auto Default)">⭐ บันทึกเป็นค่าเริ่มต้น</button>
             </div>
         </div>
         <div class="preset-bar-right">
@@ -2396,6 +2506,10 @@
         <button type="button" class="mobile-tab-btn" data-target="presetManagerCard">
             <span class="tab-icon">⭐</span>
             <span>พรีเซ็ต</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" id="mobileTabSqliteBtn" title="จัดการฐานข้อมูล SQLite">
+            <span class="tab-icon">🗄️</span>
+            <span>SQLite</span>
         </button>
         <button type="button" class="mobile-tab-btn" data-target="all">
             <span class="tab-icon">👁️</span>
@@ -2977,7 +3091,7 @@
 
     <!-- Modal: SQLite Database Manager -->
     <div id="sqliteManagerModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card" style="max-width: 680px;">
+        <div class="modal-card" style="max-width: 720px;">
             <div class="modal-header">
                 <span id="sqliteModalTitle">🗄️ ตัวจัดการฐานข้อมูล SQLite (presets.db)</span>
                 <button type="button" class="modal-close-btn" id="closeSqliteModalBtn">✕</button>
@@ -2986,31 +3100,97 @@
                 <span style="font-size: 24px;">🗃️</span>
                 <div style="flex: 1;">
                     <div style="font-size: 13.5px; font-weight: 700; color: #0f172a;" id="sqliteStatusText">ฐานข้อมูล: presets.db (SQLite 3 WASM Engine)</div>
-                    <div style="font-size: 11.5px; color: #64748b;" id="sqliteStatsDetail">ตาราง presets: กำลังเชื่อมต่อ... • ตาราง clinic_settings: พร้อมใช้งาน</div>
+                    <div style="font-size: 11.5px; color: #64748b;" id="sqliteStatsDetail">ตาราง presets: กำลังเชื่อมต่อ... • ตาราง clinic_settings: พร้อมใช้งาน • ตาราง app_state: Auto-Saved</div>
                 </div>
                 <span class="sqlite-status-badge" id="sqliteModalLiveBadge" style="background: rgba(16, 185, 129, 0.18); color: #059669; border: 1px solid rgba(16, 185, 129, 0.4);">🟢 Connected &amp; Synced</span>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 12.5px; font-weight: 600; color: #334155;" id="sqliteRecordsTitle">รายการข้อมูลในตาราง `presets` (SQL Records):</span>
-                <span style="font-size: 11px; color: #64748b;">(Query: SELECT * FROM presets)</span>
-            </div>
-            <div class="sqlite-table-container">
-                <table class="sqlite-table" id="sqliteRecordsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>ชื่อ Preset</th>
-                            <th>คลินิก</th>
-                            <th>แก้ไขล่าสุด</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sqliteRecordsBody">
-                        <tr><td colspan="4" style="text-align:center; padding: 14px; color: #94a3b8;">กำลังอ่านข้อมูลจาก SQLite...</td></tr>
-                    </tbody>
-                </table>
+            <!-- Segmented Control Tabs inside SQLite Modal -->
+            <div class="sqlite-modal-tabs">
+                <button type="button" class="sqlite-tab-btn active" data-tab="tabSqliteGuide" id="tabBtnSqliteGuide">📖 วิธีเข้าและใช้งาน SQLite</button>
+                <button type="button" class="sqlite-tab-btn" data-tab="tabSqliteState" id="tabBtnSqliteState">⚡ ข้อมูลล่าสุด (Auto-Save)</button>
+                <button type="button" class="sqlite-tab-btn" data-tab="tabSqlitePresets" id="tabBtnSqlitePresets">📋 ตาราง Presets (SQL Records)</button>
             </div>
 
+            <!-- Tab 1: User Guide (วิธีเข้าและใช้งาน SQLite) -->
+            <div class="sqlite-tab-content active" id="tabSqliteGuide">
+                <div class="sqlite-guide-box">
+                    <h4>🎯 1. การเก็บข้อมูลอัตโนมัติ (ไม่ต้องตั้งชื่อและตั้งค่าใหม่ๆ)</h4>
+                    <p>ระบบมีระบบ <strong>Zero-Config Auto-Save</strong> เชื่อมต่อกับ SQLite 3 ในเครื่องของคุณโดยตรง:</p>
+                    <ul>
+                        <li>ทุกครั้งที่คุณพิมพ์ชื่อเคส, กรอกลายน้ำ, เลือกคำเตือน, ปรับสัดส่วน 1:1 หรือ 4:5, และตั้งค่าเซ็นเซอร์ปิดตา ข้อมูลจะถูกบันทึกลงตาราง <code>app_state</code> ใน SQLite ทันที</li>
+                        <li><strong>เมื่อเปิดหน้าเว็บมาใหม่หรือรีเฟรช:</strong> ข้อมูลล่าสุดที่คุณเคยทำไว้จะถูกดึงกลับมาแสดงผลอัตโนมัติ 100% โดยไม่ต้องคอยพิมพ์ใหม่ และไม่ต้องเสียเวลาตั้งชื่อพรีเซ็ตใหม่</li>
+                        <li>หากต้องการบันทึกเป็นชุดค่าเริ่มต้นสำหรับคลินิก สามารถกดปุ่ม <code>⭐ บันทึกเป็นค่าเริ่มต้น</code> ได้ทันที</li>
+                    </ul>
+                </div>
+
+                <div class="sqlite-guide-box">
+                    <h4>🚪 2. วิธีเข้าสู่ฐานข้อมูล SQLite</h4>
+                    <p>คุณสามารถกดเปิดหน้าต่างจัดการฐานข้อมูล SQLite นี้ได้จากหลายจุด:</p>
+                    <ul>
+                        <li><strong>Desktop:</strong> ปุ่ม <code>🗄️ SQLite</code> ที่แถบเมนูหัวเว็บด้านบนขวา (ข้างปุ่มภาษา) หรือปุ่ม <code>🗄️ ฐานข้อมูล SQLite</code> ในแผงพรีเซ็ต</li>
+                        <li><strong>Mobile:</strong> แตะที่แท็บ <code>🗄️ SQLite</code> บนแถบเมนูนำทางเลื่อนได้ (Category Pill Tabs)</li>
+                    </ul>
+                </div>
+
+                <div class="sqlite-guide-box">
+                    <h4>💻 3. วิธีเปิดดูและนำไฟล์ SQLite ไปใช้งานบนคอมพิวเตอร์</h4>
+                    <p>ไฟล์ฐานข้อมูลเป็นมาตรฐาน <strong>SQLite 3 จริง 100%</strong> (.sqlite / .db):</p>
+                    <ul>
+                        <li>กดปุ่ม <code>💾 ดาวน์โหลด presets.sqlite</code> ด้านล่าง เพื่อเซฟไฟล์ฐานข้อมูลลงเครื่องคอมพิวเตอร์</li>
+                        <li>สามารถเปิดไฟล์ได้ด้วยโปรแกรมฟรี เช่น <strong>DB Browser for SQLite</strong> (<a href="https://sqlitebrowser.org" target="_blank" style="color: #0071e3; text-decoration: underline;">sqlitebrowser.org</a>), <strong>DBeaver</strong> หรือเปิดดูบนเว็บได้ทันทีที่ <a href="https://sqliteonline.com" target="_blank" style="color: #0071e3; text-decoration: underline;">sqliteonline.com</a></li>
+                        <li>คุณจะเห็นตาราง <code>presets</code> (พรีเซ็ตทั้งหมด), <code>clinic_settings</code> (โลโก้คลินิก), และ <code>app_state</code> (สถานะล่าสุด)</li>
+                    </ul>
+                </div>
+
+                <div class="sqlite-guide-box">
+                    <h4>🔄 4. วิธีย้ายข้อมูลข้ามเครื่อง (Backup & Restore)</h4>
+                    <p>ต้องการนำพรีเซ็ตและการตั้งค่าไปใช้บนคอมพิวเตอร์เครื่องอื่นหรือมือถือ:</p>
+                    <ul>
+                        <li>กดปุ่ม <code>💾 ดาวน์โหลด presets.sqlite</code> จากเครื่องเดิม แล้วส่งไฟล์ทาง LINE / Email / AirDrop</li>
+                        <li>เปิดเว็บนี้บนเครื่องใหม่ แล้วกดปุ่ม <code>📥 นำเข้าไฟล์ .sqlite</code> แล้วเลือกไฟล์ดังกล่าว</li>
+                        <li>ข้อมูลทั้งหมดจะถูกกู้คืนและซิงค์ทันทีโดยไม่ต้องตั้งค่าใหม่</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab 2: Auto-Save State Detail -->
+            <div class="sqlite-tab-content" id="tabSqliteState">
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px;">
+                    <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">⚡ ข้อมูลล่าสุดที่ระบบจำไว้ใน SQLite (Current Auto-Save State):</div>
+                    <div style="font-size: 12px; color: #475569; line-height: 1.6;" id="autoSaveStateSummary">กำลังอ่านสถานะล่าสุดจาก SQLite...</div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <button type="button" class="btn-preset-action btn-load" id="btnRestoreAutoSavedNow">📂 โหลดข้อมูลล่าสุดนี้เดี๋ยวนี้</button>
+                    <button type="button" class="btn-preset-action btn-save" id="btnSaveCurrentAsClinicDefInModal">⭐ ตั้งค่าปัจจุบันเป็นค่าเริ่มต้นคลินิก</button>
+                    <button type="button" class="btn-preset-action btn-delete" id="btnClearAutoSaveState">🗑️ ล้างข้อมูลจำล่าสุด (เริ่มใหม่)</button>
+                </div>
+            </div>
+
+            <!-- Tab 3: Presets Table Records -->
+            <div class="sqlite-tab-content" id="tabSqlitePresets">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #334155;" id="sqliteRecordsTitle">รายการข้อมูลในตาราง `presets` (SQL Records):</span>
+                    <span style="font-size: 11px; color: #64748b;">(Query: SELECT * FROM presets)</span>
+                </div>
+                <div class="sqlite-table-container">
+                    <table class="sqlite-table" id="sqliteRecordsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ชื่อ Preset</th>
+                                <th>คลินิก</th>
+                                <th>แก้ไขล่าสุด</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sqliteRecordsBody">
+                            <tr><td colspan="4" style="text-align:center; padding: 14px; color: #94a3b8;">กำลังอ่านข้อมูลจาก SQLite...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px;">
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn-preset-action btn-save" id="btnDownloadSqliteDb" title="ดาวน์โหลดไฟล์ฐานข้อมูล SQLite 3 (.sqlite / .db) จริง">
@@ -4308,6 +4488,11 @@
                             lang TEXT,
                             updated_at INTEGER NOT NULL
                         );
+                        CREATE TABLE IF NOT EXISTS app_state (
+                            key TEXT PRIMARY KEY,
+                            value TEXT NOT NULL,
+                            updated_at INTEGER NOT NULL
+                        );
                     `);
 
                     this.migrateFromLocalStorage();
@@ -4352,9 +4537,11 @@
                         const countPresets = (rPresets[0] && rPresets[0].values[0][0]) || 0;
                         const rClinics = this.db.exec("SELECT COUNT(*) FROM clinic_settings");
                         const countClinics = (rClinics[0] && rClinics[0].values[0][0]) || 0;
+                        const rState = this.db.exec("SELECT COUNT(*) FROM app_state");
+                        const countState = (rState[0] && rState[0].values[0][0]) || 0;
                         const bytes = this.db.export();
                         const kbSize = (bytes.length / 1024).toFixed(1);
-                        statsDetail.textContent = `ตาราง presets: ${countPresets} แถว • ตาราง clinic_settings: ${countClinics} แถว • ขนาด: ${kbSize} KB`;
+                        statsDetail.textContent = `ตาราง presets: ${countPresets} แถว • clinic_settings: ${countClinics} แถว • app_state: ${countState} แถว • ขนาด: ${kbSize} KB`;
                     } catch (e) {
                         statsDetail.textContent = "เชื่อมต่อฐานข้อมูล SQLite เรียบร้อย";
                     }
@@ -4451,6 +4638,66 @@
                             }
                         });
                     }
+                } catch(e) {}
+            }
+
+            saveAppState(key, value) {
+                const valStr = typeof value === "string" ? value : JSON.stringify(value);
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare(`
+                            INSERT OR REPLACE INTO app_state (key, value, updated_at)
+                            VALUES (?, ?, ?)
+                        `);
+                        stmt.run([key, valStr, Date.now()]);
+                        stmt.free();
+                        this.persistToIDB();
+                        this.updateRecordsCount();
+                    } catch(e) {
+                        console.error("SQLite saveAppState error:", e);
+                    }
+                }
+                try {
+                    localStorage.setItem(`beforeafter_state_${key}`, valStr);
+                } catch(e) {}
+            }
+
+            getAppState(key) {
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare("SELECT value FROM app_state WHERE key = ?");
+                        stmt.bind([key]);
+                        if (stmt.step()) {
+                            const row = stmt.getAsObject();
+                            stmt.free();
+                            try { return JSON.parse(row.value); } catch(e) { return row.value; }
+                        }
+                        stmt.free();
+                    } catch(e) {
+                        console.error("SQLite getAppState error:", e);
+                    }
+                }
+                try {
+                    const local = localStorage.getItem(`beforeafter_state_${key}`);
+                    if (local) {
+                        try { return JSON.parse(local); } catch(e) { return local; }
+                    }
+                } catch(e) {}
+                return null;
+            }
+
+            deleteAppState(key) {
+                if (this.isReady && this.db) {
+                    try {
+                        const stmt = this.db.prepare("DELETE FROM app_state WHERE key = ?");
+                        stmt.run([key]);
+                        stmt.free();
+                        this.persistToIDB();
+                        this.updateRecordsCount();
+                    } catch(e) {}
+                }
+                try {
+                    localStorage.removeItem(`beforeafter_state_${key}`);
                 } catch(e) {}
             }
 
@@ -4583,6 +4830,7 @@
                 let sql = `-- Presets SQLite 3 Database Dump\n-- Exported: ${new Date().toISOString()}\n\n`;
                 sql += `CREATE TABLE IF NOT EXISTS presets (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    clinic_id TEXT NOT NULL,\n    data TEXT NOT NULL,\n    created_at INTEGER NOT NULL,\n    updated_at INTEGER NOT NULL\n);\n\n`;
                 sql += `CREATE TABLE IF NOT EXISTS clinic_settings (\n    clinic_id TEXT PRIMARY KEY,\n    custom_logo_b64 TEXT,\n    default_watermark TEXT,\n    default_title TEXT,\n    lang TEXT,\n    updated_at INTEGER NOT NULL\n);\n\n`;
+                sql += `CREATE TABLE IF NOT EXISTS app_state (\n    key TEXT PRIMARY KEY,\n    value TEXT NOT NULL,\n    updated_at INTEGER NOT NULL\n);\n\n`;
 
                 const res = this.db.exec("SELECT id, name, clinic_id, data, created_at, updated_at FROM presets");
                 if (res.length > 0 && res[0].values) {
@@ -5174,6 +5422,86 @@
             });
         }
 
+        // Quick Header SQLite Button
+        const btnHeaderSqlite = document.getElementById("btnHeaderSqlite");
+        if (btnHeaderSqlite && btnOpenSqliteModal) {
+            btnHeaderSqlite.addEventListener("click", () => {
+                btnOpenSqliteModal.click();
+            });
+        }
+
+        // Quick Mobile Tab SQLite Button
+        const mobileTabSqliteBtn = document.getElementById("mobileTabSqliteBtn");
+        if (mobileTabSqliteBtn && btnOpenSqliteModal) {
+            mobileTabSqliteBtn.addEventListener("click", () => {
+                btnOpenSqliteModal.click();
+            });
+        }
+
+        // Save Current State as Clinic Default
+        const btnSaveClinicDefault = document.getElementById("btnSaveClinicDefault");
+        if (btnSaveClinicDefault) {
+            btnSaveClinicDefault.addEventListener("click", () => {
+                const state = getCurrentAppStateAsPreset();
+                if (sqliteManager) {
+                    sqliteManager.saveAppState(`clinic_default_${activeClinicId}`, state);
+                }
+                showToast(`บันทึกการตั้งค่าเป็นค่าเริ่มต้นของ ${CLINICS[activeClinicId].name} สำเร็จ! ⭐`);
+                updateAutoSaveSummaryUI();
+            });
+        }
+
+        // Modal Tab Buttons Switching
+        document.querySelectorAll(".sqlite-tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetTab = btn.dataset.tab;
+                document.querySelectorAll(".sqlite-tab-btn").forEach(b => b.classList.remove("active"));
+                document.querySelectorAll(".sqlite-tab-content").forEach(c => c.classList.remove("active"));
+                btn.classList.add("active");
+                const content = document.getElementById(targetTab);
+                if (content) content.classList.add("active");
+                if (targetTab === "tabSqliteState") {
+                    updateAutoSaveSummaryUI();
+                } else if (targetTab === "tabSqlitePresets") {
+                    renderSqliteRecordsTable();
+                }
+            });
+        });
+
+        // Modal Action Buttons inside Auto-Save tab
+        const btnRestoreAutoSavedNow = document.getElementById("btnRestoreAutoSavedNow");
+        if (btnRestoreAutoSavedNow) {
+            btnRestoreAutoSavedNow.addEventListener("click", () => {
+                const lastConfig = sqliteManager ? sqliteManager.getAppState("last_used_config") : null;
+                if (lastConfig) {
+                    applyPresetData(lastConfig);
+                    showToast("โหลดข้อมูลล่าสุดจาก SQLite เรียบร้อยแล้ว! ⚡");
+                } else {
+                    showToast("ยังไม่มีข้อมูล Auto-Save ในระบบ", "error");
+                }
+            });
+        }
+
+        const btnSaveCurrentAsClinicDefInModal = document.getElementById("btnSaveCurrentAsClinicDefInModal");
+        if (btnSaveCurrentAsClinicDefInModal && btnSaveClinicDefault) {
+            btnSaveCurrentAsClinicDefInModal.addEventListener("click", () => {
+                btnSaveClinicDefault.click();
+            });
+        }
+
+        const btnClearAutoSaveState = document.getElementById("btnClearAutoSaveState");
+        if (btnClearAutoSaveState) {
+            btnClearAutoSaveState.addEventListener("click", () => {
+                if (confirm("ต้องการล้างข้อมูลสถานะที่จำไว้ใน SQLite หรือไม่? (พรีเซ็ตที่คุณเคยบันทึกไว้จะไม่ถูกลบ)")) {
+                    if (sqliteManager) {
+                        sqliteManager.deleteAppState("last_used_config");
+                    }
+                    updateAutoSaveSummaryUI();
+                    showToast("ล้างข้อมูล Auto-Save เรียบร้อย");
+                }
+            });
+        }
+
         const closeSqliteModal = () => {
             if (sqliteManagerModal) sqliteManagerModal.style.display = "none";
         };
@@ -5432,6 +5760,8 @@
                 btnUpdatePreset: "🔄 บันทึกทับ",
                 btnDeletePreset: "🗑️ ลบ",
                 btnSqliteMgmt: "🗄️ ฐานข้อมูล SQLite",
+                btnSaveClinicDefault: "⭐ บันทึกเป็นค่าเริ่มต้น",
+                headerSqliteLabel: "SQLite",
                 btnPwaInstall: "📲 ติดตั้งแอพ",
                 btnPwaInstalled: "✓ ในแอพแล้ว"
             },
@@ -5442,6 +5772,8 @@
                 btnUpdatePreset: "🔄 Overwrite",
                 btnDeletePreset: "🗑️ Delete",
                 btnSqliteMgmt: "🗄️ SQLite Database",
+                btnSaveClinicDefault: "⭐ Save Clinic Default",
+                headerSqliteLabel: "SQLite",
                 btnPwaInstall: "📲 Install App",
                 btnPwaInstalled: "✓ App Active"
             }
@@ -5467,6 +5799,10 @@
             if (btnUpdatePreset) btnUpdatePreset.textContent = t.btnUpdatePreset;
             if (btnDeletePreset) btnDeletePreset.textContent = t.btnDeletePreset;
             if (btnOpenSqliteModal) btnOpenSqliteModal.textContent = t.btnSqliteMgmt;
+            const btnSaveClinicDefaultEl = document.getElementById("btnSaveClinicDefault");
+            if (btnSaveClinicDefaultEl && t.btnSaveClinicDefault) btnSaveClinicDefaultEl.textContent = t.btnSaveClinicDefault;
+            const headerSqliteLabelEl = document.getElementById("headerSqliteLabel");
+            if (headerSqliteLabelEl && t.headerSqliteLabel) headerSqliteLabelEl.textContent = t.headerSqliteLabel;
 
             const pwaInstallLabel = document.getElementById("pwaInstallLabel");
             const mobilePwaInstallLabel = document.getElementById("mobilePwaInstallLabel");
@@ -5594,10 +5930,80 @@
             });
         }
 
-        // Initialize SQLite & Preset Dropdown
+        // ==============================================================
+        // --- REAL-TIME SQLITE ZERO-CONFIG AUTO-SAVE ENGINE ---
+        // ==============================================================
+        let autoSaveTimer = null;
+        function scheduleAutoSaveState() {
+            if (!sqliteManager || !sqliteManager.isReady) return;
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                try {
+                    const state = getCurrentAppStateAsPreset();
+                    sqliteManager.saveAppState("last_used_config", state);
+                    const autoBadge = document.getElementById("sqliteAutoSaveBadge");
+                    if (autoBadge) {
+                        autoBadge.textContent = "✓ บันทึกแล้ว";
+                        autoBadge.classList.add("saving");
+                        setTimeout(() => {
+                            autoBadge.textContent = "⚡ Auto-Saved";
+                            autoBadge.classList.remove("saving");
+                        }, 1200);
+                    }
+                    updateAutoSaveSummaryUI();
+                } catch(err) {
+                    console.warn("Auto-save notice:", err);
+                }
+            }, 600);
+        }
+
+        function restoreAutoSavedState() {
+            if (!sqliteManager) return;
+            const lastConfig = sqliteManager.getAppState("last_used_config");
+            if (lastConfig && typeof lastConfig === "object") {
+                applyPresetData(lastConfig);
+                console.log("Restored last used config from SQLite successfully!");
+            }
+            updateAutoSaveSummaryUI();
+        }
+
+        function updateAutoSaveSummaryUI() {
+            const summaryEl = document.getElementById("autoSaveStateSummary");
+            if (!summaryEl) return;
+            if (!sqliteManager) {
+                summaryEl.textContent = "ระบบ SQLite ยังไม่พร้อม";
+                return;
+            }
+            const lastConfig = sqliteManager.getAppState("last_used_config");
+            if (!lastConfig || typeof lastConfig !== "object") {
+                summaryEl.innerHTML = "<span style='color: #94a3b8;'>ยังไม่มีข้อมูลจำล่าสุดในระบบ (จะบันทึกอัตโนมัติเมื่อพิมพ์หรือปรับแต่ง)</span>";
+                return;
+            }
+            const clinicName = CLINICS[lastConfig.clinic_id] ? CLINICS[lastConfig.clinic_id].name : lastConfig.clinic_id;
+            const title = lastConfig.title ? `"${lastConfig.title}"` : "ไม่ได้ระบุ";
+            const watermark = lastConfig.watermarkText ? `"${lastConfig.watermarkText}"` : "ไม่ได้ระบุ";
+            const ratio = lastConfig.ratio || "1:1";
+            const discL = lastConfig.discLeft ? `ซ้าย: ${lastConfig.discLeft.substring(0, 24)}...` : "ไม่มี";
+            const discR = lastConfig.discRight ? `ขวา: ${lastConfig.discRight.substring(0, 24)}...` : "ไม่มี";
+            const censorOn = lastConfig.censor && lastConfig.censor.enabled ? "เปิดใช้งาน (Active)" : "ปิด";
+
+            summaryEl.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 12px; margin-top: 4px;">
+                    <div>🏥 <strong>คลินิก:</strong> ${clinicName}</div>
+                    <div>📐 <strong>สัดส่วน:</strong> ${ratio}</div>
+                    <div>📝 <strong>ชื่อเคส:</strong> ${title}</div>
+                    <div>💧 <strong>ลายน้ำ:</strong> ${watermark}</div>
+                    <div>🕶️ <strong>แถบปิดตา:</strong> ${censorOn}</div>
+                    <div>⚠️ <strong>คำเตือน:</strong> ${discL} | ${discR}</div>
+                </div>
+            `;
+        }
+
+        // Initialize SQLite & Restore State
         sqliteManager.init().then(() => {
             updateClinicLogoSources(activeClinicId);
             refreshPresetDropdown();
+            restoreAutoSavedState();
         });
 
         // --- GENERAL CONTROLS LISTENERS ---
@@ -5608,6 +6014,7 @@
             updateFrameDimensions();
             renderBothSlots();
             renderStageOverlays();
+            scheduleAutoSaveState();
         });
 
         fitSelect.addEventListener("change", e => {
@@ -5718,6 +6125,9 @@
 
             if (typeof updateCensorBoxPositions === "function") {
                 updateCensorBoxPositions();
+            }
+            if (typeof scheduleAutoSaveState === "function") {
+                scheduleAutoSaveState();
             }
         }
 
