@@ -1,11 +1,27 @@
 // Vercel Serverless Function: SQLite / Presets API
 // Supports GET, POST, DELETE with persistent storage handling
 
+// ⚠️ WARNING: บน Vercel/serverless filesystem เป็น ephemeral — ข้อมูลใน /tmp จะหายเมื่อ cold-start
+// สำหรับ production ให้ย้ายไปใช้ Vercel KV, Supabase, PlanetScale หรือ Neon DB
+// ถ้าต้องการ persistent storage ให้ set env var PRESETS_STORAGE_PATH ชี้ไปยัง volume ที่ persistent
+
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = process.env.TMPDIR || '/tmp';
+// ใช้ PRESETS_STORAGE_PATH ถ้ามี (เช่น Railway, Render, Fly.io ที่มี volume) มิฉะนั้นใช้ /tmp
+const DATA_DIR = process.env.PRESETS_STORAGE_PATH || process.env.TMPDIR || '/tmp';
 const STORAGE_FILE = path.join(DATA_DIR, 'beforeafter_presets.json');
+
+// ตรวจว่า directory มีอยู่และ writable
+function ensureDataDir() {
+    try {
+        if (!fs.existsSync(DATA_DIR)) {
+            fs.mkdirSync(DATA_DIR, { recursive: true });
+        }
+    } catch (err) {
+        console.warn('Data dir warning:', err.message);
+    }
+}
 
 function readPresetsFromFile() {
     try {
@@ -21,6 +37,7 @@ function readPresetsFromFile() {
 
 function writePresetsToFile(data) {
     try {
+        ensureDataDir();
         fs.writeFileSync(STORAGE_FILE, JSON.stringify(data, null, 2), 'utf8');
         return true;
     } catch (err) {

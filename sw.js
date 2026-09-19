@@ -1,5 +1,7 @@
 // Service Worker for BeforeAfter PWA
-const CACHE_NAME = 'beforeafter-pwa-v1';
+// ⚠️ เปลี่ยน CACHE_VERSION เมื่อ deploy อัพเดท เพื่อให้ cache เก่าถูก invalidate
+const CACHE_VERSION = '20260919-single-image';
+const CACHE_NAME = `beforeafter-pwa-v${CACHE_VERSION}`;
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -43,6 +45,26 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests and non-API calls
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('/api/')) return;
+
+  // Google Fonts: cache opaque responses แยกใน font-cache (ข้ามขีดจำกัด opaque ปกติ)
+  const url = event.request.url;
+  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
+    event.respondWith(
+      caches.open('beforeafter-fonts-v1').then((cache) => {
+        return cache.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          return fetch(event.request).then((networkResponse) => {
+            // opaque responses (status 0) ก็ cache ได้ใน font cache
+            if (networkResponse) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          }).catch(() => cachedResponse);
+        });
+      })
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
